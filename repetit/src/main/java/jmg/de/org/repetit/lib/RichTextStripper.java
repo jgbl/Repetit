@@ -22,8 +22,6 @@ package jmg.de.org.repetit.lib;
 
 import android.util.Log;
 
-import org.de.jmg.lib.lib.libString;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

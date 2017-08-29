@@ -29,8 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.de.jmg.learn.R;
-import org.de.jmg.lib.lib.Sounds;
 
 import java.io.File;
 

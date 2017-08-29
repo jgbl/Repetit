@@ -9,5 +9,6 @@ import android.support.v4.app.Fragment;
 public class SymptomsActivity extends Fragment {
 public final  static int fragID = 2;
 
+    public MainActivity _main;
 }
 

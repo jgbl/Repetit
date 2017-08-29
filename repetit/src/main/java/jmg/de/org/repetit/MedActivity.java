@@ -10,5 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 public class MedActivity extends Fragment {
 public final  static int fragID = 1;
 
+    public MainActivity _main;
 }
 

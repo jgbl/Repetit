@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    package="jmg.de.org.repetit">
+    <uses-sdk tools:overrideLibrary="android.support.test.espresso, android.support.test.rule, android.support.test, android.app, android.support.test.espresso.idling" />
+</manifest>

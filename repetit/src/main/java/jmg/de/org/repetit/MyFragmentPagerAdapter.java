@@ -27,21 +27,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.de.jmg.lib.lib;
+import jmg.de.org.repetit.lib.lib;
 
-import br.com.thinkti.android.filechooserfrag.fragFileChooser;
-import br.com.thinkti.android.filechooserfrag.fragFileChooserQuizlet;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-	
-	int PAGE_COUNT = 5;
-	public _MainActivity fragMain;
+
+	int PAGE_COUNT = 3;
+	public SymptomsActivity fragSymptoms;
+	public MedActivity fragMed;
 	public SettingsActivity fragSettings;
-	public br.com.thinkti.android.filechooserfrag.fragFileChooser fragChooser;
-	public br.com.thinkti.android.filechooserfrag.fragFileChooserQuizlet fragQuizlet;
 	//public org.liberty.android.fantastischmemo.downloader.quizlet.QuizletOAuth2AccessCodeRetrievalFragment fragAuthQuizlet;
 	public MainActivity main;
-	public fragStatistics fragChart;
 	/** Constructor of the class */
 	public MyFragmentPagerAdapter(FragmentManager fm, MainActivity main, boolean restart) {
 		super(fm);
@@ -53,10 +49,10 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 				LayoutInflater Li = LayoutInflater.from(main);
 				for (Fragment f: fm.getFragments())
 				{
-					if (f instanceof _MainActivity)
+					if (f instanceof MedActivity)
 					{
-						fragMain = (_MainActivity) f;
-						fragMain._main = main;
+						fragMed = (MedActivity) f;
+						fragMed._main = main;
 					}
 					else if (f instanceof SettingsActivity)
 					{
@@ -64,19 +60,11 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 						fragSettings._main = main;
 						
 					}
-					else if (f instanceof fragFileChooser)
+					else if (f instanceof SymptomsActivity)
 					{
-						fragChooser = (fragFileChooser) f;
-						fragChooser._main = main;
-						fragChooser.onCreateView(Li, main.Layout, null);
-					}
-					else if (f instanceof fragStatistics)
-					{
-						fragChart = (fragStatistics) f;
-					}
-					else if (f instanceof fragFileChooserQuizlet)
-					{
-						fragQuizlet = (fragFileChooserQuizlet) f;
+						fragSymptoms = (SymptomsActivity) f;
+						fragSymptoms._main = main;
+						//fragChooser.onCreateView(Li, main.Layout, null);
 					}
 					/*
 					else if (f instanceof QuizletOAuth2AccessCodeRetrievalFragment)
@@ -102,79 +90,38 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 		{
 		
 			/** tab1 is selected */
-			case _MainActivity.fragID:
-				if (fragMain == null)
+			case MedActivity.fragID:
+				if (fragMed == null)
 				{
-					fragMain = new _MainActivity();
+					fragMed = new MedActivity();
 				}
-				LastItem = fragMain;
-				return fragMain;
+				LastItem = fragMed;
+				return fragMed;
 				
-			case fragFileChooser.fragID:
+			case SymptomsActivity.fragID:
 			try 
 			{
-				if (fragChooser==null) 
+				if (fragSymptoms==null)
 				{
-					fragChooser=new fragFileChooser();
-					if (main!=null) fragChooser.init(main.getFileChooserIntent(true),main);
+					fragSymptoms=new SymptomsActivity();
+					//if (main!=null) fragChooser.init(main.getFileChooserIntent(true),main);
 				}
-				LastItem = fragChooser;
-				return fragChooser;
+				LastItem = fragSymptoms;
+				return fragSymptoms;
 				
 			} catch (Exception e) {
 
 				lib.ShowException(main, e);
 			}
 				
-			case fragStatistics.fragID:
-			if (fragChart==null)
-			{
-				fragChart = new fragStatistics();
-			}
-			LastItem = fragChart;
-			return fragChart;
-				
-				
-			/** tab2 is selected */
 			case SettingsActivity.fragID:
 				if (fragSettings==null)
 				{
 					fragSettings = new SettingsActivity();
-					fragSettings.init(main.getSettingsIntent(),main);
+					//fragSettings.init(main.getSettingsIntent(),main);
 				}
 				LastItem = fragSettings;
 				return fragSettings;
-			case fragFileChooserQuizlet.fragID:
-				if (fragQuizlet == null)
-				{
-					fragQuizlet = new fragFileChooserQuizlet();
-					fragQuizlet.initfragFileChooserQuizlet(main, "", "");
-					/*
-					if (fragAuthQuizlet == null) {
-						fragAuthQuizlet = new QuizletOAuth2AccessCodeRetrievalFragment();
-						fragAuthQuizlet.setAuthCodeReceiveListener
-								(new OauthAccessCodeRetrievalFragment.AuthCodeReceiveListener() {
-									@Override
-									public void onAuthCodeReceived(String... codes) {
-										lib.ShowMessage(main, codes[0], "");
-									}
-
-									@Override
-									public void onAuthCodeError(String error) {
-
-									}
-
-									@Override
-									public void onCancelled() {
-
-									}
-								});
-					}
-					fragAuthQuizlet.show( main.getSupportFragmentManager() , "tag");
-					*/
-				}
-				LastItem = fragQuizlet;
-				return fragQuizlet;
 
 		}
 		
@@ -184,7 +131,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 	/** Returns the number of pages */
 	@Override
 	public int getCount() {		
-		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 4;
+		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 3;
 		return PAGE_COUNT;
 	}
 	@Override
@@ -199,7 +146,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 		super.destroyItem(container, position, object);
 		if (lib.NookSimpleTouch() && object == fragSettings) 
 		{
-			main.RemoveFragSettings();
+			//main.RemoveFragSettings();
 		}
 	}
 

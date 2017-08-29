@@ -9,5 +9,6 @@ import android.support.v4.app.Fragment;
 public class SettingsActivity extends Fragment {
 public final  static int fragID = 10;
 
+    public MainActivity _main;
 }
 

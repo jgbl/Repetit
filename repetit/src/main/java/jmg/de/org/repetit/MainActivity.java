@@ -122,9 +122,9 @@ protected void onCreate(Bundle savedInstanceState)
                 }
                 else if (LastPosition == MedActivity.fragID)
                 {
-                    if (fPA != null && fPA.fragMain != null)
+                    if (fPA != null && fPA.fragMed != null)
                     {
-                        //fPA.fragMain.removeCallbacks();
+                        //fPA.fragMed.removeCallbacks();
                     }
                 }
 
@@ -147,18 +147,18 @@ protected void onCreate(Bundle savedInstanceState)
                 {
                     //mnuAddNew.setEnabled(true);
                     //mnuUploadToQuizlet.setEnabled(true);
-                    if (fPA != null && fPA.fragMain != null)
+                    if (fPA != null && fPA.fragMed != null)
                     {
                         /*
-                        fPA.fragMain._txtMeaning1.setOnFocusChangeListener(new View.OnFocusChangeListener()
+                        fPA.fragMed._txtMeaning1.setOnFocusChangeListener(new View.OnFocusChangeListener()
                         {
                             @Override
                             public void onFocusChange(View v, boolean hasFocus)
                             {
-                                fPA.fragMain._txtMeaning1.setOnFocusChangeListener(fPA.fragMain.FocusListenerMeaning1);
+                                fPA.fragMed._txtMeaning1.setOnFocusChangeListener(fPA.fragMed.FocusListenerMeaning1);
                                 if (hasFocus)
                                 {
-                                    fPA.fragMain._scrollView.fullScroll(View.FOCUS_UP);
+                                    fPA.fragMed._scrollView.fullScroll(View.FOCUS_UP);
                                 }
 
                             }
@@ -189,7 +189,7 @@ protected void onCreate(Bundle savedInstanceState)
                 }
                 else if (position == SymptomsActivity.fragID)
                 {
-                    if (fPA != null && fPA.fragQuizlet != null)
+                    if (fPA != null && fPA.fragSymptoms != null)
                     {
                         //searchQuizlet();
                     }
