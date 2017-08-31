@@ -77,9 +77,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.de.jmg.learn.MainActivity;
-import org.de.jmg.learn.R;
-import org.de.jmg.learn.libLearn;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,6 +97,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jmg.de.org.repetit.MainActivity;
+import jmg.de.org.repetit.R;
 
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static java.util.Locale.getDefault;
@@ -431,7 +429,7 @@ public class lib
             int Len = strBed.length();
             if (Len == 0)
                 return "";
-            libLearn.gStatus = ClassName + ".MakeMask";
+            lib.gStatus = ClassName + ".MakeMask";
             for (i = 0; i <= Len - 1; i++)
             {
                 if ((".,;/[]()".indexOf(strBed.charAt(i)) > -1))

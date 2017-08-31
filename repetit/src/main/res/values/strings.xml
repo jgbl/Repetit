@@ -6,6 +6,8 @@
     <string name="hello_world">hello world</string>
     <string name="imgColors">edit colors</string>
     <string name="txtColors2">colors</string>
+    <string name="off">off</string>
+    <string name="message">Message</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>
