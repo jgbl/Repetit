@@ -28,6 +28,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import jmg.de.org.repetit.R;
+
 public class BorderedTextView extends TextView implements IBorderedView {
 	private Paint paint = new Paint();
 	private Drawable _MeaningBG;
@@ -54,7 +56,7 @@ public class BorderedTextView extends TextView implements IBorderedView {
 		this.showBorders = showBorders;
 		if (showBorders) {
 			if (_MeaningBG != null) _MeaningBG = this.getBackground();
-			this.setBackgroundResource(org.de.jmg.learn.R.drawable.roundedbox);
+			this.setBackgroundResource(R.drawable.roundedbox);
 			GradientDrawable drawable = (GradientDrawable) this.getBackground();
 			drawable.setColor(backColor);
 

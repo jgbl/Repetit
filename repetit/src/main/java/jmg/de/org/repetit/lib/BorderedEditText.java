@@ -54,7 +54,7 @@ public class BorderedEditText extends EditText implements IBorderedView {
 		this.showBorders = showBorders;
 		if (showBorders) {
 			if (_MeaningBG == null) _MeaningBG = this.getBackground();
-			this.setBackgroundResource(org.de.jmg.learn.R.drawable.roundedbox);
+			this.setBackgroundResource(R.drawable.roundedbox);
 			GradientDrawable drawable = (GradientDrawable) this.getBackground();
 			drawable.setColor(BackColor);
 		} else  {

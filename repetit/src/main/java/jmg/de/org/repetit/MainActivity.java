@@ -120,7 +120,7 @@ protected void onCreate(Bundle savedInstanceState)
                     }
                     //mnuUploadToQuizlet.setEnabled(true);
                 }
-                else if (LastPosition == MedActivity.fragID)
+                else if (LastPosition == SymptomsActivity.fragID)
                 {
                     if (fPA != null && fPA.fragMed != null)
                     {

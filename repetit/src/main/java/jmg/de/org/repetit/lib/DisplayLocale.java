@@ -22,9 +22,11 @@ package jmg.de.org.repetit.lib;
 
 import android.support.annotation.NonNull;
 
-import org.de.jmg.learn.R;
+
 
 import java.util.Locale;
+
+import jmg.de.org.repetit.R;
 
 public class DisplayLocale implements Comparable<DisplayLocale>
 {
