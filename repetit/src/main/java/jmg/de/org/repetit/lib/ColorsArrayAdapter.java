@@ -30,8 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.de.jmg.learn.R;
-import org.de.jmg.lib.ColorSetting.ColorItems;
+import jmg.de.org.repetit.R;
+import jmg.de.org.repetit.lib.ColorSetting.ColorItems;
 
 public class ColorsArrayAdapter extends
 		AbstractScaledArrayAdapter<ColorSetting> {
@@ -118,7 +118,7 @@ public class ColorsArrayAdapter extends
 			if (row.getTag() == null) blnNew = true;
 		}
 
-		TextView label = (TextView) row.findViewById(R.id.txtColors);
+		TextView label = (TextView) row.findViewById(R.id.txtColors2);
 		if (blnNew)
 		{
 			label.setTextSize(TypedValue.COMPLEX_UNIT_PX, label.getTextSize() * super.Scale);

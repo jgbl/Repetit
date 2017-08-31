@@ -3,4 +3,16 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="hello_world">hello world</string>
+    <string name="imgColors">edit colors</string>
+    <string name="txtColors2">colors</string>
+    <string-array name="spnColors">
+        <item >word</item>
+        <item >meaning</item>
+        <item >comment</item>
+        <item >background</item>
+        <item >box word</item>
+        <item >box meaning</item>
+        <item >background wrong</item>
+    </string-array>
 </resources>
