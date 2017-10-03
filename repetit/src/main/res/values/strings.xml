@@ -1,13 +1,20 @@
 <resources>
     <string name="app_name">Repetit</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="hello_world">hello world</string>
     <string name="imgColors">edit colors</string>
     <string name="txtColors2">colors</string>
     <string name="off">off</string>
     <string name="message">Message</string>
+    <string name="ok">OK</string>
+    <string name="question">Question</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="msgShowDocumentProvider">Show document provider</string>
+    <string name="msgRememberChoice">remember choice</string>
+    <string name="msgDontShowThisMessageAgain">don\'t show this message again</string>
+    <string name="msgNoPersistableUriPermissionCouldBeTaken">no persistable uri permission could be taken</string>
+    <string name="PrivacyPolicy">privacy policy</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>

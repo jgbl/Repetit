@@ -29,6 +29,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import jmg.de.org.repetit.R;
+
 public class BorderedEditText extends EditText implements IBorderedView {
 	private Paint paint = new Paint();
 	public RectF RoundedRect;

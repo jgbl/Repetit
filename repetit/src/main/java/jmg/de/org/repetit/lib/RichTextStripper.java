@@ -155,7 +155,7 @@ public class RichTextStripper
 				String brace = matches.group(5); //.Value;
 				String tchar = matches.group(6) ; //.Value;
 
-				if (!libString.IsNullOrEmpty(brace))
+				if (!lib.libString.IsNullOrEmpty(brace))
 				{
 					curskip = 0;
 					if (brace.equalsIgnoreCase("{"))
@@ -171,7 +171,7 @@ public class RichTextStripper
 						ignorable = entry.Ignorable;
 					}
 				}
-				else if (!libString.IsNullOrEmpty(character)) // \x (not a letter)
+				else if (!lib.libString.IsNullOrEmpty(character)) // \x (not a letter)
 				{
 					curskip = 0;
 					if (character.equals("~"))
@@ -193,7 +193,7 @@ public class RichTextStripper
 						ignorable = true;
 					}
 				}
-				else if (!libString.IsNullOrEmpty(word)) // \foo
+				else if (!lib.libString.IsNullOrEmpty(word)) // \foo
 				{
 					curskip = 0;
 					if (destinations.contains(word))
@@ -223,7 +223,7 @@ public class RichTextStripper
 						curskip = ucskip;
 					}
 				}
-				else if (!libString.IsNullOrEmpty(hex)) // \'xx
+				else if (!lib.libString.IsNullOrEmpty(hex)) // \'xx
 				{
 					if (curskip > 0)
 					{
@@ -235,7 +235,7 @@ public class RichTextStripper
 		                outList.add("" + (c));
 					}
 				}
-				else if (!libString.IsNullOrEmpty(tchar))
+				else if (!lib.libString.IsNullOrEmpty(tchar))
 				{
 					if (curskip > 0)
 					{

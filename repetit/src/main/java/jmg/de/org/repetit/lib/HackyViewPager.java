@@ -1,12 +1,11 @@
 package jmg.de.org.repetit.lib;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 
-public class HackyViewPager extends ViewPager
+public class HackyViewPager extends android.support.v4.view.ViewPager
 {
 
     public HackyViewPager(Context context)

@@ -90,6 +90,7 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -593,7 +594,7 @@ public class lib
         A.setPositiveButton("OK", new listener());
         A.setMessage(ex.getMessage() + "\n"
                 + (ex.getCause() == null ? "" : ex.getCause().getMessage())
-                + "\nStatus: " + libLearn.gStatus
+                + "\nStatus: " + gStatus
                 + "\n" + Log.getStackTraceString(ex));
         A.setTitle("Error");
         dlgOK = A.create();
@@ -765,7 +766,7 @@ public class lib
         // System.Threading.SendOrPostCallback(DelShowException),new
         // ExStateInfo(context, ex));
         if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
-        libLearn.gStatus = "ShowMessageYesNoWithCheckbox";
+        gStatus = "ShowMessageYesNoWithCheckbox";
         try
         {
             if (YesNoHandler == null)
@@ -846,7 +847,7 @@ public class lib
         // System.Threading.SendOrPostCallback(DelShowException),new
         // ExStateInfo(context, ex));
         if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
-        libLearn.gStatus = "ShowMessageYesNoWithCheckbox";
+        gStatus = "ShowMessageYesNoWithCheckbox";
         try
         {
             if (YesNoHandler == null)
@@ -1142,25 +1143,6 @@ public class lib
 
     }
 
-    public static void playSound(Context context, Sounds s) throws Exception
-    {
-        MainActivity main = (MainActivity) context;
-        AssetManager assets = context.getAssets();
-        if (main.colSounds.size() > 0)
-        {
-            File F = new File(main.colSounds.get(s).SoundPath);
-            if (F.exists())
-                playSound(F);
-            else if (F.getPath().startsWith("snd/"))
-                playSound(assets, F.getPath());
-        }
-        else
-        {
-            if (AssetSounds[0] == null)
-                initSounds();
-            playSound(assets, AssetSounds[s.ordinal()]);
-        }
-    }
 
     public static void playSound(AssetManager assets, String name)
             throws Exception
@@ -1182,54 +1164,7 @@ public class lib
         }
     }
 
-    public static Sounds getSoundByNumber(int Zaehler)
-    {
-        for (int i = 0; i < Sounds.values().length; i++)
-        {
-            if (Sounds.values()[i].ordinal() == Zaehler)
-                return Sounds.values()[i];
-        }
-        return null;
-    }
 
-    public static void playSound(Context context, int Zaehler)
-            throws Exception
-    {
-        MainActivity main = (MainActivity) context;
-        if (main.colSounds.size() > 0)
-        {
-            if (Zaehler < -4)
-                Zaehler = -4;
-            else if (Zaehler > 5)
-                Zaehler = 5;
-            lib.Sounds Sound = null;
-            if (Zaehler <= 0 && lib.AntwWasRichtig == false)
-                Zaehler = Math.abs(Zaehler - 6);
-
-            Sound = getSoundByNumber(Zaehler);
-
-            File F = new File(main.colSounds.get(Sound).SoundPath);
-            if (F.exists())
-                playSound(F);
-            else if (F.getPath().startsWith("snd/"))
-                playSound(context.getAssets(), F.getPath());
-        }
-        else
-        {
-            AssetManager assets = context.getAssets();
-            if (AssetSounds[0] == null)
-                initSounds();
-            if (Zaehler < -4)
-                Zaehler = -4;
-            else if (Zaehler > 5)
-                Zaehler = 5;
-            if (Zaehler > 0)
-                playSound(assets, AssetSounds[Zaehler - 1]);
-            else if (Zaehler <= 0)
-                playSound(assets, AssetSounds[Math.abs(Zaehler - 5)]);
-        }
-
-    }
 
     public static void playSound(File F) throws Exception
     {
@@ -1365,7 +1300,7 @@ public class lib
     public static void SelectFile(Activity context, Uri defaultURI) throws Exception
     {
 
-        libLearn.gStatus = "Select File";
+        gStatus = "Select File";
         Intent intent = new Intent();
         if (defaultURI != null)
         {
@@ -1522,27 +1457,7 @@ public class lib
 
                 return displayName + ":" + size + ":" + mimeType;
             }
-            else
-            {
-                MainActivity main = (MainActivity) context;
-                if (!libString.IsNullOrEmpty(main.vok.getURIName()))
-                {
-                    return "/" + main.vok.getURIName();
-                }
-                else
-                {
-                    String p = uri.getPath();
-                    if (!libString.IsNullOrEmpty(p))
-                    {
-                        p = p.substring(p.lastIndexOf("/") + 1);
-                        return p;
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-            }
+
         }
         catch (Exception ex)
         {
@@ -1997,10 +1912,6 @@ public class lib
         ok, cancel, undefined
     }
 
-    public enum Sounds
-    {
-        Richtig0, Richtig1, Richtig2, Richtig3, Richtig4, Richtig5, Falsch0, Falsch1, Falsch2, Falsch3, Falsch4, Falsch5, Beep
-    }
 
     public static class YesNoCheckResult
     {
