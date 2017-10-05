@@ -10,8 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:elevation="5dp"
-        android:background="#ffffff"></android.support.v7.widget.Toolbar>
+        android:background="#ffffff"/>
 
     <RelativeLayout
         android:id="@+id/container"

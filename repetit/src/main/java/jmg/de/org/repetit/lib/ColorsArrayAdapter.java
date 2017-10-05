@@ -126,13 +126,8 @@ public class ColorsArrayAdapter extends
 
 		label.setText(ColorItem.ColorName);
 
-		TextView icon = (TextView) row.findViewById(R.id.txtColors2);
-		if (blnNew)
-		{
-			icon.setTextSize(TypedValue.COMPLEX_UNIT_PX, icon.getTextSize() * super.Scale);
-		}
-					
-		icon.setBackgroundColor(ColorItem.ColorValue);
+
+		label.setBackgroundColor(ColorItem.ColorValue);
 		if (Scale != 1.0f)	row.setTag(true);
 		return row;
 	}

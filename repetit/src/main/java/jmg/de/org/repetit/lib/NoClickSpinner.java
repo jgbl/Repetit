@@ -26,7 +26,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Spinner;
 
-public class NoClickSpinner extends Spinner {
+public class NoClickSpinner extends android.support.v7.widget.AppCompatSpinner {
 	public boolean blnDontCallOnClick;
 
 	public NoClickSpinner(Context context) {

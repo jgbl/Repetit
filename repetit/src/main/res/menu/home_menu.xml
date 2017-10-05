@@ -4,36 +4,36 @@
     <item
         android:id="@+id/expand_all"
         android:orderInCategory="200"
-        android:title="Expand All"
+        android:title="@string/expand_all"
         app:showAsAction="never" />
     <item
         android:id="@+id/collapse_all"
         android:orderInCategory="200"
-        android:title="Collapse All"
+        android:title="@string/collapse_all"
         app:showAsAction="never" />
     <item
         android:id="@+id/select_all"
         android:orderInCategory="200"
-        android:title="Select All"
+        android:title="@string/select_all"
         app:showAsAction="never" />
     <item
         android:id="@+id/deselect_all"
         android:orderInCategory="200"
-        android:title="Deselect All"
+        android:title="@string/deselect_all"
         app:showAsAction="never" />
     <item
         android:id="@+id/expand_level"
         android:orderInCategory="200"
-        android:title="Expand Level 1"
+        android:title="@string/expand_level_1"
         app:showAsAction="never" />
     <item
         android:id="@+id/collapse_level"
         android:orderInCategory="200"
-        android:title="Collapse Level 1"
+        android:title="@string/collapse_level_1"
         app:showAsAction="never" />
     <item
         android:id="@+id/show_select_node"
         android:orderInCategory="200"
-        android:title="Show Selections"
+        android:title="@string/show_selections"
         app:showAsAction="never" />
 </menu>

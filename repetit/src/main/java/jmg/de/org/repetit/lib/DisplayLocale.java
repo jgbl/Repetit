@@ -41,14 +41,8 @@ public class DisplayLocale implements Comparable<DisplayLocale>
         {
             if (locale.toString().equalsIgnoreCase("_off"))
             {
-                if (lib.main != null)
-                {
-                    return lib.main.getString(R.string.off);
-                }
-                else
-                {
-                    return "off";
-                }
+                return "off";
+
             }
             else
             {

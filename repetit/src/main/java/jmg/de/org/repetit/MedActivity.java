@@ -5,7 +5,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,21 +13,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
-import me.texy.treeview.base.BaseNodeViewBinder;
 
 /**
  * Created by hmnatalie on 29.08.17.
  */
 
 public class MedActivity extends Fragment {
-    public final static int fragID = 1;
+    public final static int fragID = 0;
 
     public MainActivity _main;
 
@@ -58,7 +55,14 @@ public class MedActivity extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
-        return inflater.inflate(R.layout.activity_main,container);
+        try
+        {
+            return inflater.inflate(R.layout.activity_med, container);
+        }
+        catch (Throwable ex)
+        {
+            return null;
+        }
     }
 
         @Override

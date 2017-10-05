@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import jmg.de.org.repetit.R;
 
-public class BorderedTextView extends TextView implements IBorderedView {
+public class BorderedTextView extends android.support.v7.widget.AppCompatTextView implements IBorderedView {
 	private Paint paint = new Paint();
 	private Drawable _MeaningBG;
 	public boolean showBorders;

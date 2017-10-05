@@ -31,7 +31,7 @@ import android.widget.EditText;
 
 import jmg.de.org.repetit.R;
 
-public class BorderedEditText extends EditText implements IBorderedView {
+public class BorderedEditText extends android.support.v7.widget.AppCompatEditText implements IBorderedView {
 	private Paint paint = new Paint();
 	public RectF RoundedRect;
 	public boolean showBorders;

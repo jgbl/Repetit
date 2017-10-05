@@ -116,8 +116,7 @@ public class lib
     public static boolean sndEnabled = true;
     public static boolean AntwWasRichtig;
     public static ArrayList<DialogInterface> OpenDialogs = new ArrayList<>();
-    public static MainActivity main;
-    public static Handler YesNoHandler;
+    //public static MainActivity main;
     public static String[] AssetSounds = new String[13];
     public static PrefsOnMultiChoiceClickListener cbListener = new PrefsOnMultiChoiceClickListener();
     static AlertDialog dlgOK;
@@ -142,7 +141,6 @@ public class lib
                     DialogResultYes = yesnoundefined.no;
                     break;
             }
-            if (YesNoHandler != null) YesNoHandler.sendMessage(YesNoHandler.obtainMessage());
         }
     };
     /*
@@ -625,17 +623,6 @@ public class lib
         if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
         try
         {
-            if (YesNoHandler == null)
-            {
-                YesNoHandler = new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message mesg)
-                    {
-                        //throw new MessageException();
-                    }
-                };
-            }
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
@@ -668,7 +655,6 @@ public class lib
             catch (Exception e2)
             {
                 // Looper.myLooper().quit();
-                YesNoHandler = null;
                 if (dlg.isShowing())
                 {
                     dlg.setOnDismissListener(null);
@@ -695,17 +681,6 @@ public class lib
         if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
         try
         {
-            if (YesNoHandler == null)
-            {
-                YesNoHandler = new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message mesg)
-                    {
-                        //throw new MessageException();
-                    }
-                };
-            }
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
@@ -738,7 +713,6 @@ public class lib
             catch (Exception e2)
             {
                 // Looper.myLooper().quit();
-                YesNoHandler = null;
                 if (dlg.isShowing())
                 {
                     dlg.setOnDismissListener(null);
@@ -769,17 +743,6 @@ public class lib
         gStatus = "ShowMessageYesNoWithCheckbox";
         try
         {
-            if (YesNoHandler == null)
-            {
-                YesNoHandler = new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message mesg)
-                    {
-                        //throw new MessageException();
-                    }
-                };
-            }
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
@@ -818,7 +781,6 @@ public class lib
             catch (Exception e2)
             {
                 // Looper.myLooper().quit();
-                YesNoHandler = null;
                 if (dlg.isShowing())
                 {
                     dlg.setOnDismissListener(null);
@@ -850,17 +812,6 @@ public class lib
         gStatus = "ShowMessageYesNoWithCheckbox";
         try
         {
-            if (YesNoHandler == null)
-            {
-                YesNoHandler = new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message mesg)
-                    {
-                        //throw new MessageException();
-                    }
-                };
-            }
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
@@ -899,7 +850,6 @@ public class lib
             catch (Exception e2)
             {
                 // Looper.myLooper().quit();
-                YesNoHandler = null;
                 if (dlg.isShowing())
                 {
                     dlg.setOnDismissListener(null);
@@ -943,17 +893,6 @@ public class lib
 
         try
         {
-            if (YesNoHandler == null)
-            {
-                YesNoHandler = new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message mesg)
-                    {
-                        //throw new MessageException();
-                    }
-                };
-            }
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
@@ -983,7 +922,6 @@ public class lib
             catch (Exception e2)
             {
                 // Looper.myLooper().quit();
-                YesNoHandler = null;
                 if (dlg.isShowing())
                 {
                     dlg.setOnDismissListener(null);

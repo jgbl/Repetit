@@ -15,6 +15,16 @@
     <string name="msgDontShowThisMessageAgain">don\'t show this message again</string>
     <string name="msgNoPersistableUriPermissionCouldBeTaken">no persistable uri permission could be taken</string>
     <string name="PrivacyPolicy">privacy policy</string>
+    <string name="item_first_level">item first level</string>
+    <string name="item_second_level">item second level</string>
+    <string name="tree_node">Tree Node</string>
+    <string name="expand_all">Expand All</string>
+    <string name="collapse_all">Collapse All</string>
+    <string name="select_all">Select All</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="expand_level_1">Expand Level 1</string>
+    <string name="collapse_level_1">Collapse Level 1</string>
+    <string name="show_selections">Show Selections</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>

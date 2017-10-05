@@ -1,4 +1,4 @@
-<org.de.jmg.repetit.lib.HackyViewPager
+<jmg.de.org.repetit.lib.HackyViewPager
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pager"
     android:layout_width="match_parent"
