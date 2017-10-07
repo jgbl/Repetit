@@ -38,10 +38,12 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
 
     @Override
     public void onNodeToggled(TreeNode treeNode, boolean expand) {
+
         if (expand) {
             imageView.animate().rotation(90).setDuration(200).start();
         } else {
             imageView.animate().rotation(0).setDuration(200).start();
         }
     }
+
 }

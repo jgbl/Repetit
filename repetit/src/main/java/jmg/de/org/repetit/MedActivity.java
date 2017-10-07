@@ -1,5 +1,6 @@
 package jmg.de.org.repetit;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import jmg.de.org.repetit.lib.dbSqlite;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
@@ -57,6 +59,7 @@ public class MedActivity extends Fragment {
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
+
     }
 
     @Override
@@ -122,22 +125,67 @@ public class MedActivity extends Fragment {
         return stringBuilder.toString();
     }
 
-    private void buildTree() {
-        for (int i = 0; i < 20; i++) {
-            TreeNode treeNode = new TreeNode(new String("Parent  " + "No." + i));
-            treeNode.setLevel(0);
-            for (int j = 0; j < 10; j++) {
-                TreeNode treeNode1 = new TreeNode(new String("Child " + "No." + j));
-                treeNode1.setLevel(1);
-                for (int k = 0; k < 5; k++) {
-                    TreeNode treeNode2 = new TreeNode(new String("Grand Child " + "No." + k));
-                    treeNode2.setLevel(2);
-                    treeNode1.addChild(treeNode2);
-                }
-                treeNode.addChild(treeNode1);
-            }
-            root.addChild(treeNode);
+    private class TreeNodeHolder
+    {
+        public String Text;
+        public String path;
+
+        public TreeNodeHolder(){
+
         }
+        public TreeNodeHolder(String Text, String path)
+        {
+            this.Text = Text;
+            this.path = path;
+        }
+
+        @Override
+        public String toString()
+        {
+            return Text;
+        }
+    }
+
+    private class TreeNodeHolderMed extends TreeNodeHolder
+    {
+        private final int ID;
+        private final String Name;
+        private final String Beschreibung;
+
+        public TreeNodeHolderMed(String Text, String path, int ID, String Name, String Beschreibung)
+        {
+            super.Text = Text;
+            super.path = path;
+            this.ID = ID;
+            this.Name = Name;
+            this.Beschreibung = Beschreibung;
+        }
+    }
+
+    private void buildTree() {
+        dbSqlite db = new dbSqlite(getContext(),false);
+        db.createDataBase();
+        Cursor c = db.query("Select * FROM Medikamente");
+        if (c.moveToFirst())
+        {
+            int ColumnNameId = c.getColumnIndex("Name");
+            int ColumnIDId = c.getColumnIndex("ID");
+            int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+            do
+            {
+                int ID = c.getInt(ColumnIDId);
+                String Name = c.getString(ColumnNameId);
+                String Beschreibung = c.getString(ColumnBeschreibungId);
+                TreeNode treeNode = new TreeNode(new TreeNodeHolderMed(Name,"Med" + ID, ID, Name, Beschreibung));
+                treeNode.setLevel(0);
+                TreeNode treeNode1 = new TreeNode(new TreeNodeHolder("Dummy", "Dummy"));
+                treeNode1.setLevel(1);
+                treeNode.addChild(treeNode1);
+                root.addChild(treeNode);
+            } while (c.moveToNext());
+        }
+        c.close();
+        db.close();
     }
 
     private void setLightStatusBar(@NonNull View view) {

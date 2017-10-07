@@ -35,7 +35,7 @@ public class dbSqlite extends SQLiteOpenHelper
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
 
-    private static String DB_NAME = "replite.sqlite";
+    private static String DB_NAME = "RepLiteKent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";
     private String dbname = DB_NAME;
     public SQLiteDatabase DataBase;
@@ -79,7 +79,7 @@ public class dbSqlite extends SQLiteOpenHelper
         }
         if (F.isDirectory() && F.exists())
         {
-            String JMGDataDirectory = Path.combine(extPath, "damianbluetooth", "database");
+            String JMGDataDirectory = Path.combine(extPath, "repetit", "database");
             File F1 = new File(JMGDataDirectory);
             if (F1.isDirectory() == false && !F1.exists())
             {
