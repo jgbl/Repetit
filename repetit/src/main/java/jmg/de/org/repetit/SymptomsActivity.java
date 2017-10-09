@@ -43,6 +43,11 @@ public final  static int fragID = 1;
     }
     @Override
     public void onViewCreated(View view, Bundle savedinstancestate) {
+        //initTreeView(view);
+    }
+
+    public void initTreeView(View view)
+    {
         initView(view);
 
         root = TreeNode.root();
@@ -51,14 +56,15 @@ public final  static int fragID = 1;
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        viewGroup.addView(view);
-
+        viewGroup.addView(view2);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
         try
         {
-            View v = inflater.inflate(R.layout.activity_sympt, container);
+            View v = inflater.inflate(R.layout.activity_sympt, container, false);
+            initTreeView(v);
             return v;
         }
         catch (Throwable ex)
@@ -147,8 +153,8 @@ public final  static int fragID = 1;
     private void initView(View view) {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         viewGroup = (RelativeLayout) view.findViewById(R.id.container);
-        _main.setSupportActionBar(toolbar);
-        setLightStatusBar(viewGroup);
+        //_main.setSupportActionBar(toolbar);
+        //setLightStatusBar(viewGroup);
     }
 }
 
