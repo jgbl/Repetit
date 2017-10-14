@@ -72,4 +72,8 @@ public abstract class BaseNodeViewBinder extends RecyclerView.ViewHolder {
     public void onNodeToggled(TreeNode treeNode, boolean expand) {
         //empty
     }
+
+    public void beforeNodeToggled(TreeNode treeNode, boolean expand) {
+        //empty
+    }
 }

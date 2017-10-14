@@ -1,5 +1,6 @@
 package jmg.de.org.repetit;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
@@ -46,12 +48,11 @@ public final  static int fragID = 1;
         //initTreeView(view);
     }
 
-    public void initTreeView(View view)
-    {
+    public void initTreeView(View view) throws Throwable {
         initView(view);
 
         root = TreeNode.root();
-        buildTree();
+        buildTree(root);
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -123,21 +124,38 @@ public final  static int fragID = 1;
         return stringBuilder.toString();
     }
 
-    private void buildTree() {
-        for (int i = 0; i < 20; i++) {
-            TreeNode treeNode = new TreeNode(new String("Parent  " + "No." + i));
-            treeNode.setLevel(0);
-            for (int j = 0; j < 10; j++) {
-                TreeNode treeNode1 = new TreeNode(new String("Child " + "No." + j));
-                treeNode1.setLevel(1);
-                for (int k = 0; k < 5; k++) {
-                    TreeNode treeNode2 = new TreeNode(new String("Grand Child " + "No." + k));
-                    treeNode2.setLevel(2);
-                    treeNode1.addChild(treeNode2);
+    private void buildTree(TreeNode treeNodeParent) throws  Throwable {
+        if (treeNodeParent.getChildren().size()>0) return;
+        //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
+        dbSqlite db = new dbSqlite(getContext(),false);
+        try {
+            Cursor c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text");
+            try {
+                if (c.moveToFirst()) {
+                    int ColumnTextId = c.getColumnIndex("Text");
+                    int ColumnIDId = c.getColumnIndex("ID");
+                    int ColumnShortTextId = c.getColumnIndex("ShortText");
+                    int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+                    int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                    do {
+                        int ID = c.getInt(ColumnIDId);
+                        String Text = c.getString(ColumnTextId);
+                        String ShortText = c.getString(ColumnShortTextId);
+                        Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+                        Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+                        treeNode.setLevel(0);
+                        treeNodeParent.addChild(treeNode);
+                    } while (c.moveToNext());
+                    //this.treeView.expandNode(treeNodeParent);
                 }
-                treeNode.addChild(treeNode1);
+            } finally {
+                c.close();
             }
-            root.addChild(treeNode);
+        }
+        finally
+        {
+            db.close();
         }
     }
 

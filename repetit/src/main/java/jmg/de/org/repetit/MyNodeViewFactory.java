@@ -20,9 +20,9 @@ public class MyNodeViewFactory extends BaseNodeViewFactory {
             case 1:
                 return new SecondLevelNodeViewBinder(view);
             case 2:
-                return new ThirdLevelNodeViewBinder(view);
+                return new SecondLevelNodeViewBinder(view);
             default:
-                return null;
+                return new SecondLevelNodeViewBinder(view);
         }
     }
 }
