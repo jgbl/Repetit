@@ -25,6 +25,10 @@
     <string name="expand_level_1">Expand Level 1</string>
     <string name="collapse_level_1">Collapse Level 1</string>
     <string name="show_selections">Show Selections</string>
+    <string name="find_sympt">find symptoms</string>
+    <string name="qry_med">query medikaments</string>
+    <string name="msg_find_title">Find</string>
+    <string name="msg_find_symptoms">enter substring for symptoms to find</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>

@@ -1,5 +1,7 @@
 package jmg.de.org.repetit;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
@@ -7,13 +9,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -22,6 +28,9 @@ import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
+
+import static android.R.attr.prompt;
+import static jmg.de.org.repetit.lib.lib.OpenDialogs;
 
 /**
  * Created by hmnatalie on 29.08.17.
@@ -35,7 +44,7 @@ public final  static int fragID = 1;
     protected Toolbar toolbar;
     private ViewGroup viewGroup;
     private TreeNode root;
-    private TreeView treeView;
+    public TreeView treeView;
 
 
     @Override
@@ -52,7 +61,7 @@ public final  static int fragID = 1;
         initView(view);
 
         root = TreeNode.root();
-        buildTree(root);
+        buildTree(root,"Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text");
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -78,39 +87,44 @@ public final  static int fragID = 1;
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 
-        menuInflater.inflate(R.menu.home_menu, menu);
+        menuInflater.inflate(R.menu.symptoms_menu, menu);
         //return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.select_all:
-                treeView.selectAll();
+            case R.id.mnu_find_symptoms:
+                AlertDialog.Builder A = new AlertDialog.Builder(getContext());
+                final EditText input = new EditText(getContext());
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setText("");
+                A.setView(input);
+
+                A.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String txt = input.getText().toString();
+                        if (!lib.libString.IsNullOrEmpty(txt))
+                        {
+                            BuildT
+                        }
+                    }
+                });
+                A.setNegativeButton(getContext().getString(R.string.cancel), null);
+                A.setMessage(getContext().getString(R.string.msg_find_symptoms));
+                A.setTitle(getContext().getString(R.string.msg_find_title));
+                AlertDialog dlg = A.create();
                 break;
-            case R.id.deselect_all:
-                treeView.deselectAll();
+            case R.id.mnu_qry_med:
+                String qry = getQueryMed();
+                ((MainActivity)getActivity()).fPA.fragMed.buildTree(qry);
                 break;
-            case R.id.expand_all:
-                treeView.expandAll();
-                break;
-            case R.id.collapse_all:
-                treeView.collapseAll();
-                break;
-            case R.id.expand_level:
-                treeView.expandLevel(1);
-                break;
-            case R.id.collapse_level:
-                treeView.collapseLevel(1);
-                break;
-            case R.id.show_select_node:
-                Toast.makeText(_main.getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
-                break;
-        }
+            }
         return super.onOptionsItemSelected(item);
     }
 
-    private String getSelectedNodes() {
+    public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
         List<TreeNode> selectedNodes = treeView.getSelectedNodes();
         for (int i = 0; i < selectedNodes.size(); i++) {
@@ -124,12 +138,12 @@ public final  static int fragID = 1;
         return stringBuilder.toString();
     }
 
-    private void buildTree(TreeNode treeNodeParent) throws  Throwable {
+    private void buildTree(TreeNode treeNodeParent, String qry) throws  Throwable {
         if (treeNodeParent.getChildren().size()>0) return;
         //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
         dbSqlite db = new dbSqlite(getContext(),false);
         try {
-            Cursor c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text");
+            Cursor c = db.query(qry);
             try {
                 if (c.moveToFirst()) {
                     int ColumnTextId = c.getColumnIndex("Text");
