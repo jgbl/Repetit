@@ -162,8 +162,8 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
     public void selectNode(boolean checked, TreeNode treeNode) {
         treeNode.setSelected(checked);
 
-        selectChildren(treeNode, checked);
-        selectParentIfNeed(treeNode, checked);
+        //selectChildren(treeNode, checked);
+        //selectParentIfNeed(treeNode, checked);
     }
 
     private void selectChildren(TreeNode treeNode, boolean checked) {

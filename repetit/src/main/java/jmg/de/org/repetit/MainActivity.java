@@ -6,12 +6,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import jmg.de.org.repetit.lib.HackyViewPager;
 import jmg.de.org.repetit.lib.lib;
+import me.texy.treeview.TreeNode;
+import me.texy.treeview.TreeView;
+import me.texy.treeview.base.SelectableTreeAction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isWatch;
     private ViewGroup Layout;
     private HackyViewPager mPager;
-    private MyFragmentPagerAdapter fPA;
+    public MyFragmentPagerAdapter fPA;
+    private TreeView treeView;
 
     public MainActivity()
 {
@@ -78,6 +88,41 @@ protected void onCreate(Bundle savedInstanceState)
 
 
         }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.select_all:
+                treeView.selectAll();
+                break;
+            case R.id.deselect_all:
+                treeView.deselectAll();
+                break;
+            case R.id.expand_all:
+                treeView.expandAll();
+                break;
+            case R.id.collapse_all:
+                treeView.collapseAll();
+                break;
+            case R.id.expand_level:
+                treeView.expandLevel(1);
+                break;
+            case R.id.collapse_level:
+                treeView.collapseLevel(1);
+                break;
+            case R.id.show_select_node:
+                Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void setPageChangedListener()
     {
         /** Defining a listener for pageChange */
@@ -130,26 +175,13 @@ protected void onCreate(Bundle savedInstanceState)
 
                 if (position == MedActivity.fragID)
                 {
-                    //mnuAddNew.setEnabled(false);
-                        	/*
-							try {
-								if (!checkLoadFile())
-								{
-									mPager.setCurrentItem(_MainActivity.fragID);
-								}
-							} catch (Throwable e) {
-
-								lib.ShowException(MainActivity.this, e);
-							}
-							*/
-                }
-                else if (position == MedActivity.fragID)
-                {
                     //mnuAddNew.setEnabled(true);
                     //mnuUploadToQuizlet.setEnabled(true);
+
                     if (fPA != null && fPA.fragMed != null)
                     {
-                        /*
+                        treeView = fPA.fragMed.treeView;
+                    /*
                         fPA.fragMed._txtMeaning1.setOnFocusChangeListener(new View.OnFocusChangeListener()
                         {
                             @Override
@@ -191,6 +223,7 @@ protected void onCreate(Bundle savedInstanceState)
                 {
                     if (fPA != null && fPA.fragSymptoms != null)
                     {
+                        treeView = fPA.fragSymptoms.treeView;
                         //searchQuizlet();
                     }
 
@@ -211,6 +244,20 @@ protected void onCreate(Bundle savedInstanceState)
         mPager.addOnPageChangeListener(pageChangeListener);
 
     }
+    public String getSelectedNodes() {
+        StringBuilder stringBuilder = new StringBuilder("You have selected: ");
+        List<TreeNode> selectedNodes = treeView.getSelectedNodes();
+        for (int i = 0; i < selectedNodes.size(); i++) {
+            if (i < 5) {
+                stringBuilder.append(selectedNodes.get(i).getValue().toString() + ",");
+            } else {
+                stringBuilder.append("...and " + (selectedNodes.size() - 5) + " more.");
+                break;
+            }
+        }
+        return stringBuilder.toString();
+    }
+
 
 
 }

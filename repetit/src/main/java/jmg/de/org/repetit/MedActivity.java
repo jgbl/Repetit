@@ -1,5 +1,6 @@
 package jmg.de.org.repetit;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
@@ -34,7 +35,7 @@ public class MedActivity extends Fragment {
     protected Toolbar toolbar;
     private ViewGroup viewGroup;
     private TreeNode root;
-    private TreeView treeView;
+    public TreeView treeView;
 
 
     @Override
@@ -53,7 +54,7 @@ public class MedActivity extends Fragment {
         initView(view);
 
         root = TreeNode.root();
-        buildTree();
+        buildTree("SELECT * FROM Medikamente");
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -76,42 +77,8 @@ public class MedActivity extends Fragment {
         }
     }
 
-        @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 
-        menuInflater.inflate(R.menu.home_menu, menu);
-        //return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.select_all:
-                treeView.selectAll();
-                break;
-            case R.id.deselect_all:
-                treeView.deselectAll();
-                break;
-            case R.id.expand_all:
-                treeView.expandAll();
-                break;
-            case R.id.collapse_all:
-                treeView.collapseAll();
-                break;
-            case R.id.expand_level:
-                treeView.expandLevel(1);
-                break;
-            case R.id.collapse_level:
-                treeView.collapseLevel(1);
-                break;
-            case R.id.show_select_node:
-                Toast.makeText(_main.getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private String getSelectedNodes() {
+    public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
         List<TreeNode> selectedNodes = treeView.getSelectedNodes();
         for (int i = 0; i < selectedNodes.size(); i++) {
@@ -125,47 +92,34 @@ public class MedActivity extends Fragment {
         return stringBuilder.toString();
     }
 
-    private class TreeNodeHolder
+
+    public class TreeNodeHolderMed extends TreeNodeHolder
     {
-        public String Text;
-        public String path;
+        public final int ID;
+        public final String Name;
+        public final String Beschreibung;
 
-        public TreeNodeHolder(){
-
-        }
-        public TreeNodeHolder(String Text, String path)
+        public TreeNodeHolderMed(Context context, String Text, String path, int ID, String Name, String Beschreibung)
         {
-            this.Text = Text;
-            this.path = path;
-        }
-
-        @Override
-        public String toString()
-        {
-            return Text;
-        }
-    }
-
-    private class TreeNodeHolderMed extends TreeNodeHolder
-    {
-        private final int ID;
-        private final String Name;
-        private final String Beschreibung;
-
-        public TreeNodeHolderMed(String Text, String path, int ID, String Name, String Beschreibung)
-        {
-            super.Text = Text;
-            super.path = path;
+            super(Text,path,context);
             this.ID = ID;
             this.Name = Name;
             this.Beschreibung = Beschreibung;
         }
     }
 
-    private void buildTree() {
+
+
+    public void buildTree(String qry) {
+        if (root.getChildren().size()>0)
+        {
+            List<TreeNode> l = root.getChildren();
+            l.clear();
+            root.setChildren(l);
+        }
         dbSqlite db = new dbSqlite(getContext(),false);
         db.createDataBase();
-        Cursor c = db.query("Select * FROM Medikamente");
+        Cursor c = db.query(qry);
         if (c.moveToFirst())
         {
             int ColumnNameId = c.getColumnIndex("Name");
@@ -176,11 +130,8 @@ public class MedActivity extends Fragment {
                 int ID = c.getInt(ColumnIDId);
                 String Name = c.getString(ColumnNameId);
                 String Beschreibung = c.getString(ColumnBeschreibungId);
-                TreeNode treeNode = new TreeNode(new TreeNodeHolderMed(Name,"Med" + ID, ID, Name, Beschreibung));
+                TreeNode treeNode = new TreeNode(new TreeNodeHolderMed(getContext(),Name,"Med" + ID, ID, Name, Beschreibung));
                 treeNode.setLevel(0);
-                TreeNode treeNode1 = new TreeNode(new TreeNodeHolder("Dummy", "Dummy"));
-                treeNode1.setLevel(1);
-                treeNode.addChild(treeNode1);
                 root.addChild(treeNode);
             } while (c.moveToNext());
         }
