@@ -1891,6 +1891,13 @@ public class lib
             }
         }
 
+        public static String MakeFitForQuery(String qry, boolean blnTrim) {
+            qry = qry.replace("'", "''");
+            qry = qry.replace("%", "[%]");
+            if (blnTrim) qry = qry.trim();
+            return qry;
+        }
+
         public static int InStr(String s, String Search)
         {
             int Start = 1;

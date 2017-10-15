@@ -107,7 +107,11 @@ public final  static int fragID = 1;
                         String txt = input.getText().toString();
                         if (!lib.libString.IsNullOrEmpty(txt))
                         {
-                            BuildT
+                            try {
+                                buildTree(root,"SELECT * FROM Symptoms WHERE ShortText LIKE '%" + lib.libString.MakeFitForQuery(txt,true) + "%'");
+                            } catch (Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
                         }
                     }
                 });
@@ -122,6 +126,30 @@ public final  static int fragID = 1;
                 break;
             }
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getQueryMed() {
+        String qry;
+        for (TreeNode t : treeView.getSelectedNodes())
+        {
+            If qrySymptMed <> "" Then
+            If True OrElse OrFlag Then
+            qrySymptMed &= " OR "
+            Else
+            qrySymptMed &= " AND "
+            End If
+            End If
+            If Not Wide Then
+            qry = qry &
+                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " & Child2.Tag!ID & ")"
+            Else
+                    qry = qry &
+                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" & MakeFitForQuery(Child2.Tag!Text) & "%'))"
+            End If
+            qrySymptMed &= "SymptomeOfMedikament.SymptomID = " & Child2.Tag!ID
+
+        }
+
     }
 
     public String getSelectedNodes() {
