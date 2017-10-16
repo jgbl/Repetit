@@ -126,6 +126,10 @@ public final  static int fragID = 1;
             case R.id.mnu_qry_med:
                 String qry = getQueryMed(true,true);
                 ((MainActivity)getActivity()).mPager.setCurrentItem(MedActivity.fragID);
+                String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, 0 AS Count, 0 AS TotalGrade, SymptomeOFMedikament.SymptomID, Symptome.Text FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                        "WHERE " + qry + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID";
+                qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+
                 ((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                 break;
             }
