@@ -54,12 +54,13 @@ public class MedActivity extends Fragment {
         initView(view);
 
         root = TreeNode.root();
-        buildTree("SELECT * FROM Medikamente");
+        buildTree("SELECT * FROM Medikamente",false);
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
+        if (_main.treeView == null) _main.treeView = treeView;
 
     }
 
@@ -110,7 +111,7 @@ public class MedActivity extends Fragment {
 
 
 
-    public void buildTree(String qry) {
+    public void buildTree(String qry, boolean refresh) {
         if (root.getChildren().size()>0)
         {
             List<TreeNode> l = root.getChildren();
@@ -137,6 +138,7 @@ public class MedActivity extends Fragment {
         }
         c.close();
         db.close();
+        if (refresh && treeView != null) treeView.refreshTreeView();
     }
 
     private void setLightStatusBar(@NonNull View view) {

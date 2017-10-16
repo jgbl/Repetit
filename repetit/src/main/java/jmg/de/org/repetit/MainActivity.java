@@ -24,13 +24,14 @@ import me.texy.treeview.base.SelectableTreeAction;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private TextView mTextMessage;
     private boolean isTV;
     private boolean isWatch;
     private ViewGroup Layout;
     public HackyViewPager mPager;
     public MyFragmentPagerAdapter fPA;
-    private TreeView treeView;
+    public TreeView treeView;
 
     public MainActivity()
 {
@@ -44,7 +45,7 @@ protected void onCreate(Bundle savedInstanceState)
         {
         super.onCreate(savedInstanceState);
         //lib.main = this;
-
+        lib.gStatus = "MainActivity onCreate";
         //getting the kind of userinterface: television or watch or else
         int UIMode = lib.getUIMode(this);
         switch (UIMode)
@@ -81,9 +82,9 @@ protected void onCreate(Bundle savedInstanceState)
 
         /** Setting the FragmentPagerAdapter object to the viewPager object */
         mPager.setAdapter(fPA);
-        //mPager.setCurrentItem(0);
 
-        lib.gStatus = "onCreate getEink";
+
+
 
 
         }
@@ -96,28 +97,36 @@ protected void onCreate(Bundle savedInstanceState)
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.select_all:
-                treeView.selectAll();
-                break;
-            case R.id.deselect_all:
-                treeView.deselectAll();
-                break;
-            case R.id.expand_all:
-                treeView.expandAll();
-                break;
-            case R.id.collapse_all:
-                treeView.collapseAll();
-                break;
-            case R.id.expand_level:
-                treeView.expandLevel(1);
-                break;
-            case R.id.collapse_level:
-                treeView.collapseLevel(1);
-                break;
-            case R.id.show_select_node:
-                Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
-                break;
+        try
+        {
+            switch (item.getItemId())
+            {
+                case R.id.select_all:
+                    treeView.selectAll();
+                    break;
+                case R.id.deselect_all:
+                    treeView.deselectAll();
+                    break;
+                case R.id.expand_all:
+                    treeView.expandAll();
+                    break;
+                case R.id.collapse_all:
+                    treeView.collapseAll();
+                    break;
+                case R.id.expand_level:
+                    treeView.expandLevel(1);
+                    break;
+                case R.id.collapse_level:
+                    treeView.collapseLevel(1);
+                    break;
+                case R.id.show_select_node:
+                    Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+        catch (Throwable ex)
+        {
+            Log.e(TAG,"OptionsItemSelected",ex);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -1,11 +1,16 @@
 package jmg.de.org.repetit;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import jmg.de.org.repetit.lib.dbSqlite;
+import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.base.CheckableNodeViewBinder;
 
@@ -17,11 +22,14 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
 
     TextView textView;
     ImageView imageView;
-
+    View  itemView;
+    LinearLayout linLayout;
     public SecondLevelNodeViewBinder(View itemView) {
         super(itemView);
+        this.itemView = itemView;
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
         imageView = (ImageView) itemView.findViewById(R.id.arrow_img);
+        linLayout = (LinearLayout) itemView.findViewById(R.id.node_container);
     }
 
     @Override
@@ -38,6 +46,27 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
     public void bindView(final TreeNode treeNode) {
         textView.setText(treeNode.getValue().toString());
         imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
+        switch (treeNode.getLevel())
+        {
+            case 2:
+                //relLayout.setBackground(null);
+                itemView.setBackgroundColor(Color.BLUE);
+                break;
+            case 3:
+                itemView.setBackgroundColor(Color.DKGRAY);
+                break;
+            case 4:
+                itemView.setBackgroundColor(Color.RED);
+                break;
+            case 5:
+                itemView.setBackgroundColor(Color.BLACK);
+        }
+        if (treeNode.getLevel()>1)
+        {
+            RelativeLayout.LayoutParams l = (RelativeLayout.LayoutParams) linLayout.getLayoutParams();
+            l.setMargins(lib.dpToPx(40) + (treeNode.getLevel() - 1) * lib.dpToPx(20), 0, 0, 0);
+            linLayout.setLayoutParams(l);
+        }
     }
 
     @Override
