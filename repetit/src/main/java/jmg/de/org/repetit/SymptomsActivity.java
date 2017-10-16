@@ -30,7 +30,9 @@ import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
 import static android.R.attr.prompt;
+import static android.os.Build.ID;
 import static jmg.de.org.repetit.lib.lib.OpenDialogs;
+import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
 /**
  * Created by hmnatalie on 29.08.17.
@@ -108,7 +110,7 @@ public final  static int fragID = 1;
                         if (!lib.libString.IsNullOrEmpty(txt))
                         {
                             try {
-                                buildTree(root,"SELECT * FROM Symptoms WHERE ShortText LIKE '%" + lib.libString.MakeFitForQuery(txt,true) + "%'");
+                                buildTree(root,"SELECT * FROM Symptoms WHERE ShortText LIKE '%" + MakeFitForQuery(txt,true) + "%'");
                             } catch (Throwable throwable) {
                                 throwable.printStackTrace();
                             }
@@ -121,34 +123,36 @@ public final  static int fragID = 1;
                 AlertDialog dlg = A.create();
                 break;
             case R.id.mnu_qry_med:
-                String qry = getQueryMed();
+                String qry = getQueryMed("",true,false);
+                ((MainActivity)getActivity()).mPager.setCurrentItem(MedActivity.fragID);
                 ((MainActivity)getActivity()).fPA.fragMed.buildTree(qry);
                 break;
             }
         return super.onOptionsItemSelected(item);
     }
 
-    private String getQueryMed() {
-        String qry;
+    private String getQueryMed(String qrySymptMed, boolean OrFlag, boolean Wide) {
+        String qry = "";
         for (TreeNode t : treeView.getSelectedNodes())
         {
-            If qrySymptMed <> "" Then
-            If True OrElse OrFlag Then
-            qrySymptMed &= " OR "
-            Else
-            qrySymptMed &= " AND "
-            End If
-            End If
-            If Not Wide Then
-            qry = qry &
-                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " & Child2.Tag!ID & ")"
-            Else
-                    qry = qry &
-                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" & MakeFitForQuery(Child2.Tag!Text) & "%'))"
-            End If
-            qrySymptMed &= "SymptomeOfMedikament.SymptomID = " & Child2.Tag!ID
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            if (lib.libString.IsNullOrEmpty(qrySymptMed))
+            {
+                if (OrFlag)
+                    qrySymptMed += " OR ";
+                else
+                    qrySymptMed += " AND ";
+            }
+            if(!Wide)
+             qry +=
+                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " + h.ID + ")";
+            else
+                qry +=
+                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(h.ShortText,true) + "%'))";
+                qrySymptMed += "SymptomeOfMedikament.SymptomID = " + h.ID;
 
         }
+        return qry;
 
     }
 

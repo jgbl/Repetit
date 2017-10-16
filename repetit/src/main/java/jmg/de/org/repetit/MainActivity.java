@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isTV;
     private boolean isWatch;
     private ViewGroup Layout;
-    private HackyViewPager mPager;
+    public HackyViewPager mPager;
     public MyFragmentPagerAdapter fPA;
     private TreeView treeView;
 
@@ -68,7 +68,6 @@ protected void onCreate(Bundle savedInstanceState)
         View pager = this.findViewById(R.id.pager);
         Layout = (ViewGroup) pager;
         mPager = (HackyViewPager) pager;
-
         /** Getting a reference to FragmentManager */
         FragmentManager fm = getSupportFragmentManager();
 
