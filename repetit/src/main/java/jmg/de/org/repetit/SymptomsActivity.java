@@ -38,8 +38,9 @@ import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
  * Created by hmnatalie on 29.08.17.
  */
 
-public class SymptomsActivity extends Fragment {
-public final  static int fragID = 1;
+public class SymptomsActivity extends Fragment
+{
+    public final static int fragID = 1;
 
     public MainActivity _main;
 
@@ -50,21 +51,25 @@ public final  static int fragID = 1;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         _main = ((MainActivity) getActivity());
         setHasOptionsMenu(true);
     }
+
     @Override
-    public void onViewCreated(View view, Bundle savedinstancestate) {
+    public void onViewCreated(View view, Bundle savedinstancestate)
+    {
         //initTreeView(view);
     }
 
-    public void initTreeView(View view) throws Throwable {
+    public void initTreeView(View view) throws Throwable
+    {
         initView(view);
 
         root = TreeNode.root();
-        buildTree(root,"Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text", false);
+        buildTree(root, "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text", false);
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -73,7 +78,8 @@ public final  static int fragID = 1;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate)
+    {
         try
         {
             View v = inflater.inflate(R.layout.activity_sympt, container, false);
@@ -82,20 +88,23 @@ public final  static int fragID = 1;
         }
         catch (Throwable ex)
         {
-            lib.ShowException(_main,ex);
+            lib.ShowException(_main, ex);
             return null;
         }
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater)
+    {
         menuInflater.inflate(R.menu.symptoms_menu, menu);
-        super.onCreateOptionsMenu(menu,menuInflater);
+        super.onCreateOptionsMenu(menu, menuInflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
             case R.id.mnu_find_symptoms:
                 AlertDialog.Builder A = new AlertDialog.Builder(getContext());
                 final EditText input = new EditText(getContext());
@@ -103,15 +112,20 @@ public final  static int fragID = 1;
                 input.setText("");
                 A.setView(input);
 
-                A.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                A.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
                         String txt = input.getText().toString();
                         if (!lib.libString.IsNullOrEmpty(txt))
                         {
-                            try {
-                                buildTree(root,"SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt,true) + "%'",true);
-                            } catch (Throwable throwable) {
+                            try
+                            {
+                                buildTree(root, "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'", true);
+                            }
+                            catch (Throwable throwable)
+                            {
                                 throwable.printStackTrace();
                             }
                         }
@@ -124,19 +138,20 @@ public final  static int fragID = 1;
                 dlg.show();
                 break;
             case R.id.mnu_qry_med:
-                String qry = getQueryMed(true,true);
-                ((MainActivity)getActivity()).mPager.setCurrentItem(MedActivity.fragID);
+                String[] qry = getQueryMed(true, true);
+                ((MainActivity) getActivity()).mPager.setCurrentItem(MedActivity.fragID);
                 String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                        "WHERE Medikamente." + qry + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID";
+                        "WHERE Medikamente." + qry[0] + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                 qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                ((MainActivity)getActivity()).fPA.fragMed.buildTreeRep(qryMedGrade,true);
+                ((MainActivity) getActivity()).fPA.fragMed.buildTreeRep(qryMedGrade, true);
                 //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                 break;
-            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    private String getQueryMed(boolean OrFlag, boolean Wide) {
+    private String[] getQueryMed(boolean OrFlag, boolean Wide)
+    {
         String qry = "";
         String qrySymptMed = "";
         for (TreeNode t : treeView.getSelectedNodes())
@@ -157,26 +172,34 @@ public final  static int fragID = 1;
                     qry += " AND ";
             }
 
-            if(!Wide)
-             qry +=
-                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " + h.ID + ")";
-            else
+            if (!Wide)
+            {
                 qry +=
-                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText,true) + "%'))";
+                        "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " + h.ID + ")";
                 qrySymptMed += "SymptomeOfMedikament.SymptomID = " + h.ID;
-
-        }
-        return qry;
+            }
+            else
+            {
+                qry +=
+                        "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%'))";
+                qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
+            }
+            }
+        return new String[]{qry,qrySymptMed};
 
     }
 
-    public String getSelectedNodes() {
+    public String getSelectedNodes()
+    {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
         List<TreeNode> selectedNodes = treeView.getSelectedNodes();
-        for (int i = 0; i < selectedNodes.size(); i++) {
-            if (i < 5) {
+        for (int i = 0; i < selectedNodes.size(); i++)
+        {
+            if (i < 5)
+            {
                 stringBuilder.append(selectedNodes.get(i).getValue().toString() + ",");
-            } else {
+            } else
+            {
                 stringBuilder.append("...and " + (selectedNodes.size() - 5) + " more.");
                 break;
             }
@@ -184,8 +207,9 @@ public final  static int fragID = 1;
         return stringBuilder.toString();
     }
 
-    private void buildTree(TreeNode treeNodeParent, String qry, boolean refresh) throws  Throwable {
-        if (treeNodeParent.getChildren().size()>0)
+    private void buildTree(TreeNode treeNodeParent, String qry, boolean refresh) throws Throwable
+    {
+        if (treeNodeParent.getChildren().size() > 0)
         {
             List<TreeNode> l = treeNodeParent.getChildren();
             l.clear();
@@ -193,17 +217,21 @@ public final  static int fragID = 1;
             //treeView.collapseNode(treeNodeParent);
         }
         //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
-        dbSqlite db = new dbSqlite(getContext(),false);
-        try {
+        dbSqlite db = new dbSqlite(getContext(), false);
+        try
+        {
             Cursor c = db.query(qry);
-            try {
-                if (c.moveToFirst()) {
+            try
+            {
+                if (c.moveToFirst())
+                {
                     int ColumnTextId = c.getColumnIndex("Text");
                     int ColumnIDId = c.getColumnIndex("ID");
                     int ColumnShortTextId = c.getColumnIndex("ShortText");
                     int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
                     int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
-                    do {
+                    do
+                    {
                         int ID = c.getInt(ColumnIDId);
                         String Text = c.getString(ColumnTextId);
                         String ShortText = c.getString(ColumnShortTextId);
@@ -215,7 +243,9 @@ public final  static int fragID = 1;
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
                 }
-            } finally {
+            }
+            finally
+            {
                 c.close();
             }
         }
@@ -226,8 +256,10 @@ public final  static int fragID = 1;
         if (refresh && treeView != null) treeView.refreshTreeView();
     }
 
-    private void setLightStatusBar(@NonNull View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    private void setLightStatusBar(@NonNull View view)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
             int flags = view.getSystemUiVisibility();
             _main.getWindow().setStatusBarColor(Color.WHITE);
             flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -235,7 +267,8 @@ public final  static int fragID = 1;
         }
     }
 
-    private void initView(View view) {
+    private void initView(View view)
+    {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         viewGroup = (RelativeLayout) view.findViewById(R.id.container);
         //_main.setSupportActionBar(toolbar);
