@@ -8,21 +8,21 @@ import android.content.Context;
 
 public class TreeNodeHolder
 {
-    private Context context;
+    private MainActivity context;
     public String Text;
     public String path;
 
     public TreeNodeHolder(){
 
     }
-    public TreeNodeHolder(String Text, String path, Context context)
+    public TreeNodeHolder(String Text, String path, MainActivity context)
     {
         this.Text = Text;
         this.path = path;
         this.context = context;
     }
 
-    public Context getContext()
+    public MainActivity getContext()
     {
         return  context;
     }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Repetit.iml" filepath="$PROJECT_DIR$/Repetit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RepetitAndroid.iml" filepath="$PROJECT_DIR$/RepetitAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/repetit/repetit.iml" filepath="$PROJECT_DIR$/repetit/repetit.iml" />
       <module fileurl="file://$PROJECT_DIR$/treeview_lib/treeview_lib.iml" filepath="$PROJECT_DIR$/treeview_lib/treeview_lib.iml" />
     </modules>

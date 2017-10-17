@@ -56,7 +56,7 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
     private void buildTree(TreeNode treeNodeParent) throws  Throwable {
         if (treeNodeParent.getChildren().size()>0) return;
         TreeNodeHolder h = (TreeNodeHolder) treeNodeParent.getValue();
-        dbSqlite db = new dbSqlite(h.getContext(),false);
+        dbSqlite db = h.getContext().db;
         try {
             Cursor c;
             if (h.getClass() == MedActivity.TreeNodeHolderMed.class) {

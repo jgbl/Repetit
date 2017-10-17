@@ -86,7 +86,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
     private void buildTree(TreeNode treeNodeParent) throws Throwable {
         if (treeNodeParent.getChildren().size() > 0) return;
         TreeNodeHolderSympt h = (TreeNodeHolderSympt) treeNodeParent.getValue();
-        dbSqlite db = new dbSqlite(h.getContext(), false);
+        dbSqlite db = h.getContext().db;
         try {
             Cursor c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + h.ID + " ORDER BY Symptome.Text");
             try {

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import jmg.de.org.repetit.lib.HackyViewPager;
+import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
@@ -32,18 +33,38 @@ public class MainActivity extends AppCompatActivity {
     public HackyViewPager mPager;
     public MyFragmentPagerAdapter fPA;
     public TreeView treeView;
+    public dbSqlite db;
 
     public MainActivity()
-{
+    {
+    };
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        if (db == null){
+            db = new dbSqlite(this, false);
+            db.createDataBase();
+        }
+    }
 
-
-};
-
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if (db != null)
+        {
+            db.close();
+            db = null;
+        }
+    }
 @Override
 protected void onCreate(Bundle savedInstanceState)
         {
         super.onCreate(savedInstanceState);
+        db = new dbSqlite(this, false);
+            db.createDataBase();
         //lib.main = this;
         lib.gStatus = "MainActivity onCreate";
         //getting the kind of userinterface: television or watch or else

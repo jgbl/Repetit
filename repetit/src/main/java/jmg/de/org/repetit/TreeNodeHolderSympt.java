@@ -15,7 +15,7 @@ public class TreeNodeHolderSympt extends TreeNodeHolder
     public final Integer ParentSymptomID;
     public final int level;
 
-    public TreeNodeHolderSympt(Context context, int level, String Text, String path, int ID, String SymptomText, String ShortText, Integer KoerperTeilID, Integer ParentSymptomID)
+    public TreeNodeHolderSympt(MainActivity context, int level, String Text, String path, int ID, String SymptomText, String ShortText, Integer KoerperTeilID, Integer ParentSymptomID)
     {
         super(Text,path,context);
         this.level = level;

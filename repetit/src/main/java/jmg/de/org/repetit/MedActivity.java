@@ -116,7 +116,7 @@ public class MedActivity extends Fragment
         public int totalGrade;
         public int count;
 
-        public TreeNodeHolderMed(Context context, String Text, String path, int ID, String Name, String Beschreibung)
+        public TreeNodeHolderMed(MainActivity context, String Text, String path, int ID, String Name, String Beschreibung)
         {
             super(Text, path, context);
             this.ID = ID;
@@ -134,10 +134,10 @@ public class MedActivity extends Fragment
             l.clear();
             root.setChildren(l);
         }
-        dbSqlite db = new dbSqlite(getContext(), false);
+        dbSqlite db = ((MainActivity)getActivity()).db;
         try
         {
-            db.createDataBase();
+
             Cursor c = db.query(qry);
             try
             {
@@ -151,7 +151,7 @@ public class MedActivity extends Fragment
                         int ID = c.getInt(ColumnIDId);
                         String Name = c.getString(ColumnNameId);
                         String Beschreibung = c.getString(ColumnBeschreibungId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed(getContext(), Name, "Med" + ID, ID, Name, Beschreibung));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(), Name, "Med" + ID, ID, Name, Beschreibung));
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
                     } while (c.moveToNext());
@@ -184,10 +184,9 @@ public class MedActivity extends Fragment
             l.clear();
             root.setChildren(l);
         }
-        dbSqlite db = new dbSqlite(getContext(), false);
+        dbSqlite db = ((MainActivity)getActivity()).db;
         try
         {
-            db.createDataBase();
             Cursor c = db.query(qry);
             try
             {
@@ -207,7 +206,7 @@ public class MedActivity extends Fragment
                         int sum = 0;
                         sum = c.getInt(ColumnGrade);
                         int nexts = 0;
-                        TreeNodeHolderMed hMed = new TreeNodeHolderMed(getContext(), Name, "Med" + ID, ID, Name, Beschreibung);
+                        TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(), Name, "Med" + ID, ID, Name, Beschreibung);
                         TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
