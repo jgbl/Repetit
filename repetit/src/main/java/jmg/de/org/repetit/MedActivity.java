@@ -269,8 +269,8 @@ public class MedActivity extends Fragment
         String ShortText = c.getString(ColumnShortTextId);
         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
-        treeNode.setLevel(1);
+        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+        treeNode2.setLevel(1);
         treeNode.addChild(treeNode2);
 
     }
