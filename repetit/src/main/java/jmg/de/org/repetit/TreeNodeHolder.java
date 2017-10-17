@@ -11,15 +11,17 @@ public class TreeNodeHolder
     private MainActivity context;
     public String Text;
     public String path;
+    public int level;
 
     public TreeNodeHolder(){
 
     }
-    public TreeNodeHolder(String Text, String path, MainActivity context)
+    public TreeNodeHolder(int level, String Text, String path, MainActivity context)
     {
         this.Text = Text;
         this.path = path;
         this.context = context;
+        this.level = level;
     }
 
     public MainActivity getContext()
@@ -32,4 +34,9 @@ public class TreeNodeHolder
     {
         return Text;
     }
+
+    public void setContext(MainActivity context) {
+        this.context = context;
+    }
 }
+

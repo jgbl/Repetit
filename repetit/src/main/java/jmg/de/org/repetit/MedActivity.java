@@ -116,9 +116,9 @@ public class MedActivity extends Fragment
         public int totalGrade;
         public int count;
 
-        public TreeNodeHolderMed(MainActivity context, String Text, String path, int ID, String Name, String Beschreibung)
+        public TreeNodeHolderMed(MainActivity context, int level, String Text, String path, int ID, String Name, String Beschreibung)
         {
-            super(Text, path, context);
+            super(level, Text, path, context);
             this.ID = ID;
             this.Name = Name;
             this.Beschreibung = Beschreibung;
@@ -151,7 +151,7 @@ public class MedActivity extends Fragment
                         int ID = c.getInt(ColumnIDId);
                         String Name = c.getString(ColumnNameId);
                         String Beschreibung = c.getString(ColumnBeschreibungId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(), Name, "Med" + ID, ID, Name, Beschreibung));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung));
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
                     } while (c.moveToNext());
@@ -206,7 +206,7 @@ public class MedActivity extends Fragment
                         int sum = 0;
                         sum = c.getInt(ColumnGrade);
                         int nexts = 0;
-                        TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(), Name, "Med" + ID, ID, Name, Beschreibung);
+                        TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung);
                         TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
