@@ -36,6 +36,15 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
     public void bindView(final TreeNode treeNode) {
         textView.setText(treeNode.getValue().toString());
         imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
+        textView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                FirstLevelNodeViewBinder.this.treeView.collapseNode(treeNode);
+                treeNode.getChildren().clear();
+                onNodeToggled(treeNode,true);
+                return false;
+            }
+        });
     }
 
     @Override

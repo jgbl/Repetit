@@ -67,6 +67,15 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
             l.setMargins(lib.dpToPx(40) + (treeNode.getLevel() - 1) * lib.dpToPx(20), 0, 0, 0);
             linLayout.setLayoutParams(l);
         }
+        textView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                SecondLevelNodeViewBinder.this.treeView.collapseNode(treeNode);
+                treeNode.getChildren().clear();
+                onNodeToggled(treeNode,true);
+                return false;
+            }
+        });
     }
 
     @Override

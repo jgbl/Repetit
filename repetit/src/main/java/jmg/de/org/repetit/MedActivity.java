@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,6 +43,7 @@ public class MedActivity extends Fragment
     private ViewGroup viewGroup;
     private TreeNode root;
     public TreeView treeView;
+    private AppCompatEditText txtSearch;
 
 
     @Override
@@ -79,6 +81,7 @@ public class MedActivity extends Fragment
         try
         {
             View v = inflater.inflate(R.layout.activity_med, container, false);
+            txtSearch = (AppCompatEditText)v.findViewById(R.id.txtSearch);
             initTreeView(v);
             return v;
         }

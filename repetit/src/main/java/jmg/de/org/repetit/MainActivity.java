@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop()
+    protected void onDestroy()
     {
-        super.onStop();
+        super.onDestroy();
         if (db != null)
         {
             db.close();

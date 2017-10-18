@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -77,6 +78,8 @@ public class SymptomsActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
         try {
             View v = inflater.inflate(R.layout.activity_sympt, container, false);
+            AppCompatEditText txtSearch = (AppCompatEditText) v.findViewById(R.id.txtSearch);
+
             initTreeView(v);
             return v;
         } catch (Throwable ex) {
@@ -104,15 +107,21 @@ public class SymptomsActivity extends Fragment {
                 A.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String txt = input.getText().toString();
-                        if (!lib.libString.IsNullOrEmpty(txt)) {
-                            try {
-                                String qry = "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'";
-                                //AddSymptomeQueryRecursive(root,qry,-1,true);
-                                buildTree(root, "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'", true, true);
-                            } catch (Throwable throwable) {
-                                throwable.printStackTrace();
+                        String[] txt = input.getText().toString().split(";");
+                        try {
+                            String qry = "SELECT * FROM Symptome WHERE ";
+                            String where = "";
+                            for (String s : txt) {
+                                if (!lib.libString.IsNullOrEmpty(s)) {
+                                    if (where != "") where += " AND ";
+                                    where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                                }
                             }
+                            //AddSymptomeQueryRecursive(root,qry,-1,true);
+                            if (where != "")
+                                buildTree(root, qry + where, true, true);
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
                         }
                     }
                 });
@@ -134,7 +143,10 @@ public class SymptomsActivity extends Fragment {
                 //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                 break;
         }
-        return super.onOptionsItemSelected(item);
+        return super.
+
+                onOptionsItemSelected(item);
+
     }
 
     private String[] getQueryMed(boolean OrFlag, boolean Wide) {
@@ -208,12 +220,13 @@ public class SymptomsActivity extends Fragment {
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
                         int Level = treeNodeParent.getLevel();
+                        if (treeNodeParent == root) Level = -1;
                         TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
                         if (!getParents || ParentSymptomId == null) {
                             treeNode.setLevel(Level + 1);
                             treeNodeParent.addChild(treeNode);
                         } else {
-                            AddNodesRecursive ((MainActivity) getActivity(), Level, treeNode,treeNodeParent,ParentSymptomId);
+                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId);
 
                         }
                     } while (c.moveToNext());
@@ -231,7 +244,7 @@ public class SymptomsActivity extends Fragment {
     public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId) throws Throwable {
         ArrayList<TreeNode> list = new ArrayList<>();
         list.add(treeNode);
-        getParents(activity,ParentSymptomId, list);
+        getParents(activity, ParentSymptomId, list);
         TreeNode parent = treeNodeParent;
 
         for (int i = list.size() - 1; i >= 0; i--) {
