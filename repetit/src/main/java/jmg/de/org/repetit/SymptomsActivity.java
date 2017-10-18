@@ -1,5 +1,6 @@
 package jmg.de.org.repetit;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -10,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,9 +30,6 @@ import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
-import static android.R.attr.prompt;
-import static android.os.Build.ID;
-import static jmg.de.org.repetit.lib.lib.OpenDialogs;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
 /**
@@ -69,7 +65,7 @@ public class SymptomsActivity extends Fragment {
         initView(view);
 
         root = TreeNode.root();
-        buildTree(root, "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text", false);
+        buildTree(root, "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text", false, false);
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -112,8 +108,8 @@ public class SymptomsActivity extends Fragment {
                         if (!lib.libString.IsNullOrEmpty(txt)) {
                             try {
                                 String qry = "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'";
-                                AddSymptomeQueryRecursive(root,qry,-1,true);
-                                //buildTree(root, "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'", true);
+                                //AddSymptomeQueryRecursive(root,qry,-1,true);
+                                buildTree(root, "SELECT * FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(txt, true) + "%'", true, true);
                             } catch (Throwable throwable) {
                                 throwable.printStackTrace();
                             }
@@ -187,7 +183,7 @@ public class SymptomsActivity extends Fragment {
         return stringBuilder.toString();
     }
 
-    private void buildTree(TreeNode treeNodeParent, String qry, boolean refresh) throws Throwable {
+    private void buildTree(TreeNode treeNodeParent, String qry, boolean refresh, boolean getParents) throws Throwable {
         if (treeNodeParent.getChildren().size() > 0) {
             List<TreeNode> l = treeNodeParent.getChildren();
             l.clear();
@@ -213,8 +209,36 @@ public class SymptomsActivity extends Fragment {
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
                         int Level = treeNodeParent.getLevel();
                         TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
-                        treeNode.setLevel(Level + 1);
-                        treeNodeParent.addChild(treeNode);
+                        if (!getParents || ParentSymptomId == null) {
+                            treeNode.setLevel(Level + 1);
+                            treeNodeParent.addChild(treeNode);
+                        } else {
+                            ArrayList<TreeNode> list = new ArrayList<>();
+                            list.add(treeNode);
+                            getParents(ParentSymptomId, list);
+                            TreeNode parent = treeNodeParent;
+
+                            for (int i = list.size() - 1; i >= 0; i--) {
+                                boolean blnDouble = false;
+                                TreeNode t = list.get(i);
+                                TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+                                for (TreeNode tt : parent.getChildren()) {
+                                    TreeNodeHolderSympt h2 = (TreeNodeHolderSympt) tt.getValue();
+                                    if (h2.ID == h.ID) {
+                                        parent = tt;
+                                        blnDouble = true;
+                                        break;
+                                    }
+                                }
+                                Level += 1;
+                                if (!blnDouble) {
+                                    t.setLevel(Level);
+                                    h.level = Level;
+                                    parent.addChild(t);
+                                    parent = t;
+                                }
+                            }
+                        }
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
                 }
@@ -226,6 +250,39 @@ public class SymptomsActivity extends Fragment {
         }
         if (refresh && treeView != null) treeView.refreshTreeView();
     }
+
+    private void getParents(int ParentSymptomID, ArrayList<TreeNode> list) throws Throwable {
+        dbSqlite db = ((MainActivity) getActivity()).db;
+        try {
+            Cursor c = db.query("SELECT * FROM Symptome WHERE ID = " + ParentSymptomID);
+            try {
+                if (c.moveToFirst()) {
+                    int ColumnTextId = c.getColumnIndex("Text");
+                    int ColumnIDId = c.getColumnIndex("ID");
+                    int ColumnShortTextId = c.getColumnIndex("ShortText");
+                    int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+                    int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                    do {
+                        int ID = c.getInt(ColumnIDId);
+                        String Text = c.getString(ColumnTextId);
+                        String ShortText = c.getString(ColumnShortTextId);
+                        Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+                        Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+                        list.add(treeNode);
+                        if (!(ParentSymptomId == null)) getParents(ParentSymptomId, list);
+                    } while (c.moveToNext());
+                    //this.treeView.expandNode(treeNodeParent);
+                }
+            } finally {
+                c.close();
+            }
+        } finally {
+            //db.close();
+        }
+        //if (refresh && treeView != null) treeView.refreshTreeView();
+    }
+
 
     private void setLightStatusBar(@NonNull View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -243,7 +300,10 @@ public class SymptomsActivity extends Fragment {
         //setLightStatusBar(viewGroup);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void AddSymptomeQueryRecursive(TreeNode SNode, String qrySympt, int ParentSymptomID, boolean refresh) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+            throw new RuntimeException("Wrong Android Version");
         if (SNode.getChildren().size() > 0) {
             SNode.getChildren().clear();
         }
@@ -255,9 +315,7 @@ public class SymptomsActivity extends Fragment {
         if (found != -1) {
             qry = qrySympt.substring(0, found - 1);
             sort = " " + qry.substring(found);
-        }
-        else
-        {
+        } else {
             qry = qrySympt;
         }
         if (ParentSymptomID >= 0) {
@@ -330,11 +388,9 @@ public class SymptomsActivity extends Fragment {
 
                     List<TreeNode> l = SNode.getChildren();
 
-                    Collections.sort(l, new Comparator<TreeNode>()
-                    {
+                    Collections.sort(l, new Comparator<TreeNode>() {
                         @Override
-                        public int compare(TreeNode lhs, TreeNode rhs)
-                        {
+                        public int compare(TreeNode lhs, TreeNode rhs) {
                             TreeNodeHolderSympt h1 = (TreeNodeHolderSympt) lhs.getValue();
                             TreeNodeHolderSympt h2 = (TreeNodeHolderSympt) rhs.getValue();
                             return h1.SymptomText.compareToIgnoreCase(h2.SymptomText);
