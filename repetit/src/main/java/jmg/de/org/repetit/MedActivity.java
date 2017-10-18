@@ -269,8 +269,13 @@ public class MedActivity extends Fragment
         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
         TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId));
-        treeNode2.setLevel(1);
-        treeNode.addChild(treeNode2);
+        try {
+            SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        //treeNode2.setLevel(1);
+        //treeNode.addChild(treeNode2);
 
     }
 

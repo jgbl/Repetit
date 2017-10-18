@@ -213,31 +213,8 @@ public class SymptomsActivity extends Fragment {
                             treeNode.setLevel(Level + 1);
                             treeNodeParent.addChild(treeNode);
                         } else {
-                            ArrayList<TreeNode> list = new ArrayList<>();
-                            list.add(treeNode);
-                            getParents(ParentSymptomId, list);
-                            TreeNode parent = treeNodeParent;
+                            AddNodesRecursive ((MainActivity) getActivity(), Level, treeNode,treeNodeParent,ParentSymptomId);
 
-                            for (int i = list.size() - 1; i >= 0; i--) {
-                                boolean blnDouble = false;
-                                TreeNode t = list.get(i);
-                                TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
-                                for (TreeNode tt : parent.getChildren()) {
-                                    TreeNodeHolderSympt h2 = (TreeNodeHolderSympt) tt.getValue();
-                                    if (h2.ID == h.ID) {
-                                        parent = tt;
-                                        blnDouble = true;
-                                        break;
-                                    }
-                                }
-                                Level += 1;
-                                if (!blnDouble) {
-                                    t.setLevel(Level);
-                                    h.level = Level;
-                                    parent.addChild(t);
-                                    parent = t;
-                                }
-                            }
                         }
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
@@ -251,8 +228,36 @@ public class SymptomsActivity extends Fragment {
         if (refresh && treeView != null) treeView.refreshTreeView();
     }
 
-    private void getParents(int ParentSymptomID, ArrayList<TreeNode> list) throws Throwable {
-        dbSqlite db = ((MainActivity) getActivity()).db;
+    public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId) throws Throwable {
+        ArrayList<TreeNode> list = new ArrayList<>();
+        list.add(treeNode);
+        getParents(activity,ParentSymptomId, list);
+        TreeNode parent = treeNodeParent;
+
+        for (int i = list.size() - 1; i >= 0; i--) {
+            boolean blnDouble = false;
+            TreeNode t = list.get(i);
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            for (TreeNode tt : parent.getChildren()) {
+                TreeNodeHolderSympt h2 = (TreeNodeHolderSympt) tt.getValue();
+                if (h2.ID == h.ID) {
+                    parent = tt;
+                    blnDouble = true;
+                    break;
+                }
+            }
+            Level += 1;
+            if (!blnDouble) {
+                t.setLevel(Level);
+                h.level = Level;
+                parent.addChild(t);
+                parent = t;
+            }
+        }
+    }
+
+    private static void getParents(MainActivity activity, int ParentSymptomID, ArrayList<TreeNode> list) throws Throwable {
+        dbSqlite db = activity.db;
         try {
             Cursor c = db.query("SELECT * FROM Symptome WHERE ID = " + ParentSymptomID);
             try {
@@ -268,9 +273,9 @@ public class SymptomsActivity extends Fragment {
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(activity, 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
                         list.add(treeNode);
-                        if (!(ParentSymptomId == null)) getParents(ParentSymptomId, list);
+                        if (!(ParentSymptomId == null)) getParents(activity, ParentSymptomId, list);
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
                 }
