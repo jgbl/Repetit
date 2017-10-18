@@ -256,6 +256,10 @@ public class SymptomsActivity extends Fragment {
             qry = qrySympt.substring(0, found - 1);
             sort = " " + qry.substring(found);
         }
+        else
+        {
+            qry = qrySympt;
+        }
         if (ParentSymptomID >= 0) {
             qry = qry + " AND KoerperTeilID is NULL ";
         }
@@ -265,7 +269,7 @@ public class SymptomsActivity extends Fragment {
         String qry2 = qry;
         int foundsel = qry2.toLowerCase().indexOf(" from symptome");
         if (foundsel > 0) {
-            qry2 = qry2.substring(0, foundsel) + ",0 as level, symptome.shorttext as path " + qry2.substring(foundsel);
+            qry2 = qry2.substring(0, foundsel) + ", 0 as level, Symptome.ShortText as path " + qry2.substring(foundsel);
         }
 
         qry2 = "WITH RECURSIVE " + "SympParents (ID,Text,ShortText,KoerperTeilID,ParentSymptomID, Level, path) " + "AS (" + qry2 + " UNION ALL " + " SELECT Symptome.*, SympParents.Level + 1, sympparents.path || '/' || symptome.shorttext FROM Symptome" + " JOIN SympParents ON Symptome.ID = SympParents.ParentSymptomID)" + " SELECT DISTINCT ID,Text,ShortText,KoerperTeilID,ParentSymptomID,Level FROM SympParents";
@@ -276,15 +280,15 @@ public class SymptomsActivity extends Fragment {
         }
 
         qry2 += " ORDER BY Level DESC, ParentSymptomID ASC, Text ASC";
-
+        Cursor c = null;
         try {
             lib.gStatus = CodeLoc + " qry: " + qry2;
-            Cursor c = ((MainActivity) getActivity()).db.query(qry2);
+            c = ((MainActivity) getActivity()).db.query(qry2);
             // & sort)
             if (c.getCount() > 0) {
                 int LastID = -1;
                 TreeNode symptNode = null;
-                TreeNode rootNode = SNode;
+                TreeNode rootNode = null;
                 //Dim colLevels As New colSympsByID
                 if (c.moveToFirst()) {
                     int ColumnText = c.getColumnIndex("Text");
@@ -300,17 +304,11 @@ public class SymptomsActivity extends Fragment {
                             rootNode = SNode;
                         } else if (LastID == c.getInt(ColumnParentSymptom)) {
                             rootNode = symptNode;
-                        } else if (rootNode != null) {
-                            try {
-                                rootNode = SNode;
-                            } catch (Throwable ex) {
-                                continue;
-                            }
+                        } else {
+                            rootNode = SNode;
                         }
                         Level = c.getInt(ColumnLevel);
 
-                        if (rootNode == null)
-                            rootNode = SNode;
 
                         TreeNodeHolderSympt ParentSympRow = (TreeNodeHolderSympt) rootNode.getValue();
                         TreeNodeHolderSympt Parent = new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, c);
@@ -324,6 +322,9 @@ public class SymptomsActivity extends Fragment {
                         if (symptNode == null) {
                             symptNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), rootNode.getLevel() + 1, c));
                         }
+                        LastID = ((TreeNodeHolderSympt) (symptNode.getValue())).ID;
+                        symptNode.setLevel(Level);
+                        rootNode.addChild(symptNode);
 
                     } while (c.moveToNext());
 
@@ -346,7 +347,7 @@ public class SymptomsActivity extends Fragment {
                 }
             }
         } finally {
-
+            if (c != null) c.close();
         }
     }
 }
