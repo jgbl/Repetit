@@ -17,6 +17,9 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import jmg.de.org.repetit.lib.dbSqlite;
@@ -110,6 +113,8 @@ public class MedActivity extends Fragment
         public final int ID;
         public final String Name;
         public final String Beschreibung;
+        public int totalGrade;
+        public int count;
 
         public TreeNodeHolderMed(Context context, String Text, String path, int ID, String Name, String Beschreibung)
         {
@@ -166,12 +171,13 @@ public class MedActivity extends Fragment
         if (refresh && treeView != null) treeView.refreshTreeView();
 
     }
-    private void builtTreeRep(String qry, boolean refresh)
+    public void buildTreeRep(String qry, boolean refresh)
     {
         boolean Initialized = true;
         final String CodeLoc = TAG + ".initTreeview";
         lib.gStatus = CodeLoc + " Start";
         int MedID;
+        //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
         if (root.getChildren().size() > 0)
         {
             List<TreeNode> l = root.getChildren();
@@ -190,15 +196,49 @@ public class MedActivity extends Fragment
                     int ColumnNameId = c.getColumnIndex("Name");
                     int ColumnIDId = c.getColumnIndex("ID");
                     int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                    int ColumnGrade = c.getColumnIndex("Grade");
+
                     do
                     {
+                        //if(!c.moveToNext()) break;
                         int ID = c.getInt(ColumnIDId);
                         String Name = c.getString(ColumnNameId);
                         String Beschreibung = c.getString(ColumnBeschreibungId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed(getContext(), Name, "Med" + ID, ID, Name, Beschreibung));
+                        int sum = 0;
+                        sum = c.getInt(ColumnGrade);
+                        int nexts = 0;
+                        TreeNodeHolderMed hMed = new TreeNodeHolderMed(getContext(), Name, "Med" + ID, ID, Name, Beschreibung);
+                        TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
-                    } while (c.moveToNext());
+                        insertSymptom(c,treeNode,hMed,ID);
+                        while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
+                            insertSymptom(c,treeNode,hMed,ID);
+                            nexts += 1;
+                            sum += c.getInt(ColumnGrade);
+                        }
+                        hMed.totalGrade = sum;
+                        hMed.count = nexts + 1;
+                        hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
+                    } while (!c.isAfterLast());
+                    List<TreeNode> l = root.getChildren();
+
+                    Collections.sort(l, new Comparator<TreeNode>()
+                    {
+                        @Override
+                        public int compare(TreeNode lhs, TreeNode rhs)
+                        {
+                            TreeNodeHolderMed h1 = (TreeNodeHolderMed) lhs.getValue();
+                            TreeNodeHolderMed h2 = (TreeNodeHolderMed) rhs.getValue();
+                            if (h1.totalGrade>h2.totalGrade) return -1;
+                            if (h1.totalGrade==h2.totalGrade && h1.count>h2.count) return -1;
+                            if (h1.totalGrade==h2.totalGrade && h1.count == h2.count) return 0;
+                            return 1;
+                        }
+                    });
+                    root.setChildren(l);
+                    treeView.refreshTreeView();
+
                 }
             }
             finally
@@ -214,126 +254,28 @@ public class MedActivity extends Fragment
 
         if (refresh && treeView != null) treeView.refreshTreeView();
 
-        Dim dtMeds As Data.DataTable = _clsdbRep.GetDataTable(SQL)
-        If Not dtMeds.Rows.Count > 0 Then
-        MsgBox(GetLang("NoMedFound", "Keine Medikamente gefunden!"))
-        tv.Nodes.Clear()
-        rootNode = tv.Nodes.Add("Root", mCon.ConnectionString)
-        rootNode.Tag = mCon.ConnectionString
-        rootNode.ImageIndex = (modGlobal.NodeTypes.folderDatabase)
-                _RootNode = rootNode
-        Else
-        tv.Nodes.Clear()
-        rootNode = tv.Nodes.Add("Root", mCon.ConnectionString)
-        rootNode.Tag = mCon.ConnectionString
-        rootNode.ImageIndex = (modGlobal.NodeTypes.folderDatabase)
-                _RootNode = rootNode
-        ' Alle Medikamente aus Datenbank aus lesen und
+    }
 
+    private void insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, int ID)
+    {
+        final int ColumnTextId = c.getColumnIndex("Text");
+        final int ColumnSymptomIDId = c.getColumnIndex("SymptomID");
+        final int ColumnShortTextId = c.getColumnIndex("ShortText");
+        final int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+        final int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
 
-        ' einzeln hinzufügen
+        int SympID = c.getInt(ColumnSymptomIDId);
+        String Text = c.getString(ColumnTextId);
+        String ShortText = c.getString(ColumnShortTextId);
+        Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+        Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+        treeNode.setLevel(1);
+        treeNode.addChild(treeNode2);
 
-        'drowsMed = dtMeds.Rows '
-        DirectCast(_clsdbRep.Medikamente.Select(FilterExpression, Sort), dsRep.MedikamenteRow())
-        For I As Integer = 0 To dtMeds.Rows.Count - 1
-        If I >=dtMeds.Rows.Count Then Exit For
-        drMed = dtMeds.Rows(I)
-        Dim sum As Integer = 0
-        Dim ID As Integer = drMed !ID
-        sum = drMed !Grade
-        Dim nexts As Integer = 0
-        While I <dtMeds.Rows.Count - 1 AndAlso dtMeds.Rows(I + 1) !ID = ID
-        I += 1 :nexts += 1
-        sum += dtMeds.Rows(I) !Grade
-        End While
-        For ii As Integer = 0 To nexts
-        dtMeds.Rows(I - ii) !TotalGrade = sum
-        dtMeds.Rows(I - ii) !Count = nexts + 1
-        Next
+    }
 
-                Next
-        Dim meds () As DataRow = dtMeds.Select("", "TOTALGRADE DESC, Count DESC, Name ASC")
-        symptNode = Nothing
-        For i As Integer = 0 To meds.Length - 1
-
-        If i >=meds.Length Then Exit For
-        drMed = meds(i)
-        MedID = CInt((drMed !ID))
-        Childnode = rootNode.Nodes("Med" & MedID)
-        If Childnode Is Nothing Then
-            Childnode = rootNode.Nodes.Add("Med" & MedID, CStr(drMed !Name) &"(" & drMed
-        !TotalGrade & "/" & drMed !Count & ")")
-        Childnode.Tag = drMed ' Der Tag beinhaltet immer die ID
-        Childnode.ImageIndex = (modGlobal.NodeTypes.Medikament)
-                LSNode = Childnode.Nodes.Add("Leitsymptome" & Childnode.Name, GetLang("CardSympt", "Leitsymptome"))
-        LSNode.Tag = drMed
-        LSNode.ImageIndex = (modGlobal.NodeTypes.folderLeitsymptom)
-                'addLeitsymptomeT(LSNode, drMed)
-        LSNode.Nodes.Add("DUMMY", "DUMMY")
-        symptNode = Childnode.Nodes.Add("Symptome" & Childnode.Name, GetLang("Sympt", "Symptome"))
-        If symptNode Is Nothing Then
-        Err.Raise(ErrfrmMain_initTreeviewCoulNotAddSymptNode, CodeLoc, "Could not add SymptNOde to " & Childnode.Name)
-        Else
-        symptNode.ImageIndex = (modGlobal.NodeTypes.folderSymptom)
-                symptNode.Tag = drMed
-        End If
-        End If
-        'symptNode.Nodes.Add("DUMMY", "DUMMY")
-        If symptNode IsNot Nothing Then
-        symptNode.Nodes.Add("Sympt" & drMed !SymptomID, drMed !Text & "(" & drMed !Grade & ")").
-        ImageIndex = modGlobal.NodeTypes.undefined
-        End If
-
-        Next i
-
-        If Not mCancel Then
-        '*****************************************
-        gStatus = CodeLoc & " oldkeyensurevisible"
-        '*****************************************
-        If oldKeyEnsureVisible And oldkey <>"" Then
-            Try
-        ChildNodes = tv.Nodes.Find(oldkey, True)
-        Select Case ChildNodes.GetUpperBound(0)
-        Case 0
-        Childnode = ChildNodes(0)
-        Case - 1
-        Childnode = Nothing
-        Case Else
-        Throw New ApplicationException("ChildNode " & oldkey & " double!")
-        End Select
-        Catch e As Exception
-        Childnode = Nothing
-        End Try
-        If Childnode Is Nothing = False Then
-        Childnode.EnsureVisible()
-        End If
-        End If
-        End If
-        rootNode.Expand()
-        End If
-        Catch ex As Exception
-        HandleError(ex, CodeLoc)
-        Finally
-                gStatus = "Init Treeview lasted: " & VB.Timer - t & " Seconds!"
-        Try
-        Me.Cursor = Cursors.Default
-        tv.EndUpdate()
-        tv.Visible = True
-        tv.Enabled = True
-        Me.Enabled = True
-        Me.Show()
-        gStatus = CodeLoc & " Show finished"
-        Catch ex As Exception
-        HandleError(ex, CodeLoc)
-        End Try
-        End Try
-
-        Me.BringToFront()
-        Windows.Forms.Application.DoEvents()
-        End Sub
-
-
-        private void setLightStatusBar (@NonNull View view){
+    private void setLightStatusBar (@NonNull View view){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             int flags = view.getSystemUiVisibility();

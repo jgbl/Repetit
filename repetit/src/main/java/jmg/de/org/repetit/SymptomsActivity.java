@@ -126,11 +126,11 @@ public final  static int fragID = 1;
             case R.id.mnu_qry_med:
                 String qry = getQueryMed(true,true);
                 ((MainActivity)getActivity()).mPager.setCurrentItem(MedActivity.fragID);
-                String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, 0 AS Count, 0 AS TotalGrade, SymptomeOFMedikament.SymptomID, Symptome.Text FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                        "WHERE " + qry + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID";
+                String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                        "WHERE Medikamente." + qry + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID";
                 qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-
-                ((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
+                ((MainActivity)getActivity()).fPA.fragMed.buildTreeRep(qryMedGrade,true);
+                //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                 break;
             }
         return super.onOptionsItemSelected(item);
@@ -162,7 +162,7 @@ public final  static int fragID = 1;
                     "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " + h.ID + ")";
             else
                 qry +=
-                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(h.ShortText,true) + "%'))";
+                    "ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText,true) + "%'))";
                 qrySymptMed += "SymptomeOfMedikament.SymptomID = " + h.ID;
 
         }
