@@ -9,13 +9,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
+
+import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
 /**
  * Created by hmnatalie on 29.08.17.
@@ -82,6 +87,15 @@ public class MedActivity extends Fragment
         {
             View v = inflater.inflate(R.layout.activity_med, container, false);
             txtSearch = (AppCompatEditText)v.findViewById(R.id.txtSearch);
+            txtSearch.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    String txt = txtSearch.getText().toString();
+                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt);
+                    return true;
+                }
+            });
             initTreeView(v);
             return v;
         }
@@ -91,7 +105,29 @@ public class MedActivity extends Fragment
         }
     }
 
+    private void searchSymptoms(String searchtxt) {
+        if (lib.libString.IsNullOrEmpty(searchtxt)) return;
+        String[] txt = searchtxt.split(";");
+        try {
+            //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
+            String where = "";
+            for (String s : txt) {
+                if (!lib.libString.IsNullOrEmpty(s)) {
+                    if (where != "") where += " OR ";
+                    where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                    ;
+                }
+            }
+            //AddSymptomeQueryRecursive(root,qry,-1,true);
+            String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
+            qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+            buildTreeRep(qryMedGrade,true);
 
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
     public String getSelectedNodes()
     {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");

@@ -12,14 +12,17 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +51,7 @@ public class SymptomsActivity extends Fragment {
     private ViewGroup viewGroup;
     private TreeNode root;
     public TreeView treeView;
+    private AppCompatEditText txtSearch;
 
 
     @Override
@@ -78,8 +82,19 @@ public class SymptomsActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
         try {
             View v = inflater.inflate(R.layout.activity_sympt, container, false);
-            AppCompatEditText txtSearch = (AppCompatEditText) v.findViewById(R.id.txtSearch);
-
+            txtSearch = (AppCompatEditText) v.findViewById(R.id.txtSearch);
+            txtSearch.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE)
+                    {
+                        String txt = txtSearch.getText().toString();
+                        searchSymptoms(txt);
+                    }
+                    return true;
+                }
+            });
             initTreeView(v);
             return v;
         } catch (Throwable ex) {
@@ -107,22 +122,8 @@ public class SymptomsActivity extends Fragment {
                 A.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String[] txt = input.getText().toString().split(";");
-                        try {
-                            String qry = "SELECT * FROM Symptome WHERE ";
-                            String where = "";
-                            for (String s : txt) {
-                                if (!lib.libString.IsNullOrEmpty(s)) {
-                                    if (where != "") where += " AND ";
-                                    where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
-                                }
-                            }
-                            //AddSymptomeQueryRecursive(root,qry,-1,true);
-                            if (where != "")
-                                buildTree(root, qry + where, true, true);
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
+                        String txt = input.getText().toString();
+                        searchSymptoms(txt);
                     }
                 });
                 A.setNegativeButton(getContext().getString(R.string.cancel), null);
@@ -147,6 +148,26 @@ public class SymptomsActivity extends Fragment {
 
                 onOptionsItemSelected(item);
 
+    }
+
+    private void searchSymptoms(String searchtxt) {
+        if (lib.libString.IsNullOrEmpty(searchtxt)) return;
+        String[] txt = searchtxt.split(";");
+        try {
+            String qry = "SELECT * FROM Symptome WHERE ";
+            String where = "";
+            for (String s : txt) {
+                if (!lib.libString.IsNullOrEmpty(s)) {
+                    if (where != "") where += " AND ";
+                    where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                }
+            }
+            //AddSymptomeQueryRecursive(root,qry,-1,true);
+            if (where != "")
+                buildTree(root, qry + where, true, true);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     private String[] getQueryMed(boolean OrFlag, boolean Wide) {
