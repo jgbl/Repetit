@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +51,7 @@ public class MedActivity extends Fragment
     private TreeNode root;
     public TreeView treeView;
     private AppCompatEditText txtSearch;
-    private Button btnSearch;
+    private ImageButton btnSearch;
 
 
     @Override
@@ -98,7 +99,7 @@ public class MedActivity extends Fragment
                     return true;
                 }
             });
-            btnSearch = (Button) v.findViewById(R.id.btnSearch);
+            btnSearch = (ImageButton) v.findViewById(R.id.btnSearch);
             btnSearch.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -313,15 +314,21 @@ public class MedActivity extends Fragment
         final int ColumnShortTextId = c.getColumnIndex("ShortText");
         final int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
         final int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
-
+        final int ColumnGradeId = c.getColumnIndex("Grade");
+        int grade = -1;
+        if (ColumnGradeId >= 0)
+        {
+            grade = c.getInt(ColumnGradeId);
+        }
         int SympID = c.getInt(ColumnSymptomIDId);
         String Text = c.getString(ColumnTextId);
         String ShortText = c.getString(ColumnShortTextId);
         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+        ShortText+= (grade >=0 ? "("+ grade + ")":"");
+        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID));
         try {
-            SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId);
+            SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId,hMed.ID);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -329,6 +336,40 @@ public class MedActivity extends Fragment
         //treeNode.addChild(treeNode2);
 
     }
+
+    public String[] getQueryMed(boolean OrFlag, boolean Wide) {
+        String qry = "";
+        String qrySymptMed = "";
+        for (TreeNode t : treeView.getSelectedNodes()) {
+            if (t.getValue() instanceof  TreeNodeHolderMed) continue;
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
+                if (OrFlag)
+                    qrySymptMed += " OR ";
+                else
+                    qrySymptMed += " AND ";
+            }
+            if (!lib.libString.IsNullOrEmpty(qry)) {
+                if (OrFlag)
+                    qry += " OR ";
+                else
+                    qry += " AND ";
+            }
+
+            if (!Wide) {
+                qry +=
+                        "Medikamente.ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID = " + h.ID + ")";
+                qrySymptMed += "SymptomeOfMedikament.SymptomID = " + h.ID;
+            } else {
+                qry +=
+                        "Medikamente.ID in (Select MedikamentID from SymptomeOfMedikament where SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%'))";
+                qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
+            }
+        }
+        return new String[]{qry, qrySymptMed};
+
+    }
+
 
     private void setLightStatusBar (@NonNull View view){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)

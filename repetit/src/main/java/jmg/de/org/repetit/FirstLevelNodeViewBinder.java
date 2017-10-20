@@ -65,16 +65,18 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
     private void buildTree(TreeNode treeNodeParent) throws  Throwable {
         if (treeNodeParent.getChildren().size()>0) return;
         TreeNodeHolder h = (TreeNodeHolder) treeNodeParent.getValue();
+        int ParentMedID = -1;
         dbSqlite db = h.getContext().db;
         try {
             Cursor c;
             if (h.getClass() == MedActivity.TreeNodeHolderMed.class) {
-                c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + ((MedActivity.TreeNodeHolderMed)h).ID +
-                        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID");
+                ParentMedID = ((MedActivity.TreeNodeHolderMed)h).ID;
+                c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + ParentMedID +
+                        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
             }
             else
             {
-                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + ((TreeNodeHolderSympt)h).ID);
+                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + ((TreeNodeHolderSympt)h).ID + " ORDER BY Symptome.Text");
             }
                 try {
                 if (c.moveToFirst()) {
@@ -89,7 +91,7 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID));
                         treeNode.setLevel(1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());

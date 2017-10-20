@@ -97,7 +97,16 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
         TreeNodeHolderSympt h = (TreeNodeHolderSympt) treeNodeParent.getValue();
         dbSqlite db = h.getContext().db;
         try {
-            Cursor c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + h.ID + " ORDER BY Symptome.Text");
+            Cursor c;
+            if (h.ParentMedID == -1)
+            {
+                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + h.ID + " ORDER BY Symptome.Text");
+            }
+            else
+            {
+                c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + h.ParentMedID +
+                        " AND Symptome.ParentSymptomID = " + h.ID + " AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
+            }
             try {
                 if (c.moveToFirst()) {
                     int ColumnTextId = c.getColumnIndex("Text");
@@ -111,7 +120,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,h.ParentMedID));
                         treeNode.setLevel(h.level + 1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());

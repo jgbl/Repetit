@@ -143,6 +143,36 @@ protected void onCreate(Bundle savedInstanceState)
                 case R.id.show_select_node:
                     Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
                     break;
+                case R.id.mnuShowMed:
+                    mPager.setCurrentItem(MedActivity.fragID);
+                    break;
+                case R.id.mnuShowSympt:
+                    mPager.setCurrentItem(SymptomsActivity.fragID);
+                    break;
+                case R.id.mnuFindMeds:
+                    String[] qry;
+                    if (mPager.getCurrentItem()==SymptomsActivity.fragID)
+                    {
+                        qry = fPA.fragSymptoms.getQueryMed(true, false);
+                    }
+                    else if (mPager.getCurrentItem()==MedActivity.fragID)
+                    {
+                        qry = fPA.fragMed.getQueryMed(true, false);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    if (lib.libString.IsNullOrEmpty(qry[1])) break;
+                    mPager.setCurrentItem(MedActivity.fragID);
+                    //String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                    //        "WHERE " + qry[0] + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
+                    String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                            "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
+                    qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+                    fPA.fragMed.buildTreeRep(qryMedGrade, true);
+                    //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
+                    break;
             }
         }
         catch (Throwable ex)
