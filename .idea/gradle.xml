@@ -7,9 +7,9 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="/vm/pubback/Repetit/android/Repetit" />
-            <option value="/vm/pubback/Repetit/android/Repetit/repetit" />
-            <option value="/vm/pubback/Repetit/android/Repetit/treeview_lib" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/repetit" />
+            <option value="$PROJECT_DIR$/treeview_lib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

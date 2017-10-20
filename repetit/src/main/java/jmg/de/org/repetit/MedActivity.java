@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class MedActivity extends Fragment
     private TreeNode root;
     public TreeView treeView;
     private AppCompatEditText txtSearch;
+    private Button btnSearch;
 
 
     @Override
@@ -70,7 +72,7 @@ public class MedActivity extends Fragment
         initView(view);
 
         root = TreeNode.root();
-        buildTree("SELECT * FROM Medikamente", false);
+        buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -94,6 +96,16 @@ public class MedActivity extends Fragment
                     String txt = txtSearch.getText().toString();
                     if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt);
                     return true;
+                }
+            });
+            btnSearch = (Button) v.findViewById(R.id.btnSearch);
+            btnSearch.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    String txt = txtSearch.getText().toString();
+                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt);
                 }
             });
             initTreeView(v);

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ public class SymptomsActivity extends Fragment {
     private TreeNode root;
     public TreeView treeView;
     private AppCompatEditText txtSearch;
+    private Button btnSearch;
 
 
     @Override
@@ -93,6 +95,16 @@ public class SymptomsActivity extends Fragment {
                         searchSymptoms(txt);
                     }
                     return true;
+                }
+            });
+            btnSearch = (Button) v.findViewById(R.id.btnSearch);
+            btnSearch.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    String txt = txtSearch.getText().toString();
+                    searchSymptoms(txt);
                 }
             });
             initTreeView(v);
@@ -164,7 +176,7 @@ public class SymptomsActivity extends Fragment {
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             if (where != "")
-                buildTree(root, qry + where, true, true);
+                buildTree(root, qry + where + " ORDER BY Text", true, true);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
