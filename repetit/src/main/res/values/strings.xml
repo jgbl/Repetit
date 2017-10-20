@@ -34,6 +34,7 @@
     <string name="show_med">medicaments</string>
     <string name="search_meds">search medicaments</string>
     <string name="search_sympts">search symptoms</string>
+    <string name="search_medsadd">search medicaments add</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>

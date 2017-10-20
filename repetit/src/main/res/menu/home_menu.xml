@@ -4,17 +4,22 @@
     <item
         android:id="@+id/mnuShowMed"
         android:title="@string/show_med"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@mipmap/medicine"
         app:showAsAction="always" />
     <item
         android:id="@+id/mnuShowSympt"
         android:title="@string/show_sympt"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@mipmap/symptom"
         app:showAsAction="always" />
     <item
         android:id="@+id/mnuFindMeds"
         android:title="@string/search_meds"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@mipmap/icons8_db"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mnuFindMedsAdd"
+        android:title="@string/search_medsadd"
+        android:icon="@android:drawable/ic_input_add"
         app:showAsAction="always" />
     <item
         android:id="@+id/expand_all"

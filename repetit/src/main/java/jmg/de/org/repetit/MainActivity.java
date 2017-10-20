@@ -149,15 +149,17 @@ protected void onCreate(Bundle savedInstanceState)
                 case R.id.mnuShowSympt:
                     mPager.setCurrentItem(SymptomsActivity.fragID);
                     break;
-                case R.id.mnuFindMeds:
+                case R.id.mnuFindMeds: case R.id.mnuFindMedsAdd:
                     String[] qry;
+                boolean blnAdd = false;
+                if(item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
                     if (mPager.getCurrentItem()==SymptomsActivity.fragID)
                     {
-                        qry = fPA.fragSymptoms.getQueryMed(true, false);
+                        qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd);
                     }
                     else if (mPager.getCurrentItem()==MedActivity.fragID)
                     {
-                        qry = fPA.fragMed.getQueryMed(true, false);
+                        qry = fPA.fragMed.getQueryMed(true, false, blnAdd);
                     }
                     else
                     {

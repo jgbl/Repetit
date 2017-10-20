@@ -161,8 +161,9 @@ public class SymptomsActivity extends Fragment {
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
-                    if (where != "") where += " AND ";
-                    where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                    if (where != "") where += " OR ";
+                    if (txt.length>1) where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                    else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
                 }
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);
@@ -172,10 +173,11 @@ public class SymptomsActivity extends Fragment {
             throwable.printStackTrace();
         }
     }
-
-    public String[] getQueryMed(boolean OrFlag, boolean Wide) {
+    String lastQuery = "";
+    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
+        if (!blnAdd) lastQuery = "";
         String qry = "";
-        String qrySymptMed = "";
+        String qrySymptMed = lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
@@ -201,6 +203,7 @@ public class SymptomsActivity extends Fragment {
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
+        lastQuery = qrySymptMed;
         return new String[]{qry, qrySymptMed};
 
     }

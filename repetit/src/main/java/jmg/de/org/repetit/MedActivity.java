@@ -126,9 +126,9 @@ public class MedActivity extends Fragment
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
-                    if (where != "") where += " OR ";
-                    where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
-                    ;
+                    if (where != "") where += " AND ";
+                    if (txt.length>1)where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                    else where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
                 }
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);
@@ -336,10 +336,11 @@ public class MedActivity extends Fragment
         //treeNode.addChild(treeNode2);
 
     }
-
-    public String[] getQueryMed(boolean OrFlag, boolean Wide) {
+    private String lastQuery = "";
+    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
+        if (!blnAdd)lastQuery = "";
         String qry = "";
-        String qrySymptMed = "";
+        String qrySymptMed = lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             if (t.getValue() instanceof  TreeNodeHolderMed) continue;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
@@ -366,6 +367,7 @@ public class MedActivity extends Fragment
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
+        lastQuery = qrySymptMed;
         return new String[]{qry, qrySymptMed};
 
     }

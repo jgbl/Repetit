@@ -32,7 +32,7 @@ import jmg.de.org.repetit.lib.lib;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-	int PAGE_COUNT = 3;
+	int PAGE_COUNT = 2;
 	public SymptomsActivity fragSymptoms;
 	public MedActivity fragMed;
 	public SettingsActivity fragSettings;
@@ -132,7 +132,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 	/** Returns the number of pages */
 	@Override
 	public int getCount() {		
-		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 3;
+		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 2;
 		return PAGE_COUNT;
 	}
 	@Override
