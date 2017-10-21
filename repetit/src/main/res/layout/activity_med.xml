@@ -20,12 +20,22 @@
             android:inputType="text"
             />
         <ImageButton
-            android:id="@+id/btnSearch"
+            android:id="@+id/btnSearchAnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="2dp"
             android:layout_margin="2dp"
-            android:contentDescription="@string/search_meds"
+            android:contentDescription="@string/search_medsand"
+            android:src="@android:drawable/ic_menu_search"
+            android:text=""
+            />
+        <ImageButton
+            android:id="@+id/btnSearchOr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/search_medsor"
             android:src="@android:drawable/ic_menu_search"
             android:text=""
             />
