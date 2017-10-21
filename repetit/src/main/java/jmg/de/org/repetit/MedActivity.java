@@ -1,6 +1,5 @@
 package jmg.de.org.repetit;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,19 +10,13 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,8 +44,8 @@ public class MedActivity extends Fragment
     private TreeNode root;
     public TreeView treeView;
     private AppCompatEditText txtSearch;
-    private ImageButton btnSearch;
-
+    private ImageButton btnSearchAnd;
+    private ImageButton btnSearchOr;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -74,7 +67,7 @@ public class MedActivity extends Fragment
 
         root = TreeNode.root();
         buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
-        treeView = new TreeView(root, _main, new MyNodeViewFactory());
+        treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -95,18 +88,28 @@ public class MedActivity extends Fragment
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     String txt = txtSearch.getText().toString();
-                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt);
+                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, true);
                     return true;
                 }
             });
-            btnSearch = (ImageButton) v.findViewById(R.id.btnSearch);
-            btnSearch.setOnClickListener(new View.OnClickListener()
+            btnSearchAnd = (ImageButton) v.findViewById(R.id.btnSearchAnd);
+            btnSearchAnd.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
                     String txt = txtSearch.getText().toString();
-                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt);
+                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt,true);
+                }
+            });
+            btnSearchOr = (ImageButton) v.findViewById(R.id.btnSearchOr);
+            btnSearchOr.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    String txt = txtSearch.getText().toString();
+                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt,false);
                 }
             });
             initTreeView(v);
@@ -118,7 +121,7 @@ public class MedActivity extends Fragment
         }
     }
 
-    private void searchSymptoms(String searchtxt) {
+    private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
         String[] txt = searchtxt.split(";");
         try {
@@ -126,9 +129,18 @@ public class MedActivity extends Fragment
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
-                    if (where != "") where += " AND ";
-                    if (txt.length>1)where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(s, true) + "%')";
-                    else where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                    if (AndFlag) {
+                        if (where != "") where += " AND ";
+                        if (txt.length > 1)
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                        else
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                    }
+                    else
+                    {
+                        if (where != "") where += " OR ";
+                        where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                    }
                 }
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);

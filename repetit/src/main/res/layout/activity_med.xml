@@ -26,8 +26,8 @@
             android:padding="2dp"
             android:layout_margin="2dp"
             android:contentDescription="@string/search_medsand"
-            android:src="@android:drawable/ic_menu_search"
-            android:text=""
+            android:src="@mipmap/searchand"
+            android:text="@string/and"
             />
         <ImageButton
             android:id="@+id/btnSearchOr"
@@ -36,8 +36,8 @@
             android:padding="2dp"
             android:layout_margin="2dp"
             android:contentDescription="@string/search_medsor"
-            android:src="@android:drawable/ic_menu_search"
-            android:text=""
+            android:src="@mipmap/searchor"
+            android:text="@string/or"
             />
     </LinearLayout>
 

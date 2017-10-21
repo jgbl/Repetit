@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -54,7 +53,8 @@ public class SymptomsActivity extends Fragment {
     private TreeNode root;
     public TreeView treeView;
     private AppCompatEditText txtSearch;
-    private ImageButton btnSearch;
+    private ImageButton btnSearchAnd;
+    private  ImageButton btnSearchOr;
 
 
     @Override
@@ -93,19 +93,29 @@ public class SymptomsActivity extends Fragment {
                     if (actionId == EditorInfo.IME_ACTION_DONE)
                     {
                         String txt = txtSearch.getText().toString();
-                        searchSymptoms(txt);
+                        searchSymptoms(txt, true);
                     }
                     return true;
                 }
             });
-            btnSearch = (ImageButton) v.findViewById(R.id.btnSearch);
-            btnSearch.setOnClickListener(new View.OnClickListener()
+            btnSearchAnd = (ImageButton) v.findViewById(R.id.btnSearchAnd);
+            btnSearchAnd.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
                     String txt = txtSearch.getText().toString();
-                    searchSymptoms(txt);
+                    searchSymptoms(txt,true);
+                }
+            });
+            btnSearchOr = (ImageButton) v.findViewById(R.id.btnSearchOr);
+            btnSearchOr.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    String txt = txtSearch.getText().toString();
+                    searchSymptoms(txt,false);
                 }
             });
             initTreeView(v);
@@ -136,7 +146,7 @@ public class SymptomsActivity extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String txt = input.getText().toString();
-                        searchSymptoms(txt);
+                        searchSymptoms(txt, true);
                     }
                 });
                 A.setNegativeButton(getContext().getString(R.string.cancel), null);
@@ -153,7 +163,7 @@ public class SymptomsActivity extends Fragment {
 
     }
 
-    private void searchSymptoms(String searchtxt) {
+    private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
         String[] txt = searchtxt.split(";");
         try {
@@ -161,9 +171,19 @@ public class SymptomsActivity extends Fragment {
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
-                    if (where != "") where += " OR ";
-                    if (txt.length>1) where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
-                    else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                    if (AndFlag)
+                    {
+                        if (where != "") where += " AND ";
+                        if (txt.length > 1)
+                            where += "Text LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                        else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                    }
+                    else {
+                        if (where != "") where += " OR ";
+                        if (txt.length > 1)
+                            where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                        else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                    }
                 }
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);
