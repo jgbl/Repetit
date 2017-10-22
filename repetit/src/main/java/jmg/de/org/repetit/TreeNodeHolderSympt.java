@@ -16,9 +16,10 @@ public class TreeNodeHolderSympt extends TreeNodeHolder
     public final String ShortText;
     public final Integer KoerperTeilID;
     public final Integer ParentSymptomID;
+    public final Integer grade;
     public int ParentMedID = -1;
 
-    public TreeNodeHolderSympt(MainActivity context, int level, String Text, String path, int ID, String SymptomText, String ShortText, Integer KoerperTeilID, Integer ParentSymptomID, int ParentMedID)
+    public TreeNodeHolderSympt(MainActivity context, int level, String Text, String path, int ID, String SymptomText, String ShortText, Integer KoerperTeilID, Integer ParentSymptomID, int ParentMedID, Integer Grade )
     {
         super(level,Text,path,context);
         this.level = level;
@@ -28,8 +29,9 @@ public class TreeNodeHolderSympt extends TreeNodeHolder
         this.KoerperTeilID = KoerperTeilID;
         this.ParentSymptomID = ParentSymptomID;
         this.ParentMedID = ParentMedID;
+        this.grade = Grade;
     }
-    public  TreeNodeHolderSympt(MainActivity context, int level, Cursor c, int ParentMedID)
+    public  TreeNodeHolderSympt(MainActivity context, int level, Cursor c, int ParentMedID, Integer grade)
     {
         int ColumnTextId = c.getColumnIndex("Text");
         int ColumnIDId = c.getColumnIndex("ID");
@@ -43,6 +45,7 @@ public class TreeNodeHolderSympt extends TreeNodeHolder
         KoerperTeilID = c.getInt(ColumnKoerperTeilId);
         ParentSymptomID = c.getInt(ColumnParentSymptomId);
         this.ParentMedID = ParentMedID;
+        this.grade = grade;
         super.Text = ShortText;
         super.path = ("Sympt"+ID);
         super.level = level;

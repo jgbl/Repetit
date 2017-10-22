@@ -70,9 +70,10 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
         try {
             Cursor c;
             if (h.getClass() == MedActivity.TreeNodeHolderMed.class) {
-                ParentMedID = ((MedActivity.TreeNodeHolderMed)h).ID;
-                c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + ParentMedID +
-                        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
+                throw new RuntimeException("Not a Sympt!");
+                //ParentMedID = ((MedActivity.TreeNodeHolderMed)h).ID;
+                //c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + ParentMedID +
+                //        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
             }
             else
             {
@@ -91,7 +92,7 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID,0));
                         treeNode.setLevel(1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());

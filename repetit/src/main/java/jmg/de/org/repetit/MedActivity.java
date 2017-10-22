@@ -28,9 +28,6 @@ import me.texy.treeview.TreeView;
 
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
-/**
- * Created by hmnatalie on 29.08.17.
- */
 
 public class MedActivity extends Fragment
 {
@@ -130,7 +127,7 @@ public class MedActivity extends Fragment
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
                     if (AndFlag) {
-                        if (where != "") where += " AND ";
+                        if (!(where.equalsIgnoreCase(""))) where += " AND ";
                         if (txt.length > 1)
                             where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(s, true) + "%')";
                         else
@@ -138,16 +135,17 @@ public class MedActivity extends Fragment
                     }
                     else
                     {
-                        if (where != "") where += " OR ";
+                        if (!(where.equalsIgnoreCase(""))) where += " OR ";
                         where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
                     }
                 }
             }
+            if(!AndFlag||txt.length<2) txt=null;
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade,true);
+            buildTreeRep(qryMedGrade,true,txt);
 
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -161,10 +159,10 @@ public class MedActivity extends Fragment
         {
             if (i < 5)
             {
-                stringBuilder.append(selectedNodes.get(i).getValue().toString() + ",");
+                stringBuilder.append(selectedNodes.get(i).getValue().toString()).append(",");
             } else
             {
-                stringBuilder.append("...and " + (selectedNodes.size() - 5) + " more.");
+                stringBuilder.append("...and ").append(selectedNodes.size() - 5).append(" more.");
                 break;
             }
         }
@@ -235,7 +233,7 @@ public class MedActivity extends Fragment
         if (refresh && treeView != null) treeView.refreshTreeView();
 
     }
-    public void buildTreeRep(String qry, boolean refresh)
+    public void buildTreeRep(String qry, boolean refresh, String[] txt)
     {
         boolean Initialized = true;
         final String CodeLoc = TAG + ".initTreeview";
@@ -268,17 +266,17 @@ public class MedActivity extends Fragment
                         String Name = c.getString(ColumnNameId);
                         String Beschreibung = c.getString(ColumnBeschreibungId);
                         int sum = 0;
-                        sum = c.getInt(ColumnGrade);
                         int nexts = 0;
                         TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung);
                         TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
-                        insertSymptom(c,treeNode,hMed,ID);
+                        if (insertSymptom(c,treeNode,hMed,ID,txt))sum = c.getInt(ColumnGrade);
                         while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
-                            insertSymptom(c,treeNode,hMed,ID);
-                            nexts += 1;
-                            sum += c.getInt(ColumnGrade);
+                            if(insertSymptom(c,treeNode,hMed,ID, txt)) {
+                                nexts += 1;
+                                sum += c.getInt(ColumnGrade);
+                            }
                         }
                         hMed.totalGrade = sum;
                         hMed.count = nexts + 1;
@@ -319,7 +317,7 @@ public class MedActivity extends Fragment
 
     }
 
-    private void insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, int ID)
+    private boolean insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, int ID, String[] txt)
     {
         final int ColumnTextId = c.getColumnIndex("Text");
         final int ColumnSymptomIDId = c.getColumnIndex("SymptomID");
@@ -337,22 +335,41 @@ public class MedActivity extends Fragment
         String ShortText = c.getString(ColumnShortTextId);
         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+        boolean found = false;
+        if (txt!=null && txt.length>0)
+        {
+            for (String t : txt)
+            {
+                if (ShortText.toLowerCase().contains(t.toLowerCase()))
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            found = true;
+        }
+        if (!found) return false;
         ShortText+= (grade >=0 ? "("+ grade + ")":"");
-        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID));
+        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID,grade));
         try {
             SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId,hMed.ID);
+            return  true;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
+            return  false;
         }
         //treeNode2.setLevel(1);
         //treeNode.addChild(treeNode2);
 
     }
-    private String lastQuery = "";
+    //private String lastQuery = "";
     public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
-        if (!blnAdd)lastQuery = "";
+        if (!blnAdd)_main.lastQuery = "";
         String qry = "";
-        String qrySymptMed = lastQuery;
+        String qrySymptMed = _main.lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             if (t.getValue() instanceof  TreeNodeHolderMed) continue;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
@@ -379,7 +396,7 @@ public class MedActivity extends Fragment
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
-        lastQuery = qrySymptMed;
+        _main.lastQuery = qrySymptMed;
         return new String[]{qry, qrySymptMed};
 
     }

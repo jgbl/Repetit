@@ -268,7 +268,7 @@ public class SymptomsActivity extends Fragment {
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
                         int Level = treeNodeParent.getLevel();
                         if (treeNodeParent == root) Level = -1;
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1,0));
                         if (!getParents || ParentSymptomId == null) {
                             treeNode.setLevel(Level + 1);
                             treeNodeParent.addChild(treeNode);
@@ -295,11 +295,17 @@ public class SymptomsActivity extends Fragment {
 
         for (int i = list.size() - 1; i >= 0; i--) {
             boolean blnDouble = false;
+            boolean blnIsNewNode = false;
+            if(i==0) blnIsNewNode = true;
             TreeNode t = list.get(i);
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
             for (TreeNode tt : parent.getChildren()) {
                 TreeNodeHolderSympt h2 = (TreeNodeHolderSympt) tt.getValue();
                 if (h2.ID == h.ID) {
+                    if (blnIsNewNode)
+                    {
+                        h2.Text = h.Text;
+                    }
                     parent = tt;
                     blnDouble = true;
                     break;
@@ -332,7 +338,7 @@ public class SymptomsActivity extends Fragment {
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(activity, 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,ParentMedID));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(activity, 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,ParentMedID,0));
                         list.add(treeNode);
                         if (!(ParentSymptomId == null)) getParents(activity, ParentSymptomId, list,ParentMedID);
                     } while (c.moveToNext());
@@ -433,7 +439,7 @@ public class SymptomsActivity extends Fragment {
 
 
                         TreeNodeHolderSympt ParentSympRow = (TreeNodeHolderSympt) rootNode.getValue();
-                        TreeNodeHolderSympt Parent = new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, c, -1);
+                        TreeNodeHolderSympt Parent = new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, c, -1,0);
                         TreeNodeHolderSympt drow = Parent;
                         for (TreeNode t : rootNode.getChildren()) {
                             if (((TreeNodeHolderSympt) (t.getValue())).ID == drow.ID) {
@@ -442,7 +448,7 @@ public class SymptomsActivity extends Fragment {
                             }
                         }
                         if (symptNode == null) {
-                            symptNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), rootNode.getLevel() + 1, c,-1));
+                            symptNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), rootNode.getLevel() + 1, c,-1,0));
                         }
                         LastID = ((TreeNodeHolderSympt) (symptNode.getValue())).ID;
                         symptNode.setLevel(Level);

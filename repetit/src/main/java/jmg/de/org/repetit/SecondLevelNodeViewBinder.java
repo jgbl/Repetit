@@ -104,7 +104,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
             }
             else
             {
-                c = db.query("Select Symptome.* FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + h.ParentMedID +
+                c = db.query("Select Symptome.*, SymptomeOfMedikament.Grade FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + h.ParentMedID +
                         " AND Symptome.ParentSymptomID = " + h.ID + " AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
             }
             try {
@@ -114,13 +114,15 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
                     int ColumnShortTextId = c.getColumnIndex("ShortText");
                     int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
                     int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                    int ColumnGradeId = c.getColumnIndex("Grade");
                     do {
                         int ID = c.getInt(ColumnIDId);
                         String Text = c.getString(ColumnTextId);
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,h.ParentMedID));
+                        Integer Grade = c.getInt(ColumnGradeId);
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,h.ParentMedID,Grade));
                         treeNode.setLevel(h.level + 1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());

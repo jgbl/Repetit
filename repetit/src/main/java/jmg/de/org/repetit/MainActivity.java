@@ -7,7 +7,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
-import me.texy.treeview.base.SelectableTreeAction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,10 +32,11 @@ public class MainActivity extends AppCompatActivity {
     public MyFragmentPagerAdapter fPA;
     public TreeView treeView;
     public dbSqlite db;
+    public String lastQuery = "";
 
     public MainActivity()
     {
-    };
+    }
 
     @Override
     protected void onResume()
@@ -86,22 +85,22 @@ protected void onCreate(Bundle savedInstanceState)
 
         setContentView(R.layout.activity_main_viewpager);
 
-        /** Getting a reference to ViewPager from the layout */
+        /* Getting a reference to ViewPager from the layout */
         View pager = this.findViewById(R.id.pager);
         Layout = (ViewGroup) pager;
         mPager = (HackyViewPager) pager;
-        /** Getting a reference to FragmentManager */
+        /* Getting a reference to FragmentManager */
         FragmentManager fm = getSupportFragmentManager();
 
         setPageChangedListener();
 
-        /** Creating an instance of FragmentPagerAdapter */
+        /* Creating an instance of FragmentPagerAdapter */
         if (fPA == null)
         {
         fPA = new MyFragmentPagerAdapter(fm, this, savedInstanceState != null);
         }
 
-        /** Setting the FragmentPagerAdapter object to the viewPager object */
+        /* Setting the FragmentPagerAdapter object to the viewPager object */
         mPager.setAdapter(fPA);
 
 
@@ -172,7 +171,7 @@ protected void onCreate(Bundle savedInstanceState)
                     String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                             "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                     qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                    fPA.fragMed.buildTreeRep(qryMedGrade, true);
+                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
             }
@@ -186,7 +185,6 @@ protected void onCreate(Bundle savedInstanceState)
 
     private void setPageChangedListener()
     {
-        /** Defining a listener for pageChange */
         ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             int LastPosition = -1;
