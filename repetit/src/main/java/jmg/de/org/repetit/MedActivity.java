@@ -63,7 +63,16 @@ public class MedActivity extends Fragment
         initView(view);
 
         root = TreeNode.root();
-        buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
+        if (!lib.libString.IsNullOrEmpty(_main.lastQuery)) {
+            String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
+            qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+            buildTreeRep(qryMedGrade, false, null);
+        }
+        else
+        {
+            buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
+        }
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
@@ -301,7 +310,7 @@ public class MedActivity extends Fragment
                         }
                     });
                     root.setChildren(l);
-                    treeView.refreshTreeView();
+                    //if (refresh) treeView.refreshTreeView();
 
                 }
             }
