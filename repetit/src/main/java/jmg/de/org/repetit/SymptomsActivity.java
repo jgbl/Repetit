@@ -193,11 +193,11 @@ public class SymptomsActivity extends Fragment {
             throwable.printStackTrace();
         }
     }
-    String lastQuery = "";
+    //String lastQuery = "";
     public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
-        if (!blnAdd) lastQuery = "";
+        if (!blnAdd) _main.lastQuery = "";
         String qry = "";
-        String qrySymptMed = lastQuery;
+        String qrySymptMed = _main.lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
@@ -223,7 +223,7 @@ public class SymptomsActivity extends Fragment {
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
-        lastQuery = qrySymptMed;
+        _main.lastQuery = qrySymptMed;
         return new String[]{qry, qrySymptMed};
 
     }
