@@ -271,7 +271,10 @@ public class MedActivity extends Fragment
                         TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
-                        if (insertSymptom(c,treeNode,hMed,ID,txt))sum = c.getInt(ColumnGrade);
+                        if (insertSymptom(c,treeNode,hMed,ID,txt)){
+                            sum = c.getInt(ColumnGrade);
+                            nexts += 1;
+                        }
                         while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
                             if(insertSymptom(c,treeNode,hMed,ID, txt)) {
                                 nexts += 1;
@@ -279,7 +282,7 @@ public class MedActivity extends Fragment
                             }
                         }
                         hMed.totalGrade = sum;
-                        hMed.count = nexts + 1;
+                        hMed.count = nexts;
                         hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
                     } while (!c.isAfterLast());
                     List<TreeNode> l = root.getChildren();
