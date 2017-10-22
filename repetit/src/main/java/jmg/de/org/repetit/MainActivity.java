@@ -34,54 +34,52 @@ public class MainActivity extends AppCompatActivity {
     public dbSqlite db;
     public String lastQuery = "";
 
-    public MainActivity()
-    {
+    public MainActivity() {
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        if (db == null){
+        if (db == null) {
             db = new dbSqlite(this, false);
             db.createDataBase();
         }
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
-        if (db != null)
-        {
+        if (db != null) {
             db.close();
             db = null;
         }
     }
-@Override
-protected void onCreate(Bundle savedInstanceState)
-        {
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("lastquery",lastQuery);
+    }
+        @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = new dbSqlite(this, false);
+        if (db == null) {
+            db = new dbSqlite(this, false);
             db.createDataBase();
+        }
         //lib.main = this;
         lib.gStatus = "MainActivity onCreate";
         //getting the kind of userinterface: television or watch or else
         int UIMode = lib.getUIMode(this);
-        switch (UIMode)
-        {
-        case Configuration.UI_MODE_TYPE_TELEVISION:
-        isTV = true;
-        break;
-        case Configuration.UI_MODE_TYPE_WATCH:
-        isWatch = true;
-        break;
+        switch (UIMode) {
+            case Configuration.UI_MODE_TYPE_TELEVISION:
+                isTV = true;
+                break;
+            case Configuration.UI_MODE_TYPE_WATCH:
+                isWatch = true;
+                break;
         }
 
-        if (savedInstanceState != null)
-        {
-        //JMGDataDirectory = savedInstanceState.getString("JMGDataDirectory");
-        }
 
         setContentView(R.layout.activity_main_viewpager);
 
@@ -95,19 +93,22 @@ protected void onCreate(Bundle savedInstanceState)
         setPageChangedListener();
 
         /* Creating an instance of FragmentPagerAdapter */
-        if (fPA == null)
-        {
-        fPA = new MyFragmentPagerAdapter(fm, this, savedInstanceState != null);
+        if (fPA == null) {
+            fPA = new MyFragmentPagerAdapter(fm, this, savedInstanceState != null);
         }
 
         /* Setting the FragmentPagerAdapter object to the viewPager object */
         mPager.setAdapter(fPA);
 
+        if (savedInstanceState != null) {
+            lastQuery = savedInstanceState.getString("lastquery");
 
-
-
+        } else {
 
         }
+
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -117,10 +118,8 @@ protected void onCreate(Bundle savedInstanceState)
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        try
-        {
-            switch (item.getItemId())
-            {
+        try {
+            switch (item.getItemId()) {
                 case R.id.select_all:
                     treeView.selectAll();
                     break;
@@ -148,20 +147,16 @@ protected void onCreate(Bundle savedInstanceState)
                 case R.id.mnuShowSympt:
                     mPager.setCurrentItem(SymptomsActivity.fragID);
                     break;
-                case R.id.mnuFindMeds: case R.id.mnuFindMedsAdd:
+                case R.id.mnuFindMeds:
+                case R.id.mnuFindMedsAdd:
                     String[] qry;
-                boolean blnAdd = false;
-                if(item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
-                    if (mPager.getCurrentItem()==SymptomsActivity.fragID)
-                    {
+                    boolean blnAdd = false;
+                    if (item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
+                    if (mPager.getCurrentItem() == SymptomsActivity.fragID) {
                         qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd);
-                    }
-                    else if (mPager.getCurrentItem()==MedActivity.fragID)
-                    {
+                    } else if (mPager.getCurrentItem() == MedActivity.fragID) {
                         qry = fPA.fragMed.getQueryMed(true, false, blnAdd);
-                    }
-                    else
-                    {
+                    } else {
                         break;
                     }
                     if (lib.libString.IsNullOrEmpty(qry[1])) break;
@@ -175,70 +170,52 @@ protected void onCreate(Bundle savedInstanceState)
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
             }
-        }
-        catch (Throwable ex)
-        {
-            Log.e(TAG,"OptionsItemSelected",ex);
+        } catch (Throwable ex) {
+            Log.e(TAG, "OptionsItemSelected", ex);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setPageChangedListener()
-    {
-        ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener()
-        {
+    private void setPageChangedListener() {
+        ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
             int LastPosition = -1;
 
             @Override
-            public void onPageSelected(int position)
-            {
+            public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                if (LastPosition == MedActivity.fragID)
-                {
-                    try
-                    {
-                        if (fPA != null && fPA.fragSettings != null)
-                        {
-                            try
-                            {
+                if (LastPosition == MedActivity.fragID) {
+                    try {
+                        if (fPA != null && fPA.fragSettings != null) {
+                            try {
                                 //fPA.fragSettings.saveResultsAndFinish(true);
-                            }
-                            catch (Throwable ex)
-                            {
+                            } catch (Throwable ex) {
                                 Log.e(".saveResultsAndFinish", ex.getMessage(), ex);
                             }
-                    					/*
-                    					if (lib.NookSimpleTouch())
+                                        /*
+                                        if (lib.NookSimpleTouch())
                     					{
                     						RemoveFragSettings();
                     					}
                     					*/
                         }
 
-                    }
-                    catch (Throwable e)
-                    {
+                    } catch (Throwable e) {
 
                         lib.ShowException(MainActivity.this, e);
                     }
                     //mnuUploadToQuizlet.setEnabled(true);
-                }
-                else if (LastPosition == SymptomsActivity.fragID)
-                {
-                    if (fPA != null && fPA.fragMed != null)
-                    {
+                } else if (LastPosition == SymptomsActivity.fragID) {
+                    if (fPA != null && fPA.fragMed != null) {
                         //fPA.fragMed.removeCallbacks();
                     }
                 }
 
-                if (position == MedActivity.fragID)
-                {
+                if (position == MedActivity.fragID) {
                     //mnuAddNew.setEnabled(true);
                     //mnuUploadToQuizlet.setEnabled(true);
 
-                    if (fPA != null && fPA.fragMed != null)
-                    {
+                    if (fPA != null && fPA.fragMed != null) {
                         treeView = fPA.fragMed.treeView;
                     /*
                         fPA.fragMed._txtMeaning1.setOnFocusChangeListener(new View.OnFocusChangeListener()
@@ -256,13 +233,9 @@ protected void onCreate(Bundle savedInstanceState)
                         });
                         */
                     }
-                }
-                else if (position == SettingsActivity.fragID)
-                {
-                    if (fPA != null && fPA.fragSettings != null)
-                    {
-                        try
-                        {
+                } else if (position == SettingsActivity.fragID) {
+                    if (fPA != null && fPA.fragSettings != null) {
+                        try {
                             /*
                             int Language = fPA.fragSettings.getIntent().getIntExtra(
                                     "Language", org.de.jmg.learn.vok.Vokabel.EnumSprachen.undefiniert.ordinal());
@@ -271,24 +244,17 @@ protected void onCreate(Bundle savedInstanceState)
                             fPA.fragSettings.setSpnWordPosition();
                             fPA.fragSettings.setChkTSS();
                             */
-                        }
-                        catch (Throwable ex)
-                        {
+                        } catch (Throwable ex) {
                             Log.e(".saveResultsAndFinish", ex.getMessage(), ex);
                         }
                     }
-                }
-                else if (position == SymptomsActivity.fragID)
-                {
-                    if (fPA != null && fPA.fragSymptoms != null)
-                    {
+                } else if (position == SymptomsActivity.fragID) {
+                    if (fPA != null && fPA.fragSymptoms != null) {
                         treeView = fPA.fragSymptoms.treeView;
                         //searchQuizlet();
                     }
 
-                }
-                else
-                {
+                } else {
                     //mnuAddNew.setEnabled(false);
                 }
 
@@ -299,24 +265,23 @@ protected void onCreate(Bundle savedInstanceState)
 
         };
 
-        /** Setting the pageChange listener to the viewPager */
         mPager.addOnPageChangeListener(pageChangeListener);
 
     }
+
     public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
         List<TreeNode> selectedNodes = treeView.getSelectedNodes();
         for (int i = 0; i < selectedNodes.size(); i++) {
             if (i < 5) {
-                stringBuilder.append(selectedNodes.get(i).getValue().toString() + ",");
+                stringBuilder.append(selectedNodes.get(i).getValue().toString()).append(",");
             } else {
-                stringBuilder.append("...and " + (selectedNodes.size() - 5) + " more.");
+                stringBuilder.append("...and ").append(selectedNodes.size() - 5).append(" more.");
                 break;
             }
         }
         return stringBuilder.toString();
     }
-
 
 
 }
