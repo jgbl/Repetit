@@ -1,1 +1,1 @@
-include ':repetit', ':treeview_lib'
+include ':repetit'

@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -80,7 +81,40 @@ public class MedActivity extends Fragment
         viewGroup.addView(view2);
         if (_main.treeView == null) _main.treeView = treeView;
 
+        if (treeView != null)
+        {
+            if (root != null)
+            {
+                ArrayList<Integer> expMed = new ArrayList<>();
+                ArrayList<Integer> expMedSymp = new ArrayList<>();
+                ArrayList<Integer> Selected = new ArrayList<>();
+                for (TreeNode t : root.getChildren())
+                {
+                    if (t.hasChild())
+                    {
+                        TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
+                        expMed.add(h.ID);
+                        getSympMed(h.ID,t,expMedSymp);
+                    }
+                }
+                for (TreeNode t : treeView.getSelectedNodes())
+                {
+                    if (t.getValue() instanceof  TreeNodeHolderSympt)
+                    {
+                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+                        Selected.add(h.ParentMedID);
+                        Selected.add(h.ID);
+                    }
+                }
+                outState.putIntegerArrayList("expMed", expMed);
+                outState.putIntegerArrayList("expMedSyp", expMedSymp);
+                outState.putIntegerArrayList("Selected",Selected);
+
+            }
+
+        }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate)
@@ -126,6 +160,59 @@ public class MedActivity extends Fragment
             return null;
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        if (treeView != null)
+        {
+            if (root != null)
+            {
+                ArrayList<Integer> expMed = new ArrayList<>();
+                ArrayList<Integer> expMedSymp = new ArrayList<>();
+                ArrayList<Integer> Selected = new ArrayList<>();
+                for (TreeNode t : root.getChildren())
+                {
+                    if (t.hasChild())
+                    {
+                        TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
+                        expMed.add(h.ID);
+                        getSympMed(h.ID,t,expMedSymp);
+                    }
+                }
+                for (TreeNode t : treeView.getSelectedNodes())
+                {
+                    if (t.getValue() instanceof  TreeNodeHolderSympt)
+                    {
+                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+                        Selected.add(h.ParentMedID);
+                        Selected.add(h.ID);
+                    }
+                }
+                outState.putIntegerArrayList("expMed", expMed);
+                outState.putIntegerArrayList("expMedSyp", expMedSymp);
+                outState.putIntegerArrayList("Selected",Selected);
+
+            }
+
+        }
+    }
+
+    private void getSympMed(int Medid, TreeNode t, ArrayList<Integer> sympMed)
+    {
+        for (TreeNode tt: t.getChildren())
+        {
+            if (t.hasChild())
+            {
+                TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+                sympMed.add(Medid);
+                sympMed.add(h.ID);
+                getSympMed(Medid,tt,sympMed);
+            }
+        }
+    }
+
 
     private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
