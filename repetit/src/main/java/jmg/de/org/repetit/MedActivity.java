@@ -198,7 +198,7 @@ public class MedActivity extends Fragment
             {
                 expMedSymp.remove(0);
                 expMedSymp.remove(0);
-                if(t.hasChild()==false)SecondLevelNodeViewBinder.buildTree(treeView,tt);
+                if(tt.hasChild()==false)SecondLevelNodeViewBinder.buildTree(treeView,tt);
                 else treeView.expandNode(tt);
                 expSympMed(id,tt,expMedSymp,selected);
                 if (expMedSymp.size()<=0) break;
