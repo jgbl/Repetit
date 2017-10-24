@@ -166,6 +166,54 @@ public class MedActivity extends Fragment
     private void expSympMed(int id, TreeNode t, ArrayList<Integer> expMedSymp, ArrayList<Integer> selected) throws Throwable
     {
 
+        CheckSelected (id,t,selected);
+        if (expMedSymp.size()==0) return;
+        if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
+        {
+            expMedSymp.remove(0);
+            expMedSymp.remove(0);
+            return;
+        }
+
+        if (expMedSymp.size()==0) return;
+
+        for (TreeNode tt : t.getChildren())
+        {
+            if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
+            {
+                expMedSymp.remove(0);
+                expMedSymp.remove(0);
+                break;
+            }
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
+            if (h.ParentMedID == expMedSymp.get(0) && h.ID == expMedSymp.get(1))
+            {
+                expMedSymp.remove(0);
+                expMedSymp.remove(0);
+                if(tt.hasChild()==false)SecondLevelNodeViewBinder.buildTree(treeView,tt);
+                else treeView.expandNode(tt);
+                if (expMedSymp.size()<=0)
+                {
+                    CheckSelected (id,tt,selected);
+                    break;
+                }
+                if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
+                {
+                    expMedSymp.remove(0);
+                    expMedSymp.remove(0);
+                    CheckSelected (id,tt,selected);
+                }
+                else
+                {
+                    expSympMed(id,tt,expMedSymp,selected);
+                }
+
+            }
+        }
+    }
+
+    private void CheckSelected(int id,TreeNode t, ArrayList<Integer> selected)
+    {
         for (TreeNode tt : t.getChildren())
         {
             if (selected.size()<=0) break;
@@ -179,29 +227,6 @@ public class MedActivity extends Fragment
                     selected.remove(i);
                     break;
                 }
-            }
-        }
-        if (expMedSymp.size()==0) return;
-        if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
-        {
-            expMedSymp.remove(0);
-            expMedSymp.remove(0);
-            return;
-        }
-
-        if (expMedSymp.size()==0) return;
-
-        for (TreeNode tt : t.getChildren())
-        {
-            TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
-            if (h.ParentMedID == expMedSymp.get(0) && h.ID == expMedSymp.get(1))
-            {
-                expMedSymp.remove(0);
-                expMedSymp.remove(0);
-                if(tt.hasChild()==false)SecondLevelNodeViewBinder.buildTree(treeView,tt);
-                else treeView.expandNode(tt);
-                expSympMed(id,tt,expMedSymp,selected);
-                if (expMedSymp.size()<=0) break;
             }
         }
     }
