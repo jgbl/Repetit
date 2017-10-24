@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public TreeView treeView;
     public dbSqlite db;
     public String lastQuery = "";
+    public boolean blnSearchWholeWord;
 
     public MainActivity() {
     }
@@ -140,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.show_select_node:
                     Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.mnuSearchWholeWord:
+                    item.setChecked(item.isChecked()^true);
+                    blnSearchWholeWord = item.isChecked();
                     break;
                 case R.id.mnuShowMed:
                     mPager.setCurrentItem(MedActivity.fragID);

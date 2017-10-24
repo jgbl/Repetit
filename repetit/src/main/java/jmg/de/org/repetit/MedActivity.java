@@ -44,6 +44,8 @@ public class MedActivity extends Fragment
     private AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
+    private String _lastQuery;
+    private String[] _txt;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -64,14 +66,16 @@ public class MedActivity extends Fragment
         initView(view);
 
         root = TreeNode.root();
-        if (!lib.libString.IsNullOrEmpty(_main.lastQuery)) {
+        if (lib.libString.IsNullOrEmpty(_lastQuery) && !lib.libString.IsNullOrEmpty(_main.lastQuery)) {
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, false, null);
         }
-        else
-        {
+        else if (! lib.libString.IsNullOrEmpty(_lastQuery)) {
+            buildTreeRep(_lastQuery, false, _txt);
+        }
+        else {
             buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
         }
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
@@ -121,6 +125,11 @@ public class MedActivity extends Fragment
                     if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt,false);
                 }
             });
+            if (savedinstancestate!=null) {
+                _lastQuery = savedinstancestate.getString("lastquery");
+                _txt = savedinstancestate.getStringArray("txt");
+            }
+
             initTreeView(v);
             restoreTreeView(savedinstancestate);
             return v;
@@ -149,12 +158,24 @@ public class MedActivity extends Fragment
                         if (expMed.contains(h.ID))
                         {
                             expMed.remove(new Integer(h.ID));
+                            while(expMedSymp.get(0)==-99) expMedSymp.remove(0);
                             if (t.hasChild() == false) FirstLevelNodeViewBinderMed.buildTree(treeView,t);
                             else treeView.expandNode(t);
                             expSympMed(h.ID,t,expMedSymp,Selected);
                         }
                         if (expMed.size() == 0) break;
 
+                    }
+                }
+                if (Selected.size()>0) {
+                    for (TreeNode t : root.getChildren())
+                    {
+                        TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
+                        while (Selected.size()>0 && h.ID == Selected.get(0)) {
+                            Selected.remove(0);
+                            SymptomsActivity.AddNodesRecursive(_main, 1, null, t, Selected.get(0), h.ID);
+                            Selected.remove(0);
+                        }
                     }
                 }
 
@@ -235,7 +256,8 @@ public class MedActivity extends Fragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString("lastquery",_main.lastQuery);
+        outState.putString("lastquery",_lastQuery);
+        outState.putStringArray("txt", _txt);
         if (treeView != null)
         {
             if (root != null)
@@ -280,36 +302,47 @@ public class MedActivity extends Fragment
                 sympMed.add(Medid);
                 sympMed.add(h.ID);
                 getSympMed(Medid,tt,sympMed);
-                sympMed.add (-99);
-                sympMed.add (-99);
+                hasChild = true;
             }
             else
             {
 
             }
         }
+        if (hasChild)
+        {
+            sympMed.add (-99);
+            sympMed.add (-99);
+        }
+
     }
 
+    public static String getWhereWhole(String column, String search)
+    {
+        return "WHERE " + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '" + search + "'";
+    }
 
     private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
-        String[] txt = searchtxt.split(";");
+        String[] txt = searchtxt.split("\\.");
         try {
             //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
             String where = "";
             for (String s : txt) {
+                String whereWhole = null;
                 if (!lib.libString.IsNullOrEmpty(s)) {
+                    s = MakeFitForQuery(s,true);
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
                         if (txt.length > 1)
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord?getWhereWhole("Text",s):"WHERE Text LIKE '%" +s + "%'") + ")";
                         else
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"WHERE ShortText LIKE '%" + s + "%'") + ")";
                     }
                     else
                     {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
-                        where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%')";
+                        where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'") + ")";
                     }
                 }
             }
@@ -491,6 +524,8 @@ public class MedActivity extends Fragment
         }
 
         if (refresh && treeView != null) treeView.refreshTreeView();
+        _lastQuery = qry;
+        _txt = txt;
 
     }
 

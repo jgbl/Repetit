@@ -77,9 +77,7 @@ public class SymptomsActivity extends Fragment {
         if (!lib.libString.IsNullOrEmpty(lastQuery)) {
             qry = lastQuery;
             buildTree(root, qry, false, true);
-        }
-        else
-        {
+        } else {
             buildTree(root, qry, false, false);
         }
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
@@ -121,7 +119,7 @@ public class SymptomsActivity extends Fragment {
                     searchSymptoms(txt, false);
                 }
             });
-            if (savedinstancestate!=null) lastQuery = savedinstancestate.getString("lastquery");
+            if (savedinstancestate != null) lastQuery = savedinstancestate.getString("lastquery");
             initTreeView(v);
             restoreTreeView(savedinstancestate);
             return v;
@@ -161,11 +159,12 @@ public class SymptomsActivity extends Fragment {
                 TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
                 symp.add(h.ID);
                 getSymp(tt, symp);
-                symp.add(-99);
+                hasChild = true;
             } else {
 
             }
         }
+        if (hasChild) symp.add(-99);
     }
 
     private void restoreTreeView(Bundle savedinstancestate) throws Throwable {
@@ -174,6 +173,9 @@ public class SymptomsActivity extends Fragment {
                 ArrayList<Integer> expSymp = savedinstancestate.getIntegerArrayList("expSymp");
                 ArrayList<Integer> Selected = savedinstancestate.getIntegerArrayList("Selected");
                 expSymp(root, expSymp, Selected);
+                for (Integer i : Selected) {
+                    AddNodesRecursive(_main, 0, null, root, i, -1);
+                }
             }
 
         }
@@ -181,10 +183,9 @@ public class SymptomsActivity extends Fragment {
 
     private void expSymp(TreeNode t, ArrayList<Integer> expSymp, ArrayList<Integer> selected) throws Throwable {
 
-        checkSelected(t,selected);
+        checkSelected(t, selected);
         if (expSymp.size() == 0) return;
         if (-99 == expSymp.get(0))
-
         {
             expSymp.remove(0);
             return;
@@ -192,13 +193,8 @@ public class SymptomsActivity extends Fragment {
 
         if (expSymp.size() == 0) return;
 
-        for (
-                TreeNode tt : t.getChildren())
-
-        {
-            if (-99 == expSymp.get(0))
-
-            {
+        for (TreeNode tt : t.getChildren()) {
+            if (-99 == expSymp.get(0)) {
                 expSymp.remove(0);
                 break;
             }
@@ -212,18 +208,16 @@ public class SymptomsActivity extends Fragment {
                     if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt);
                     else treeView.expandNode(tt);
                 }
-                if (expSymp.size() <= 0){
-                    checkSelected(tt,selected);
+                if (expSymp.size() <= 0) {
+                    checkSelected(tt, selected);
                     break;
                 }
                 if (-99 == expSymp.get(0))
 
                 {
                     expSymp.remove(0);
-                    checkSelected(tt,selected);
-                }
-                else
-                {
+                    checkSelected(tt, selected);
+                } else {
                     expSymp(tt, expSymp, selected);
                 }
 
@@ -232,8 +226,7 @@ public class SymptomsActivity extends Fragment {
 
     }
 
-    private void checkSelected(TreeNode t, ArrayList<Integer> selected)
-    {
+    private void checkSelected(TreeNode t, ArrayList<Integer> selected) {
         for (TreeNode tt : t.getChildren()) {
             if (selected.size() <= 0) break;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
@@ -283,24 +276,31 @@ public class SymptomsActivity extends Fragment {
 
     }
 
+    public static String getWhereWhole(String column, String search)
+    {
+        return "(" + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '" + search + "')";
+    }
+
+
     private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
-        String[] txt = searchtxt.split(";");
+        String[] txt = searchtxt.split("\\.");
         try {
             String qry = "SELECT * FROM Symptome WHERE ";
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
+                    s = MakeFitForQuery(s,true);
                     if (AndFlag) {
                         if (where != "") where += " AND ";
                         if (txt.length > 1)
-                            where += "Text LIKE '%" + MakeFitForQuery(s, true) + "%'";
-                        else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                            where += (_main.blnSearchWholeWord?getWhereWhole("Text",s):"Text LIKE '%" + s + "%'");
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'");
                     } else {
                         if (where != "") where += " OR ";
                         if (txt.length > 1)
-                            where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
-                        else where += "ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'";
+                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'");
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'");
                     }
                 }
             }
@@ -409,7 +409,7 @@ public class SymptomsActivity extends Fragment {
 
     public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId, int ParentMedID) throws Throwable {
         ArrayList<TreeNode> list = new ArrayList<>();
-        list.add(treeNode);
+        if (treeNode != null) list.add(treeNode);
         getParents(activity, ParentSymptomId, list, ParentMedID);
         TreeNode parent = treeNodeParent;
 

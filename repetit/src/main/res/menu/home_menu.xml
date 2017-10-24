@@ -56,4 +56,9 @@
         android:orderInCategory="200"
         android:title="@string/show_selections"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/mnuSearchWholeWord"
+        android:title="@string/search_whole_word"
+        android:checkable="true"
+        app:showAsAction="never" />
 </menu>

@@ -41,6 +41,7 @@
     <string name="search_medsor">search medicaments or</string>
     <string name="and">and</string>
     <string name="or">or</string>
+    <string name="search_whole_word">search whole word</string>
     <string-array name="spnColors">
         <item >word</item>
         <item >meaning</item>
