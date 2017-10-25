@@ -23,7 +23,7 @@ import me.texy.treeview.TreeNode;
  */
 
 public interface SelectableTreeAction extends BaseTreeAction {
-    void selectNode(TreeNode treeNode);
+    void selectNode(TreeNode treeNode, int Weight);
 
     void deselectNode(TreeNode treeNode);
 

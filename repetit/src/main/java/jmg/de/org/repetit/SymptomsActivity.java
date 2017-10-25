@@ -144,6 +144,7 @@ public class SymptomsActivity extends Fragment {
                         TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
                         //Selected.add(h.ParentMedID);
                         Selected.add(h.ID);
+                        Selected.add(t.getWeight());
                     }
                 }
                 outState.putIntegerArrayList("expSymp", expSymp);
@@ -176,8 +177,10 @@ public class SymptomsActivity extends Fragment {
                 lib.gStatus = "expSymp";
                 expSymp(root, expSymp, Selected);
                 lib.gStatus = "AddNodesRecursive";
-                for (Integer i : Selected) {
-                    AddNodesRecursive(_main, 0, null, root, i, -1);
+                while (Selected.size()>0) {
+                    AddNodesRecursive(_main, 0, null, root, Selected.get(0),Selected.get(1), -1);
+                    Selected.remove(0);
+                    Selected.remove(0);
                 }
             }
 
@@ -234,8 +237,11 @@ public class SymptomsActivity extends Fragment {
             if (selected.size() <= 0) break;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
             int found = selected.indexOf(new Integer(h.ID));
+            while (found > -1 && found % 2 != 0) found = selected.indexOf(new Integer(h.ID));
             if (found > -1) {
-                treeView.selectNode(tt);
+                treeView.selectNode(tt,1);
+                t.setWeight(selected.get(found + 1));
+                selected.remove(found);
                 selected.remove(found);
             }
         }
@@ -316,12 +322,16 @@ public class SymptomsActivity extends Fragment {
     }
 
     //String lastQuery = "";
-    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
-        if (!blnAdd) _main.lastQuery = "";
+    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd, ArrayList<Integer> selected) {
+        if (!blnAdd) {
+            _main.lastQuery = "";
+            selected.clear();
+        }
         String qry = "";
         String qrySymptMed = _main.lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            selected.add(-1); selected.add(h.ID);selected.add(t.getWeight());
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
                 if (OrFlag)
                     qrySymptMed += " OR ";
@@ -396,7 +406,7 @@ public class SymptomsActivity extends Fragment {
                             treeNode.setLevel(Level + 1);
                             treeNodeParent.addChild(treeNode);
                         } else {
-                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, -1);
+                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
                         }
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
@@ -410,12 +420,12 @@ public class SymptomsActivity extends Fragment {
         if (refresh && treeView != null) treeView.refreshTreeView();
     }
 
-    public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId, int ParentMedID) throws Throwable {
+    public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId, Integer Weight, int ParentMedID) throws Throwable {
         ArrayList<TreeNode> list = new ArrayList<>();
         if (treeNode != null) list.add(treeNode);
         getParents(activity, ParentSymptomId, list, ParentMedID);
         TreeNode parent = treeNodeParent;
-
+        if (treeNode == null && list.size()>0) list.get(0).setWeight(Weight);
         for (int i = list.size() - 1; i >= 0; i--) {
             boolean blnDouble = false;
             boolean blnIsNewNode = false;

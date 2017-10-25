@@ -44,6 +44,7 @@
     <string name="search_whole_word">search whole word</string>
     <string name="weight_prompt">x</string>
     <string-array name="spnWeight">
+        <item >0</item>
         <item >1</item>
         <item >2</item>
         <item >3</item>

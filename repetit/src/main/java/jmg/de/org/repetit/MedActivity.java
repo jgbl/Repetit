@@ -46,6 +46,7 @@ public class MedActivity extends Fragment
     private ImageButton btnSearchOr;
     private String _lastQuery;
     private String[] _txt;
+    private ArrayList<Integer> Selected;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -70,10 +71,10 @@ public class MedActivity extends Fragment
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade, false, null);
+            buildTreeRep(qryMedGrade, false, null, Selected);
         }
         else if (! lib.libString.IsNullOrEmpty(_lastQuery)) {
-            buildTreeRep(_lastQuery, false, _txt);
+            buildTreeRep(_lastQuery, false, _txt, Selected);
         }
         else {
             buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
@@ -129,6 +130,7 @@ public class MedActivity extends Fragment
             if (savedinstancestate!=null) {
                 _lastQuery = savedinstancestate.getString("lastquery");
                 _txt = savedinstancestate.getStringArray("txt");
+                Selected = savedinstancestate.getIntegerArrayList("Selected");
             }
 
             initTreeView(v);
@@ -150,7 +152,6 @@ public class MedActivity extends Fragment
             {
                 ArrayList<Integer> expMed = savedinstancestate.getIntegerArrayList("expMed");
                 ArrayList<Integer> expMedSymp = savedinstancestate.getIntegerArrayList("expMedSymp");
-                ArrayList<Integer> Selected = savedinstancestate.getIntegerArrayList("Selected");
                 if (expMed.size() == 0 ) return;
                 for (TreeNode t : root.getChildren())
                 {
@@ -176,7 +177,8 @@ public class MedActivity extends Fragment
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
                         while (Selected.size()>0 && h.ID == Selected.get(0)) {
                             Selected.remove(0);
-                            SymptomsActivity.AddNodesRecursive(_main, 1, null, t, Selected.get(0), h.ID);
+                            SymptomsActivity.AddNodesRecursive(_main, 1, null, t, Selected.get(0),Selected.get(1), h.ID);
+                            Selected.remove(0);
                             Selected.remove(0);
                         }
                     }
@@ -199,10 +201,11 @@ public class MedActivity extends Fragment
             return;
         }
 
-        if (expMedSymp.size()==0) return;
 
         for (TreeNode tt : t.getChildren())
         {
+            if (expMedSymp.size()==0) return;
+
             if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
             {
                 expMedSymp.remove(0);
@@ -242,11 +245,13 @@ public class MedActivity extends Fragment
         {
             if (selected.size()<=0) break;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
-            for (int i = 0; i < selected.size(); i += 2)
+            for (int i = 0; i < selected.size(); i += 3)
             {
                 if (selected.get(i) == id && selected.get(i + 1) == h.ID)
                 {
-                    treeView.selectNode(tt);
+                    treeView.selectNode(tt,1);
+                    tt.setWeight(selected.get(i+2));
+                    selected.remove(i);
                     selected.remove(i);
                     selected.remove(i);
                     break;
@@ -284,6 +289,8 @@ public class MedActivity extends Fragment
                         TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
                         Selected.add(h.ParentMedID);
                         Selected.add(h.ID);
+                        Selected.add(t.getWeight());
+                        Selected.add(root.getWeight());
                     }
                 }
                 outState.putIntegerArrayList("expMed", expMed);
@@ -354,7 +361,7 @@ public class MedActivity extends Fragment
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade,true,txt);
+            buildTreeRep(qryMedGrade,true,txt,null);
 
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -443,7 +450,7 @@ public class MedActivity extends Fragment
         if (refresh && treeView != null) treeView.refreshTreeView();
 
     }
-    public void buildTreeRep(String qry, boolean refresh, String[] txt)
+    public void buildTreeRep(String qry, boolean refresh, String[] txt, ArrayList<Integer>selected)
     {
         boolean Initialized = true;
         final String CodeLoc = TAG + ".initTreeview";
@@ -481,14 +488,16 @@ public class MedActivity extends Fragment
                         TreeNode treeNode = new TreeNode(hMed);
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
-                        if (insertSymptom(c,treeNode,hMed,ID,txt)){
-                            sum = c.getInt(ColumnGrade);
+                        int f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                        if (f >= 0){
+                            sum = c.getInt(ColumnGrade) * f;
                             nexts += 1;
                         }
                         while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
-                            if(insertSymptom(c,treeNode,hMed,ID, txt)) {
+                            f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                            if(f>=0) {
                                 nexts += 1;
-                                sum += c.getInt(ColumnGrade);
+                                sum += c.getInt(ColumnGrade) * f;
                             }
                         }
                         hMed.totalGrade = sum;
@@ -532,8 +541,9 @@ public class MedActivity extends Fragment
 
     }
 
-    private boolean insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, int ID, String[] txt)
+    private int insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, ArrayList<Integer> Weight, int ID, String[] txt)
     {
+        int res;
         final int ColumnTextId = c.getColumnIndex("Text");
         final int ColumnSymptomIDId = c.getColumnIndex("SymptomID");
         final int ColumnShortTextId = c.getColumnIndex("ShortText");
@@ -566,28 +576,55 @@ public class MedActivity extends Fragment
         {
             found = true;
         }
-        if (!found) return false;
-        ShortText+= (grade >=0 ? "("+ grade + ")":"");
+        if (!found) return -1;
+        res = -1;
+        if (Weight!=null) {
+            for (int i = 0; i < Weight.size(); i += 3) {
+                int MedID = Weight.get(0);
+                int SympID2 = Weight.get(1);
+                int Weight2 = Weight.get(2);
+                if (MedID >= 0) {
+                    if (MedID == hMed.ID && SympID == SympID2) {
+                        res = Weight2;
+                        break;
+                    }
+                } else if (SympID == SympID2) {
+                    res = Weight2;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            res = 1;
+        }
+        ShortText+= (grade >=0 && res > 0 ? "("+ grade * res + ")":"");
         TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID,grade));
+        treeNode2.setWeight(res);
         try {
-            SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId,hMed.ID);
-            return  true;
+            SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId, res,hMed.ID);
+            return  res;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            return  false;
+            return  -1;
         }
         //treeNode2.setLevel(1);
         //treeNode.addChild(treeNode2);
 
     }
     //private String lastQuery = "";
-    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd) {
-        if (!blnAdd)_main.lastQuery = "";
+    public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd, ArrayList<Integer> selected) {
+        if (!blnAdd)
+        {
+            _main.lastQuery = "";
+            selected.clear();
+        }
         String qry = "";
         String qrySymptMed = _main.lastQuery;
         for (TreeNode t : treeView.getSelectedNodes()) {
             if (t.getValue() instanceof  TreeNodeHolderMed) continue;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            selected.add(-1); selected.add(h.ID); selected.add(t.getWeight());
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
                 if (OrFlag)
                     qrySymptMed += " OR ";

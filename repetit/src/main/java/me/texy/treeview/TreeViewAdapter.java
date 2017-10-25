@@ -20,7 +20,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.List;
 import me.texy.treeview.base.BaseNodeViewBinder;
 import me.texy.treeview.base.BaseNodeViewFactory;
 import me.texy.treeview.base.CheckableNodeViewBinder;
+import me.texy.treeview.base.SpinnerNodeViewBinder;
 import me.texy.treeview.helper.TreeHelper;
 
 /**
@@ -146,7 +149,7 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
                         boolean checked = checkableView.isChecked();
-                        selectNode(checked, treeNode);
+                        selectNode(checked, treeNode,1);
                         ((CheckableNodeViewBinder) viewBinder).onNodeSelectedChanged(treeNode, checked);
                     }
                 });
@@ -156,10 +159,49 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
             }
         }
 
+        if (viewBinder instanceof SpinnerNodeViewBinder && ((SpinnerNodeViewBinder) viewBinder).getSpinnerViewId() >= 0) {
+            final View view = nodeView
+                    .findViewById(((SpinnerNodeViewBinder) viewBinder).getSpinnerViewId());
+
+            if (view != null && view instanceof Spinner) {
+                final Spinner spinnerView = (Spinner) view;
+                spinnerView.setSelection(treeNode.getWeight());
+                ((SpinnerNodeViewBinder) viewBinder).setSpinner(spinnerView);
+                spinnerView.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        treeNode.setWeight(position);
+                        ((SpinnerNodeViewBinder) viewBinder).onSpinnerChanged(treeNode,position);
+                        if (position>0)
+                        {
+                            selectNode(true,treeNode, position);
+                        }
+                        else
+                        {
+                            selectNode(false,treeNode,0);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        treeNode.setWeight(0);
+                        ((SpinnerNodeViewBinder) viewBinder).onSpinnerChanged(treeNode,0);
+                        selectNode(false,treeNode,0);
+                    }
+
+                });
+            } else {
+                throw new ClassCastException("The getSpinnerViewId() " +
+                        "must return a Spinner's id");
+            }
+        }
+
+
         viewBinder.bindView(treeNode);
     }
 
-    public void selectNode(boolean checked, TreeNode treeNode) {
+    public void selectNode(boolean checked, TreeNode treeNode, int Weight) {
+        treeNode.setWeight(Weight);
         treeNode.setSelected(checked);
 
         //selectChildren(treeNode, checked);

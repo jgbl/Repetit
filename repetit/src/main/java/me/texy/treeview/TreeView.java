@@ -168,16 +168,16 @@ public class TreeView implements SelectableTreeAction {
     }
 
     @Override
-    public void selectNode(TreeNode treeNode) {
+    public void selectNode(TreeNode treeNode, int Weight) {
         if (treeNode != null) {
-            adapter.selectNode(true, treeNode);
+            adapter.selectNode(true, treeNode, Weight);
         }
     }
 
     @Override
     public void deselectNode(TreeNode treeNode) {
         if (treeNode != null) {
-            adapter.selectNode(false, treeNode);
+            adapter.selectNode(false, treeNode,0);
         }
     }
 

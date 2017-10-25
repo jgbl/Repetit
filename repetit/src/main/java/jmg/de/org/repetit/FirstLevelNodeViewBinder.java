@@ -9,12 +9,13 @@ import jmg.de.org.repetit.lib.dbSqlite;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
+import me.texy.treeview.base.SpinnerNodeViewBinder;
 
 /**
  * Created by zxy on 17/4/23.
  */
 
-public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
+public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
     TextView textView;
     ImageView imageView;
     public FirstLevelNodeViewBinder(View itemView) {
@@ -23,9 +24,10 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
         imageView = (ImageView) itemView.findViewById(R.id.arrow_img);
     }
 
+
     @Override
-    public int getCheckableViewId() {
-        return R.id.checkBox;
+    public int getSpinnerViewId() {
+        return R.id.spinner;
     }
 
     @Override

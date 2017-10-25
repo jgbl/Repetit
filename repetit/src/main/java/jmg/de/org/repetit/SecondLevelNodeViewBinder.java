@@ -14,12 +14,13 @@ import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
+import me.texy.treeview.base.SpinnerNodeViewBinder;
 
 /**
  * Created by zxy on 17/4/23.
  */
 
-public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
+public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
 
     TextView textView;
     ImageView imageView;
@@ -34,9 +35,10 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
     }
 
     @Override
-    public int getCheckableViewId() {
-        return R.id.checkBox;
+    public int getSpinnerViewId() {
+        return R.id.spinner;
     }
+
 
     @Override
     public int getLayoutId() {
@@ -57,7 +59,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
                 itemView.setBackgroundColor(Color.DKGRAY);
                 break;
             case 4:
-                itemView.setBackgroundColor(Color.RED);
+                itemView.setBackgroundColor(Color.rgb(104,69,69));
                 break;
             case 5:
                 itemView.setBackgroundColor(Color.BLACK);

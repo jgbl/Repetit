@@ -33,14 +33,14 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:entries="@array/spnWeight"
         android:prompt="@string/weight_prompt" />
-
+<!--
     <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/checkBox"
         android:layout_width="30dp"
@@ -48,7 +48,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp" />
-
+-->
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"

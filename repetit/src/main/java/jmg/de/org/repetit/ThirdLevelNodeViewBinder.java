@@ -18,10 +18,6 @@ public class ThirdLevelNodeViewBinder extends SecondLevelNodeViewBinder {
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
     }
 
-    @Override
-    public int getCheckableViewId() {
-        return R.id.checkBox;
-    }
 
     @Override
     public int getLayoutId() {

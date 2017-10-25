@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jmg.de.org.repetit.lib.HackyViewPager;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public dbSqlite db;
     public String lastQuery = "";
     public boolean blnSearchWholeWord;
+    public ArrayList<Integer> selected = new ArrayList<>();
 
     public MainActivity() {
     }
@@ -158,9 +160,9 @@ public class MainActivity extends AppCompatActivity {
                     boolean blnAdd = false;
                     if (item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
                     if (mPager.getCurrentItem() == SymptomsActivity.fragID) {
-                        qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd);
+                        qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd,selected);
                     } else if (mPager.getCurrentItem() == MedActivity.fragID) {
-                        qry = fPA.fragMed.getQueryMed(true, false, blnAdd);
+                        qry = fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
                     } else {
                         break;
                     }
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                             "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                     qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null);
+                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null,selected);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
             }
