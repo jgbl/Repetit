@@ -149,7 +149,7 @@ public class TreeNode {
     }
 
     public boolean isSelected() {
-        return selected;
+        return selected | weight > 0;
     }
 
     public void setSelected(boolean selected) {
@@ -161,6 +161,6 @@ public class TreeNode {
     }
 
     public void setWeight(int weight) {
-        this.weight = weight;
+        this.weight = weight;if (weight>0) setSelected(true); else setSelected(false);
     }
 }

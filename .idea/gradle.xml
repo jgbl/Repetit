@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="/vm/pubback/Repetit/android/Repetit" />
-            <option value="/vm/pubback/Repetit/android/Repetit/repetit" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/repetit" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

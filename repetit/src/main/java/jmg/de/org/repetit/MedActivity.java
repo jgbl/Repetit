@@ -290,7 +290,7 @@ public class MedActivity extends Fragment
                         Selected.add(h.ParentMedID);
                         Selected.add(h.ID);
                         Selected.add(t.getWeight());
-                        Selected.add(root.getWeight());
+                        //Selected.add(root.getWeight());
                     }
                 }
                 outState.putIntegerArrayList("expMed", expMed);
@@ -580,9 +580,9 @@ public class MedActivity extends Fragment
         res = -1;
         if (Weight!=null) {
             for (int i = 0; i < Weight.size(); i += 3) {
-                int MedID = Weight.get(0);
-                int SympID2 = Weight.get(1);
-                int Weight2 = Weight.get(2);
+                int MedID = Weight.get(0+i);
+                int SympID2 = Weight.get(1+i);
+                int Weight2 = Weight.get(2+i);
                 if (MedID >= 0) {
                     if (MedID == hMed.ID && SympID == SympID2) {
                         res = Weight2;
@@ -600,7 +600,7 @@ public class MedActivity extends Fragment
         }
         ShortText+= (grade >=0 && res > 0 ? "("+ grade * res + ")":"");
         TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID,grade));
-        treeNode2.setWeight(res);
+        if (res >= 0 ) treeNode2.setWeight(res);
         try {
             SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId, res,hMed.ID);
             return  res;
@@ -621,9 +621,24 @@ public class MedActivity extends Fragment
         }
         String qry = "";
         String qrySymptMed = _main.lastQuery;
-        for (TreeNode t : treeView.getSelectedNodes()) {
+        List<TreeNode> arr = treeView.getSelectedNodes();
+        int count = arr.size();
+        for (TreeNode t : arr) {
             if (t.getValue() instanceof  TreeNodeHolderMed) continue;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+            int found = selected.indexOf(new Integer(h.ID));
+            if(found >=0 && (found-1)%3!=0) {
+                found = -1;
+                for (int i = 0; i < selected.size(); i = i + 3)
+                {
+                    if (selected.get(i+1) == h.ID)
+                    {
+                        found = i+1;
+                        break;
+                    }
+                }
+            };
+            if (found >= 0) continue;
             selected.add(-1); selected.add(h.ID); selected.add(t.getWeight());
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
                 if (OrFlag)

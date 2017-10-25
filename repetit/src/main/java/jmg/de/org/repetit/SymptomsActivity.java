@@ -197,9 +197,9 @@ public class SymptomsActivity extends Fragment {
             return;
         }
 
-        if (expSymp.size() == 0) return;
 
         for (TreeNode tt : t.getChildren()) {
+            if (expSymp.size() == 0) return;
             if (-99 == expSymp.get(0)) {
                 expSymp.remove(0);
                 break;
@@ -237,10 +237,21 @@ public class SymptomsActivity extends Fragment {
             if (selected.size() <= 0) break;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
             int found = selected.indexOf(new Integer(h.ID));
-            while (found > -1 && found % 2 != 0) found = selected.indexOf(new Integer(h.ID));
+            if (found > -1 && found % 2 != 0)
+            {
+                found = -1;
+                for (int i = 0; i < selected.size(); i+=2)
+                {
+                    if (selected.get(i) == h.ID)
+                    {
+                        found = i;
+                        break;
+                    }
+                }
+            }
             if (found > -1) {
                 treeView.selectNode(tt,1);
-                t.setWeight(selected.get(found + 1));
+                tt.setWeight(selected.get(found + 1));
                 selected.remove(found);
                 selected.remove(found);
             }

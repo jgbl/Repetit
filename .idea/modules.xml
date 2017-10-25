@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file:///vm/pubback/Repetit/android/Repetit/Repetit.iml" filepath="/vm/pubback/Repetit/android/Repetit/Repetit.iml" />
-      <module fileurl="file:///vm/pubback/Repetit/android/Repetit/repetit/repetit.iml" filepath="/vm/pubback/Repetit/android/Repetit/repetit/repetit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Repetit.iml" filepath="$PROJECT_DIR$/Repetit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/repetit/repetit.iml" filepath="$PROJECT_DIR$/repetit/repetit.iml" />
     </modules>
   </component>
 </project>
