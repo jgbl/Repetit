@@ -46,7 +46,6 @@ public class FirstLevelNodeViewBinder extends CheckableNodeViewBinder {
                 return false;
             }
         });
-        if (checkBox!=null)
     }
 
     @Override

@@ -46,8 +46,8 @@ public class ColorsArrayAdapter extends
 				.getPreferences(Context.MODE_PRIVATE);
 		for (int i = 0; i < ColorSetting.ColorItems.values().length; i++) {
 			ColorItems ColorItem = ColorSetting.ColorItems.values()[i];
-			String Name = _Activity.getResources().getStringArray(
-					R.array.spnColors)[i];
+			//String Name = _Activity.getResources().getStringArray(
+			//		R.array.spnColors)[i];
 			int defValue = 0;
 			switch (ColorItem) {
 			case word:
@@ -76,7 +76,7 @@ public class ColorsArrayAdapter extends
 				break;
 			}
 			int Color = prefs.getInt(ColorItem.name(), defValue);
-			this.add(new ColorSetting(ColorItem, Name, Color));
+			//this.add(new ColorSetting(ColorItem, Name, Color));
 		}
 
 	}

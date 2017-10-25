@@ -42,13 +42,17 @@
     <string name="and">and</string>
     <string name="or">or</string>
     <string name="search_whole_word">search whole word</string>
-    <string-array name="spnColors">
-        <item >word</item>
-        <item >meaning</item>
-        <item >comment</item>
-        <item >background</item>
-        <item >box word</item>
-        <item >box meaning</item>
-        <item >background wrong</item>
+    <string name="weight_prompt">x</string>
+    <string-array name="spnWeight">
+        <item >1</item>
+        <item >2</item>
+        <item >3</item>
+        <item >4</item>
+        <item >5</item>
+        <item >6</item>
+        <item >7</item>
+        <item >8</item>
+        <item >9</item>
+        <item >10</item>
     </string-array>
 </resources>
