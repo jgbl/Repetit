@@ -92,9 +92,10 @@ public class MedActivity extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate)
     {
+        View v = null;
         try
         {
-            View v = inflater.inflate(R.layout.activity_med, container, false);
+            v = inflater.inflate(R.layout.activity_med, container, false);
             txtSearch = (AppCompatEditText)v.findViewById(R.id.txtSearch);
             txtSearch.setImeOptions(EditorInfo.IME_ACTION_DONE);
             txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -136,7 +137,8 @@ public class MedActivity extends Fragment
         }
         catch (Throwable ex)
         {
-            return null;
+            lib.ShowException(_main,ex);
+            return v;
         }
     }
 
@@ -158,9 +160,10 @@ public class MedActivity extends Fragment
                         if (expMed.contains(h.ID))
                         {
                             expMed.remove(new Integer(h.ID));
-                            while(expMedSymp.get(0)==-99) expMedSymp.remove(0);
+                            while(expMedSymp.size()>0 && expMedSymp.get(0)==-99) expMedSymp.remove(0);
                             if (t.hasChild() == false) FirstLevelNodeViewBinderMed.buildTree(treeView,t);
                             else treeView.expandNode(t);
+                            lib.gStatus = "expSympMed";
                             expSympMed(h.ID,t,expMedSymp,Selected);
                         }
                         if (expMed.size() == 0) break;

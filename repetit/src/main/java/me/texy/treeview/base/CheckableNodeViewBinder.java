@@ -15,6 +15,7 @@
 package me.texy.treeview.base;
 
 import android.view.View;
+import android.widget.CheckBox;
 
 import me.texy.treeview.TreeNode;
 
@@ -23,6 +24,8 @@ import me.texy.treeview.TreeNode;
  */
 
 public abstract class CheckableNodeViewBinder extends BaseNodeViewBinder {
+
+    public CheckBox checkBox;
 
     public CheckableNodeViewBinder(View itemView) {
         super(itemView);
@@ -43,5 +46,9 @@ public abstract class CheckableNodeViewBinder extends BaseNodeViewBinder {
      */
     public void onNodeSelectedChanged(TreeNode treeNode, boolean selected) {
         /*empty*/
+    }
+
+    public void setCheckBox(CheckBox checkBox) {
+        this.checkBox = checkBox;
     }
 }

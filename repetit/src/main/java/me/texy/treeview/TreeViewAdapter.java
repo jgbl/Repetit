@@ -141,7 +141,7 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
             if (view != null && view instanceof CheckBox) {
                 final CheckBox checkableView = (CheckBox) view;
                 checkableView.setChecked(treeNode.isSelected());
-
+                ((CheckableNodeViewBinder) viewBinder).setCheckBox(checkableView);
                 checkableView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

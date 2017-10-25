@@ -89,8 +89,9 @@ public class SymptomsActivity extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
+        View v = null;
         try {
-            View v = inflater.inflate(R.layout.activity_sympt, container, false);
+            v = inflater.inflate(R.layout.activity_sympt, container, false);
             txtSearch = (AppCompatEditText) v.findViewById(R.id.txtSearch);
             txtSearch.setImeOptions(EditorInfo.IME_ACTION_DONE);
             txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -125,7 +126,7 @@ public class SymptomsActivity extends Fragment {
             return v;
         } catch (Throwable ex) {
             lib.ShowException(_main, ex);
-            return null;
+            return v;
         }
     }
 
@@ -172,7 +173,9 @@ public class SymptomsActivity extends Fragment {
             if (root != null) {
                 ArrayList<Integer> expSymp = savedinstancestate.getIntegerArrayList("expSymp");
                 ArrayList<Integer> Selected = savedinstancestate.getIntegerArrayList("Selected");
+                lib.gStatus = "expSymp";
                 expSymp(root, expSymp, Selected);
+                lib.gStatus = "AddNodesRecursive";
                 for (Integer i : Selected) {
                     AddNodesRecursive(_main, 0, null, root, i, -1);
                 }
