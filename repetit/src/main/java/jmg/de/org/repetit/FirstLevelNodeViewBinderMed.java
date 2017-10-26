@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import jmg.de.org.repetit.lib.dbSqlite;
 import me.texy.treeview.TreeNode;
+import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
 
 /**
@@ -52,7 +53,7 @@ public class FirstLevelNodeViewBinderMed extends CheckableNodeViewBinder {
 
         if (expand) {
             try {
-                buildTree(treeNode);
+                buildTree(treeView,treeNode);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -62,7 +63,7 @@ public class FirstLevelNodeViewBinderMed extends CheckableNodeViewBinder {
             imageView.animate().rotation(0).setDuration(200).start();
         }
     }
-    private void buildTree(TreeNode treeNodeParent) throws  Throwable {
+    public static void buildTree(TreeView tv, TreeNode treeNodeParent) throws  Throwable {
         if (treeNodeParent.getChildren().size()>0) return;
         TreeNodeHolder h = (TreeNodeHolder) treeNodeParent.getValue();
         int ParentMedID = -1;
@@ -97,7 +98,7 @@ public class FirstLevelNodeViewBinderMed extends CheckableNodeViewBinder {
                         treeNode.setLevel(1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());
-                    this.treeView.expandNode(treeNodeParent);
+                    tv.expandNode(treeNodeParent);
                 }
             } finally {
                 c.close();

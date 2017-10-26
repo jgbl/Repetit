@@ -2,6 +2,8 @@ package jmg.de.org.repetit;
 
 import android.content.Context;
 
+import me.texy.treeview.base.BaseNodeViewBinder;
+
 /**
  * Created by hmnatalie on 14.10.17.
  */
@@ -12,7 +14,7 @@ public class TreeNodeHolder
     public String Text;
     public String path;
     public int level;
-
+    public BaseNodeViewBinder binder;
     public TreeNodeHolder(){
 
     }

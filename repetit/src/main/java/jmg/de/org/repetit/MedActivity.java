@@ -81,38 +81,7 @@ public class MedActivity extends Fragment
         viewGroup.addView(view2);
         if (_main.treeView == null) _main.treeView = treeView;
 
-        if (treeView != null)
-        {
-            if (root != null)
-            {
-                ArrayList<Integer> expMed = new ArrayList<>();
-                ArrayList<Integer> expMedSymp = new ArrayList<>();
-                ArrayList<Integer> Selected = new ArrayList<>();
-                for (TreeNode t : root.getChildren())
-                {
-                    if (t.hasChild())
-                    {
-                        TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
-                        expMed.add(h.ID);
-                        getSympMed(h.ID,t,expMedSymp);
-                    }
-                }
-                for (TreeNode t : treeView.getSelectedNodes())
-                {
-                    if (t.getValue() instanceof  TreeNodeHolderSympt)
-                    {
-                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
-                        Selected.add(h.ParentMedID);
-                        Selected.add(h.ID);
-                    }
-                }
-                outState.putIntegerArrayList("expMed", expMed);
-                outState.putIntegerArrayList("expMedSyp", expMedSymp);
-                outState.putIntegerArrayList("Selected",Selected);
 
-            }
-
-        }
     }
 
 
@@ -153,6 +122,7 @@ public class MedActivity extends Fragment
                 }
             });
             initTreeView(v);
+            restoreTreeView(savedinstancestate);
             return v;
         }
         catch (Throwable ex)
@@ -161,10 +131,86 @@ public class MedActivity extends Fragment
         }
     }
 
+    private void restoreTreeView(Bundle savedinstancestate) throws Throwable
+    {
+        if (treeView != null && savedinstancestate != null)
+        {
+            if (root != null)
+            {
+                ArrayList<Integer> expMed = savedinstancestate.getIntegerArrayList("expMed");
+                ArrayList<Integer> expMedSymp = savedinstancestate.getIntegerArrayList("expMedSymp");
+                ArrayList<Integer> Selected = savedinstancestate.getIntegerArrayList("Selected");
+                if (expMed.size() == 0 ) return;
+                for (TreeNode t : root.getChildren())
+                {
+                    if (t.hasChild() == false || true)
+                    {
+                        TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
+                        if (expMed.contains(h.ID))
+                        {
+                            expMed.remove(new Integer(h.ID));
+                            if (t.hasChild() == false) FirstLevelNodeViewBinderMed.buildTree(treeView,t);
+                            else treeView.expandNode(t);
+                            expSympMed(h.ID,t,expMedSymp,Selected);
+                        }
+                        if (expMed.size() == 0) break;
+
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    private void expSympMed(int id, TreeNode t, ArrayList<Integer> expMedSymp, ArrayList<Integer> selected) throws Throwable
+    {
+
+        for (TreeNode tt : t.getChildren())
+        {
+            if (selected.size()<=0) break;
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
+            for (int i = 0; i < selected.size(); i += 2)
+            {
+                if (selected.get(i) == id && selected.get(i + 1) == h.ID)
+                {
+                    treeView.selectNode(tt);
+                    selected.remove(i);
+                    selected.remove(i);
+                    break;
+                }
+            }
+        }
+        if (expMedSymp.size()==0) return;
+        if (-99 == expMedSymp.get(0) && -99 == expMedSymp.get(1))
+        {
+            expMedSymp.remove(0);
+            expMedSymp.remove(0);
+            return;
+        }
+
+        if (expMedSymp.size()==0) return;
+
+        for (TreeNode tt : t.getChildren())
+        {
+            TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
+            if (h.ParentMedID == expMedSymp.get(0) && h.ID == expMedSymp.get(1))
+            {
+                expMedSymp.remove(0);
+                expMedSymp.remove(0);
+                if(t.hasChild()==false)SecondLevelNodeViewBinder.buildTree(treeView,tt);
+                else treeView.expandNode(tt);
+                expSympMed(id,tt,expMedSymp,selected);
+                if (expMedSymp.size()<=0) break;
+            }
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
+        outState.putString("lastquery",_main.lastQuery);
         if (treeView != null)
         {
             if (root != null)
@@ -174,7 +220,7 @@ public class MedActivity extends Fragment
                 ArrayList<Integer> Selected = new ArrayList<>();
                 for (TreeNode t : root.getChildren())
                 {
-                    if (t.hasChild())
+                    if (t.hasChild() && t.isExpanded())
                     {
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
                         expMed.add(h.ID);
@@ -191,9 +237,8 @@ public class MedActivity extends Fragment
                     }
                 }
                 outState.putIntegerArrayList("expMed", expMed);
-                outState.putIntegerArrayList("expMedSyp", expMedSymp);
+                outState.putIntegerArrayList("expMedSymp", expMedSymp);
                 outState.putIntegerArrayList("Selected",Selected);
-
             }
 
         }
@@ -201,14 +246,21 @@ public class MedActivity extends Fragment
 
     private void getSympMed(int Medid, TreeNode t, ArrayList<Integer> sympMed)
     {
+        boolean hasChild = false;
         for (TreeNode tt: t.getChildren())
         {
-            if (t.hasChild())
+            if (tt.hasChild() && tt.isExpanded())
             {
-                TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
+                TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
                 sympMed.add(Medid);
                 sympMed.add(h.ID);
                 getSympMed(Medid,tt,sympMed);
+                sympMed.add (-99);
+                sympMed.add (-99);
+            }
+            else
+            {
+
             }
         }
     }
@@ -312,6 +364,7 @@ public class MedActivity extends Fragment
                         TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung));
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
+
                     } while (c.moveToNext());
                 }
             }

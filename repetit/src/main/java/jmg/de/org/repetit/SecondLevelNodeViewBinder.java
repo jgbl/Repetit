@@ -12,6 +12,7 @@ import android.widget.TextView;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
+import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
 
 /**
@@ -82,7 +83,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
     public void onNodeToggled(TreeNode treeNode, boolean expand) {
         if (expand) {
             try {
-                buildTree(treeNode);
+                buildTree(treeView,treeNode);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -92,7 +93,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
         }
     }
 
-    private void buildTree(TreeNode treeNodeParent) throws Throwable {
+    public static void buildTree(TreeView tv, TreeNode treeNodeParent) throws Throwable {
         if (treeNodeParent.getChildren().size() > 0) return;
         TreeNodeHolderSympt h = (TreeNodeHolderSympt) treeNodeParent.getValue();
         dbSqlite db = h.getContext().db;
@@ -126,7 +127,7 @@ public class SecondLevelNodeViewBinder extends CheckableNodeViewBinder {
                         treeNode.setLevel(h.level + 1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());
-                    this.treeView.expandNode(treeNodeParent);
+                    tv.expandNode(treeNodeParent);
                 }
             } finally {
                 c.close();
