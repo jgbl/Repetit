@@ -74,7 +74,7 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder {
             if (h.getClass() == MedActivity.TreeNodeHolderMed.class) {
                 ParentMedID = ((MedActivity.TreeNodeHolderMed)h).ID;
                 c = db.query("Select Symptome.*, SymptomeOfMedikament.Grade FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + ParentMedID +
-                        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
+                        " AND Symptome.ParentSymptomID IS Null AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text COLLATE NOCASE");
             }
             else
             {

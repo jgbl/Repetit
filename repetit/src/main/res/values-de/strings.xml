@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">Repetit</string>
+    <string name="hello_world">hello world</string>
+    <string name="imgColors">Farben editiern</string>
+    <string name="txtColors2">Farben</string>
+    <string name="off">aus</string>
+    <string name="message">Nachricht</string>
+    <string name="ok">OK</string>
+    <string name="question">Frage</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="msgShowDocumentProvider">Den Document Provider anzeigen</string>
+    <string name="msgRememberChoice">Auswahl speichern</string>
+    <string name="msgDontShowThisMessageAgain">Diese Nachricht nicht wieder anzeigen</string>
+    <string name="msgNoPersistableUriPermissionCouldBeTaken">Es konnte keine persistente URI Erlaubnis geholt werden</string>
+    <string name="PrivacyPolicy">Datenschutzerklärung</string>
+    <string name="item_first_level">Eintrag erste Ebene</string>
+    <string name="item_second_level">Eintrag zweite Ebene</string>
+    <string name="tree_node">Baumansichtsknoten</string>
+    <string name="collapse_all">Alle zusammenklappen</string>
+    <string name="deselect_all">Auswahl für Alle aufheben</string>
+    <string name="show_selections">Auswahl anzeigen</string>
+    <string name="find_sympt">Symptome finden</string>
+    <string name="qry_med">nach Medikamenten suchen</string>
+    <string name="msg_find_title">suchen</string>
+    <string name="msg_find_symptoms">geben Sie einen Suchstring ein</string>
+    <string name="btnSearch">suchen</string>
+    <string name="show_sympt">Symptome</string>
+    <string name="show_med">Medikamente</string>
+    <string name="search_meds">Medikamente durchsuchen</string>
+    <string name="search_sympts">Symptome durchsuchen</string>
+    <string name="search_medsadd">Medikamente durchsuchen und Ergebnisse hinzufügen</string>
+    <string name="search_medsand">Medikamente durchsuchen und mit UND verknüpfen</string>
+    <string name="search_symptsand">Symptome durchsuchen und mit UND verknüpfen</string>
+    <string name="search_symptsor">Symptome durchsuchen und mit ODER verknüpfen</string>
+    <string name="search_medsor">Medikamente durchsuchen und mit ODER verknüpen</string>
+    <string name="and">und</string>
+    <string name="or">oder</string>
+    <string name="search_whole_word">nach ganzen Worten suchen</string>
+    <string name="weight_prompt">x</string>
+    <string name="mnuContact">Kontakt</string>
+    <string name="mnuCredits">Quellen</string>
+    <string name="mnuPrivacyPolicy">Datenschutzerklärung</string>
+    <string name="Contact">Bitte kontaktieren Sie mich, wenn Sie irgendwelche Fragen haben</string>
+    <string name="SendMail">E-Mail senden</string>
+    <string name="license">Lizenz</string>
+    <string name="licenseaccept">Ich akzeptiere die Lizenz</string>
+    <string name="PrivacyPolicyAccept">Ich akzeptiere die Datenschutzerklärung</string>
+    <string name="mnuHelp">Hilfe</string>
+    <string-array name="spnWeight">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+        <item >3</item>
+        <item >4</item>
+        <item >5</item>
+        <item >6</item>
+        <item >7</item>
+        <item >8</item>
+        <item >9</item>
+        <item >10</item>
+    </string-array>
+</resources>

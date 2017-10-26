@@ -80,7 +80,7 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
             }
             else
             {
-                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + ((TreeNodeHolderSympt)h).ID + " ORDER BY Symptome.Text");
+                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + ((TreeNodeHolderSympt)h).ID + " ORDER BY Symptome.Text COLLATE NOCASE");
             }
                 try {
                 if (c.moveToFirst()) {

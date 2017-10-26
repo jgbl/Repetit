@@ -22,34 +22,14 @@
         android:icon="@android:drawable/ic_input_add"
         app:showAsAction="always" />
     <item
-        android:id="@+id/expand_all"
-        android:orderInCategory="200"
-        android:title="@string/expand_all"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/collapse_all"
         android:orderInCategory="200"
         android:title="@string/collapse_all"
         app:showAsAction="never" />
     <item
-        android:id="@+id/select_all"
-        android:orderInCategory="200"
-        android:title="@string/select_all"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/deselect_all"
         android:orderInCategory="200"
         android:title="@string/deselect_all"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/expand_level"
-        android:orderInCategory="200"
-        android:title="@string/expand_level_1"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/collapse_level"
-        android:orderInCategory="200"
-        android:title="@string/collapse_level_1"
         app:showAsAction="never" />
     <item
         android:id="@+id/show_select_node"
@@ -76,5 +56,11 @@
         android:title="@string/mnuPrivacyPolicy"
         android:icon="@android:drawable/ic_dialog_info"
         />
+    <item
+        android:id="@+id/mnuHelp"
+        android:title="@string/mnuHelp"
+        android:icon="@android:drawable/ic_dialog_info"
+        />
+
 
 </menu>

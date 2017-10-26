@@ -82,23 +82,11 @@ public final  static int fragID = 2;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.select_all:
-                treeView.selectAll();
-                break;
             case R.id.deselect_all:
                 treeView.deselectAll();
                 break;
-            case R.id.expand_all:
-                treeView.expandAll();
-                break;
             case R.id.collapse_all:
                 treeView.collapseAll();
-                break;
-            case R.id.expand_level:
-                treeView.expandLevel(1);
-                break;
-            case R.id.collapse_level:
-                treeView.collapseLevel(1);
                 break;
             case R.id.show_select_node:
                 Toast.makeText(_main.getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();

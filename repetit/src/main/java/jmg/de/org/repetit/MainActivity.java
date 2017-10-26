@@ -224,23 +224,14 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.Contact));
                     this.startActivity(Intent.createChooser(intent, getString(R.string.SendMail)));
                     break;
-                case R.id.select_all:
-                    treeView.selectAll();
+                case R.id.mnuHelp:
+                    lib.ShowHelp(this,Locale.getDefault());
                     break;
                 case R.id.deselect_all:
                     treeView.deselectAll();
                     break;
-                case R.id.expand_all:
-                    treeView.expandAll();
-                    break;
                 case R.id.collapse_all:
                     treeView.collapseAll();
-                    break;
-                case R.id.expand_level:
-                    treeView.expandLevel(1);
-                    break;
-                case R.id.collapse_level:
-                    treeView.collapseLevel(1);
                     break;
                 case R.id.show_select_node:
                     Toast.makeText(getApplication(), getSelectedNodes(), Toast.LENGTH_LONG).show();

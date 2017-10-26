@@ -1,0 +1,12 @@
+Wählen Sie entweder die Medikamente- oder die Symptomansicht
+und suchen Sie nach einzelnen oder mehreren Symptome (getrennt durch
+ . ). In der Medikamentenansicht wird dann bereits eine Repertorisierung
+ durchgeführ und die Medikamente mit den meisten Treffern und der höchsten
+ Wetigkeit werden oben angezeigt. Nun können die Symptome gewichtet werden
+ (Faktor 1-10) und anschließend kann eine Repertorisierung durchgeführt
+ werden (durch Drücken auf "search medicaments" oder auf
+ "search medicaments add". Wird das letztere Menü ausgewählt
+ wird die Suche zur vorherigen Suche hinzugefügt ansonsten
+ wird eine neue Suche gemacht. Durch langes Drücken auf
+ einen Eintrag wird die Selektion rückgängig gemacht
+ und alle untergeordneten Symptome werden angezeigt.

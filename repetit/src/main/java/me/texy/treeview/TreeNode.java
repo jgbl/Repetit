@@ -154,6 +154,14 @@ public class TreeNode {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+        if (selected)
+        {
+            if (this.weight == 0) this.weight = 1;
+        }
+        else
+        {
+            this.weight = 0;
+        }
     }
 
     public int getWeight() {

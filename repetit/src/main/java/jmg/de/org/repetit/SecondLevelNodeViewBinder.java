@@ -103,12 +103,12 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
             Cursor c;
             if (h.ParentMedID == -1)
             {
-                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + h.ID + " ORDER BY Symptome.Text");
+                c = db.query("Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID = " + h.ID + " ORDER BY Symptome.Text COLLATE NOCASE");
             }
             else
             {
                 c = db.query("Select Symptome.*, SymptomeOfMedikament.Grade FROM SymptomeOfMedikament, Symptome WHERE SymptomeOfMedikament.MedikamentID = " + h.ParentMedID +
-                        " AND Symptome.ParentSymptomID = " + h.ID + " AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text");
+                        " AND Symptome.ParentSymptomID = " + h.ID + " AND Symptome.ID = SymptomeOfMedikament.SymptomID ORDER BY Symptome.Text COLLATE NOCASE");
             }
             try {
                 if (c.moveToFirst()) {

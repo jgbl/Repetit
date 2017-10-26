@@ -73,7 +73,7 @@ public class SymptomsActivity extends Fragment {
         initView(view);
 
         root = TreeNode.root();
-        String qry = "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text";
+        String qry = "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text COLLATE NOCASE";
         if (!lib.libString.IsNullOrEmpty(lastQuery)) {
             qry = lastQuery;
             buildTree(root, qry, false, true);
@@ -298,7 +298,7 @@ public class SymptomsActivity extends Fragment {
 
     public static String getWhereWhole(String column, String search)
     {
-        return "(" + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '" + search + "')";
+        return "(" + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '%, " + search + " %' OR " + column + " like '% " + search + ", %' OR " + column + " like '" + search + "')";
     }
 
 
@@ -326,7 +326,7 @@ public class SymptomsActivity extends Fragment {
             }
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             if (where != "")
-                buildTree(root, qry + where + " ORDER BY Text", true, true);
+                buildTree(root, qry + where + " ORDER BY Text COLLATE NOCASE", true, true);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

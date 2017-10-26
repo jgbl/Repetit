@@ -1837,6 +1837,28 @@ public class lib
         return res2;
     }
 
+    public static void ShowHelp(Context context, Locale L) throws IOException
+    {
+        InputStream is;
+        if ((L.equals( Locale.GERMAN)) || (L.equals( Locale.GERMANY)))
+        {
+            is = context.getAssets().open("READMEDe");
+        }
+        else
+        {
+            return;
+            //is = context.getAssets().open("README");
+        }
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        String strPrivacyPolicy = s.hasNext() ? s.next() : "";
+        s.close();
+        is.close();
+        lib.ShowMessage(context,
+                strPrivacyPolicy,
+                context.getString(R.string.PrivacyPolicyAccept)
+                );
+    }
+
 
 
 
