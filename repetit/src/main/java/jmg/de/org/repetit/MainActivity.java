@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"jhmgbl2@t-online.de"});
                     String versionName2 = this.getPackageManager()
                                               .getPackageInfo(this.getPackageName(), 0).versionName;
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "learnforandroid " + versionName2);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "repetit " + versionName2);
                     intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.Contact));
                     this.startActivity(Intent.createChooser(intent, getString(R.string.SendMail)));
                     break;
