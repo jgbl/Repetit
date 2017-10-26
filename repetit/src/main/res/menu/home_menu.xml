@@ -61,4 +61,20 @@
         android:title="@string/search_whole_word"
         android:checkable="true"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/mnuContact"
+        android:title="@string/mnuContact"
+        android:icon="@android:drawable/ic_menu_send"
+        />
+    <item
+        android:id="@+id/mnuCredits"
+        android:title="@string/mnuCredits"
+        android:icon="@android:drawable/ic_dialog_info"
+        />
+    <item
+        android:id="@+id/mnuPrivacyPolicy"
+        android:title="@string/mnuPrivacyPolicy"
+        android:icon="@android:drawable/ic_dialog_info"
+        />
+
 </menu>

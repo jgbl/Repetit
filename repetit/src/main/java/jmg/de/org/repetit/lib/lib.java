@@ -1832,7 +1832,7 @@ public class lib
         is.close();
         lib.yesnoundefined res2 = (lib.ShowMessageYesNo(context,
                 strPrivacyPolicy,
-                context.getString(R.string.PrivacyPolicy),
+                context.getString(R.string.PrivacyPolicyAccept),
                 true));
         return res2;
     }
