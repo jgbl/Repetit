@@ -337,6 +337,11 @@ public class MedActivity extends Fragment
         String[] txt = searchtxt.split("\\.");
         try {
             //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
+            if (!lib.libString.IsNullOrEmpty(_main.lastQuery))
+            {
+                lib.yesnoundefined res =(lib.ShowMessageYesNo(getContext(),getString(R.string.alreadysearched),getString(R.string.continuesearch),false));
+                if (res != lib.yesnoundefined.yes) return;
+            }
             String where = "";
             for (String s : txt) {
                 String whereWhole = null;
@@ -489,12 +494,14 @@ public class MedActivity extends Fragment
                         treeNode.setLevel(0);
                         root.addChild(treeNode);
                         int f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                        if (f == -2) f = 1;
                         if (f >= 0){
                             sum = c.getInt(ColumnGrade) * f;
                             nexts += 1;
                         }
                         while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
                             f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                            if (f == -2) f = 1;
                             if(f>=0) {
                                 nexts += 1;
                                 sum += c.getInt(ColumnGrade) * f;
@@ -596,14 +603,14 @@ public class MedActivity extends Fragment
         }
         else
         {
-            res = 1;
+            res = -2;
         }
         ShortText+= (grade >=0 && res > 0 ? "("+ grade * res + ")":"");
         TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId,hMed.ID,grade));
         if (res >= 0 ) treeNode2.setWeight(res);
         try {
             SymptomsActivity.AddNodesRecursive(hMed.getContext(),0,treeNode2,treeNode,ParentSymptomId, res,hMed.ID);
-            return  res;
+            return  (res == -2?1:res);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return  -1;

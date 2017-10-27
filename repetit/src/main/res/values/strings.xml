@@ -48,6 +48,8 @@
     <string name="licenseaccept">I accept the license</string>
     <string name="PrivacyPolicyAccept">I accept the privacy policy</string>
     <string name="mnuHelp">help</string>
+    <string name="alreadysearched">There is already a search displayed! Do you want to delete the search?</string>
+    <string name="continuesearch">continue</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

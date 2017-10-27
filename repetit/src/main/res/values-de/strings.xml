@@ -61,4 +61,6 @@
         <item >9</item>
         <item >10</item>
     </string-array>
+    <string name="alreadysearched">Es wird bereits eine Suche angezeigt! Möchten Sie diese Suche löschen?</string>
+    <string name="continuesearch">Fortfahren</string>
 </resources>

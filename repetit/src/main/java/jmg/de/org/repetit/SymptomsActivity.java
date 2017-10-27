@@ -436,7 +436,7 @@ public class SymptomsActivity extends Fragment {
         if (treeNode != null) list.add(treeNode);
         getParents(activity, ParentSymptomId, list, ParentMedID);
         TreeNode parent = treeNodeParent;
-        if (treeNode == null && list.size()>0) list.get(0).setWeight(Weight);
+        if (treeNode == null && list.size()>0 && Weight >= 0) list.get(0).setWeight(Weight);
         for (int i = list.size() - 1; i >= 0; i--) {
             boolean blnDouble = false;
             boolean blnIsNewNode = false;
