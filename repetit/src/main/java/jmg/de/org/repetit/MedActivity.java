@@ -1,11 +1,14 @@
 package jmg.de.org.repetit;
 
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -455,8 +458,45 @@ public class MedActivity extends Fragment
         if (refresh && treeView != null) treeView.refreshTreeView();
 
     }
+
+
+
     public void buildTreeRep(String qry, boolean refresh, String[] txt, ArrayList<Integer>selected)
     {
+
+        new AsyncTask<Void, Integer, Integer>()
+        {
+            ProgressDialog pd;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                
+            }
+
+            @Override
+            protected Integer doInBackground(Void... params)
+            {
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... params)
+            {
+
+            }
+
+            @Override
+            protected void onPostExecute( final Integer result ) {
+                // continue what you are doing...
+
+                Foo.this.continueSomething();
+            }
+
+
+
+        };
+
+
         boolean Initialized = true;
         final String CodeLoc = TAG + ".initTreeview";
         lib.gStatus = CodeLoc + " Start";
