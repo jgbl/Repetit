@@ -1,6 +1,7 @@
 package jmg.de.org.repetit;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -8,9 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
@@ -65,29 +67,30 @@ public class MedActivity extends Fragment
         //initTreeView(view);
     }
 
-    public void initTreeView(View view)
+    public void initTreeView(View view, Bundle savedinstancestate)
     {
         initView(view);
 
         root = TreeNode.root();
-        if (lib.libString.IsNullOrEmpty(_lastQuery) && !lib.libString.IsNullOrEmpty(_main.lastQuery)) {
-            String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
-            qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade, false, null, Selected);
-        }
-        else if (! lib.libString.IsNullOrEmpty(_lastQuery)) {
-            buildTreeRep(_lastQuery, false, _txt, Selected);
-        }
-        else {
-            buildTree("SELECT * FROM Medikamente ORDER BY Name", false);
-        }
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
         View view2 = treeView.getView();
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
         if (_main.treeView == null) _main.treeView = treeView;
+
+        if (lib.libString.IsNullOrEmpty(_lastQuery) && !lib.libString.IsNullOrEmpty(_main.lastQuery)) {
+            String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
+            qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+            buildTreeRep(qryMedGrade, true, null, Selected,savedinstancestate);
+        }
+        else if (! lib.libString.IsNullOrEmpty(_lastQuery)) {
+            buildTreeRep(_lastQuery, true, _txt, Selected,savedinstancestate);
+        }
+        else {
+            buildTree("SELECT * FROM Medikamente ORDER BY Name", true,savedinstancestate);
+        }
 
 
     }
@@ -136,8 +139,7 @@ public class MedActivity extends Fragment
                 Selected = savedinstancestate.getIntegerArrayList("Selected");
             }
 
-            initTreeView(v);
-            restoreTreeView(savedinstancestate);
+            initTreeView(v,savedinstancestate);
             return v;
         }
         catch (Throwable ex)
@@ -369,7 +371,7 @@ public class MedActivity extends Fragment
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade,true,txt,null);
+            buildTreeRep(qryMedGrade,true,txt,null, null);
 
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -412,179 +414,346 @@ public class MedActivity extends Fragment
     }
 
 
-    public void buildTree(String qry, boolean refresh)
+    public void buildTree(final String qry, final boolean refresh, final Bundle savedinstancestate)
     {
-        if (root.getChildren().size() > 0)
+        final Context context = getContext();
+        new AsyncTask<Void, ProgressClass, Integer>()
         {
-            List<TreeNode> l = root.getChildren();
-            l.clear();
-            root.setChildren(l);
-        }
-        dbSqlite db = ((MainActivity)getActivity()).db;
-        try
-        {
-
-            Cursor c = db.query(qry);
-            try
-            {
-                if (c.moveToFirst())
-                {
-                    int ColumnNameId = c.getColumnIndex("Name");
-                    int ColumnIDId = c.getColumnIndex("ID");
-                    int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
-                    do
-                    {
-                        int ID = c.getInt(ColumnIDId);
-                        String Name = c.getString(ColumnNameId);
-                        String Beschreibung = c.getString(ColumnBeschreibungId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung));
-                        treeNode.setLevel(0);
-                        root.addChild(treeNode);
-
-                    } while (c.moveToNext());
-                }
-            }
-            finally
-            {
-                c.close();
-            }
-
-        }
-        finally
-        {
-            db.close();
-        }
-
-        if (refresh && treeView != null) treeView.refreshTreeView();
-
-    }
-
-
-
-    public void buildTreeRep(String qry, boolean refresh, String[] txt, ArrayList<Integer>selected)
-    {
-
-        new AsyncTask<Void, Integer, Integer>()
-        {
+            public int counter;
+            public int oldmax;
+            public String oldmsg;
             ProgressDialog pd;
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                
+                createProgress();
+            }
+
+            private void createProgress()
+            {
+                pd = new ProgressDialog(context);
+                pd.setTitle(getString(R.string.Repertoriasing));
+                pd.setMessage(getString(R.string.startingRep));
+                pd.setIndeterminate(false);
+                pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                pd.setCancelable(false);
+                pd.setCanceledOnTouchOutside(false);
+                pd.show();
             }
 
             @Override
             protected Integer doInBackground(Void... params)
             {
-                return null;
+                ProgressClass pc = new ProgressClass(0,100,context.getString(R.string.startingquery),false);
+                publishProgress(pc);
+                if (root.getChildren().size() > 0)
+                {
+                    List<TreeNode> l = root.getChildren();
+                    l.clear();
+                    root.setChildren(l);
+                }
+                dbSqlite db = ((MainActivity)getActivity()).db;
+                try
+                {
+
+                    Cursor c = db.query(qry);
+                    try
+                    {
+                        if (c.moveToFirst())
+                        {
+                            final int ColumnNameId = c.getColumnIndex("Name");
+                            final int ColumnIDId = c.getColumnIndex("ID");
+                            final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                            int count = c.getCount();
+                            do
+                            {
+                                counter += 1;
+                                if (counter%(count/10)==0)
+                                {
+                                    pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                    publishProgress(pc);
+                                }
+                                int ID = c.getInt(ColumnIDId);
+                                String Name = c.getString(ColumnNameId);
+                                String Beschreibung = c.getString(ColumnBeschreibungId);
+                                TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung));
+                                treeNode.setLevel(0);
+                                root.addChild(treeNode);
+
+                            } while (c.moveToNext());
+                        }
+                    }
+                    finally
+                    {
+                        c.close();
+                    }
+
+                }
+                finally
+                {
+                    db.close();
+                }
+
+
+                return  counter;
+
             }
 
             @Override
-            protected void onProgressUpdate(Integer... params)
+            protected void onProgressUpdate(ProgressClass... params)
             {
-
+                try
+                {
+                    super.onProgressUpdate(params);
+                    ProgressClass p = params[0];
+                    if (pd != null)
+                    {
+                        if (p.blnRestart)
+                        {
+                            pd.dismiss();
+                            createProgress();
+                            pd.show();
+                        }
+                        pd.setProgress(p.counter);
+                        if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg))
+                        {
+                            pd.setMessage(p.msg);
+                            oldmsg = p.msg;
+                        }
+                        if (p.max > 0 && !(p.max==oldmax))
+                        {
+                            pd.setMax(p.max);
+                            oldmax = p.max;
+                        }
+                    } else
+                    {
+                        Log.i("dbsqlite", "no progress");
+                    }
+                }
+                catch (Throwable ex)
+                {
+                    ex.printStackTrace();
+                }
             }
 
             @Override
             protected void onPostExecute( final Integer result ) {
                 // continue what you are doing...
 
-                Foo.this.continueSomething();
-            }
-
-
-
-        };
-
-
-        boolean Initialized = true;
-        final String CodeLoc = TAG + ".initTreeview";
-        lib.gStatus = CodeLoc + " Start";
-        int MedID;
-        //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
-        if (root.getChildren().size() > 0)
-        {
-            List<TreeNode> l = root.getChildren();
-            l.clear();
-            root.setChildren(l);
-        }
-        dbSqlite db = ((MainActivity)getActivity()).db;
-        try
-        {
-            Cursor c = db.query(qry);
-            try
-            {
-                if (c.moveToFirst())
+                pd.dismiss();
+                if (refresh && treeView != null) treeView.refreshTreeView();
+                if (savedinstancestate!=null) try
                 {
-                    int ColumnNameId = c.getColumnIndex("Name");
-                    int ColumnIDId = c.getColumnIndex("ID");
-                    int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
-                    int ColumnGrade = c.getColumnIndex("Grade");
-
-                    do
-                    {
-                        //if(!c.moveToNext()) break;
-                        int ID = c.getInt(ColumnIDId);
-                        String Name = c.getString(ColumnNameId);
-                        String Beschreibung = c.getString(ColumnBeschreibungId);
-                        int sum = 0;
-                        int nexts = 0;
-                        TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung);
-                        TreeNode treeNode = new TreeNode(hMed);
-                        treeNode.setLevel(0);
-                        root.addChild(treeNode);
-                        int f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
-                        if (f == -2) f = 1;
-                        if (f >= 0){
-                            sum = c.getInt(ColumnGrade) * f;
-                            nexts += 1;
-                        }
-                        while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
-                            f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
-                            if (f == -2) f = 1;
-                            if(f>=0) {
-                                nexts += 1;
-                                sum += c.getInt(ColumnGrade) * f;
-                            }
-                        }
-                        hMed.totalGrade = sum;
-                        hMed.count = nexts;
-                        hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
-                    } while (!c.isAfterLast());
-                    List<TreeNode> l = root.getChildren();
-
-                    Collections.sort(l, new Comparator<TreeNode>()
-                    {
-                        @Override
-                        public int compare(TreeNode lhs, TreeNode rhs)
-                        {
-                            TreeNodeHolderMed h1 = (TreeNodeHolderMed) lhs.getValue();
-                            TreeNodeHolderMed h2 = (TreeNodeHolderMed) rhs.getValue();
-                            if (h1.totalGrade>h2.totalGrade) return -1;
-                            if (h1.totalGrade==h2.totalGrade && h1.count>h2.count) return -1;
-                            if (h1.totalGrade==h2.totalGrade && h1.count == h2.count) return 0;
-                            return 1;
-                        }
-                    });
-                    root.setChildren(l);
-                    //if (refresh) treeView.refreshTreeView();
-
+                    restoreTreeView(savedinstancestate);
+                }
+                catch (Throwable throwable)
+                {
+                    throwable.printStackTrace();
                 }
             }
-            finally
+
+
+
+        }.execute();
+
+
+    }
+
+
+
+    public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final ArrayList<Integer> selected, final Bundle savedinstancestate)
+    {
+        final Context context = getContext();
+        new AsyncTask<Void, ProgressClass, Integer>()
+        {
+            public int oldmax;
+            public String oldmsg;
+            ProgressDialog pd;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                createProgress();
+            }
+            
+            private void createProgress()
             {
-                c.close();
+                pd = new ProgressDialog(context);
+                pd.setTitle(getString(R.string.Repertoriasing));
+                pd.setMessage(getString(R.string.startingRep));
+                pd.setIndeterminate(false);
+                pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                pd.setCancelable(false);
+                pd.setCanceledOnTouchOutside(false);
+                pd.show();
             }
 
-        }
-        finally
-        {
-            db.close();
-        }
+            @Override
+            protected Integer doInBackground(Void... params)
+            {
+                ProgressClass pc = new ProgressClass(0,100,context.getString(R.string.startingRep),false);
+                publishProgress(pc);
+                boolean Initialized = true;
+                final String CodeLoc = TAG + ".initTreeview";
+                lib.gStatus = CodeLoc + " Start";
+                int MedID;
+                int counter = 0;
+                //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
+                if (root.getChildren().size() > 0)
+                {
+                    List<TreeNode> l = root.getChildren();
+                    l.clear();
+                    root.setChildren(l);
+                }
+                dbSqlite db = ((MainActivity)getActivity()).db;
+                try
+                {
+                    Cursor c = db.query(qry);
+                    try
+                    {
+                        if (c.moveToFirst())
+                        {
+                            int ColumnNameId = c.getColumnIndex("Name");
+                            int ColumnIDId = c.getColumnIndex("ID");
+                            int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                            int ColumnGrade = c.getColumnIndex("Grade");
+                            pc.update(0,c.getCount(),context.getString(R.string.processingquery),false);
+                            this.publishProgress(pc);
+                            counter += 1;
+                            pc.counter = counter;
+                            this.publishProgress(pc);
+                            do
+                            {
+                                //if(!c.moveToNext()) break;
+                                int ID = c.getInt(ColumnIDId);
+                                String Name = c.getString(ColumnNameId);
+                                String Beschreibung = c.getString(ColumnBeschreibungId);
+                                int sum = 0;
+                                int nexts = 0;
+                                TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity)getActivity(),0, Name, "Med" + ID, ID, Name, Beschreibung);
+                                TreeNode treeNode = new TreeNode(hMed);
+                                treeNode.setLevel(0);
+                                root.addChild(treeNode);
+                                int f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                                if (f == -2) f = 1;
+                                if (f >= 0){
+                                    sum = c.getInt(ColumnGrade) * f;
+                                    nexts += 1;
+                                }
+                                while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
+                                    counter += 1;
+                                    if (counter%(pc.max/10)==0)
+                                    {
+                                        pc.counter = counter;
+                                        this.publishProgress(pc);
+                                    }
+                                    f = insertSymptom(c,treeNode,hMed,selected,ID,txt);
+                                    if (f == -2) f = 1;
+                                    if(f>=0) {
+                                        nexts += 1;
+                                        sum += c.getInt(ColumnGrade) * f;
+                                    }
+                                }
+                                counter+=1;
+                                hMed.totalGrade = sum;
+                                hMed.count = nexts;
+                                hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
+                            } while (!c.isAfterLast());
+                            List<TreeNode> l = root.getChildren();
 
-        if (refresh && treeView != null) treeView.refreshTreeView();
-        _lastQuery = qry;
-        _txt = txt;
+                            Collections.sort(l, new Comparator<TreeNode>()
+                            {
+                                @Override
+                                public int compare(TreeNode lhs, TreeNode rhs)
+                                {
+                                    TreeNodeHolderMed h1 = (TreeNodeHolderMed) lhs.getValue();
+                                    TreeNodeHolderMed h2 = (TreeNodeHolderMed) rhs.getValue();
+                                    if (h1.totalGrade>h2.totalGrade) return -1;
+                                    if (h1.totalGrade==h2.totalGrade && h1.count>h2.count) return -1;
+                                    if (h1.totalGrade==h2.totalGrade && h1.count == h2.count) return 0;
+                                    return 1;
+                                }
+                            });
+                            root.setChildren(l);
+                            //if (refresh) treeView.refreshTreeView();
+
+                        }
+                    }
+                    finally
+                    {
+                        c.close();
+                    }
+
+                }
+                finally
+                {
+                    db.close();
+                }
+                return  counter;
+
+            }
+
+            @Override
+            protected void onProgressUpdate(ProgressClass... params)
+            {
+                try
+                {
+                    super.onProgressUpdate(params);
+                    ProgressClass p = params[0];
+                    if (pd != null)
+                    {
+                        if (p.blnRestart)
+                        {
+                            pd.dismiss();
+                            createProgress();
+                            pd.show();
+                        }
+                        pd.setProgress(p.counter);
+                        if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg))
+                        {
+                            pd.setMessage(p.msg);
+                            oldmsg = p.msg;
+                        }
+                        if (p.max > 0 && !(p.max==oldmax))
+                        {
+                            pd.setMax(p.max);
+                            oldmax = p.max;
+                        }
+                    } else
+                    {
+                        Log.i("dbsqlite", "no progress");
+                    }
+                }
+                catch (Throwable ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            @Override
+            protected void onPostExecute( final Integer result ) {
+                // continue what you are doing...
+
+                pd.dismiss();
+                if (refresh && treeView != null) treeView.refreshTreeView();
+                _lastQuery = qry;
+                _txt = txt;
+                if (savedinstancestate!=null) try
+                {
+                    restoreTreeView(savedinstancestate);
+                }
+                catch (Throwable throwable)
+                {
+                    throwable.printStackTrace();
+                }
+
+            }
+
+
+
+        }.execute();
+
+
+        
 
     }
 

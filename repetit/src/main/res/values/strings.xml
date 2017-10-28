@@ -50,6 +50,11 @@
     <string name="mnuHelp">help</string>
     <string name="alreadysearched">There is already a search displayed! Do you want to delete the search?</string>
     <string name="continuesearch">continue</string>
+    <string name="Repertoriasing">repertoriasing</string>
+    <string name="startingRep">starting repertoriasing</string>
+    <string name="firstsymptom">first symptom</string>
+    <string name="processingquery">starting repertoriasing</string>
+    <string name="startingquery">starting query</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

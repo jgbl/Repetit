@@ -29,9 +29,6 @@ import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
-import static android.R.attr.breadCrumbShortTitle;
-import static android.R.attr.id;
-
 public class MainActivity extends AppCompatActivity
 {
 
@@ -269,7 +266,7 @@ public class MainActivity extends AppCompatActivity
                     String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                             "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                     qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected);
+                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected, null);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
             }
