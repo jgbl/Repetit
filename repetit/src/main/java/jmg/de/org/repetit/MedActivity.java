@@ -794,7 +794,7 @@ public class MedActivity extends Fragment
         }
         if (!found) return -1;
         res = -1;
-        if (Weight!=null) {
+        if (Weight!=null && Weight.size()>0) {
             for (int i = 0; i < Weight.size(); i += 3) {
                 int MedID = Weight.get(0+i);
                 int SympID2 = Weight.get(1+i);
