@@ -447,7 +447,7 @@ public class SymptomsActivity extends Fragment {
                             int count = c.getCount();
                             do {
                                 counter += 1;
-                                if (counter%(count/10)==0)
+                                if (pc.max<10||counter%(count/10)==0)
                                 {
                                     pc.update(counter, count, context.getString(R.string.processingquery), false);
                                     publishProgress(pc);
@@ -479,7 +479,12 @@ public class SymptomsActivity extends Fragment {
                     } finally {
                         c.close();
                     }
-                } finally {
+                }
+                catch (Throwable ex)
+                {
+                    this.ex = ex;
+                }
+                finally {
                     db.close();
                 }
 

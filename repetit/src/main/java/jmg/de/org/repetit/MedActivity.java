@@ -419,6 +419,7 @@ public class MedActivity extends Fragment
         final Context context = getContext();
         new AsyncTask<Void, ProgressClass, Integer>()
         {
+            public Throwable ex;
             public int counter;
             public int oldmax;
             public String oldmsg;
@@ -468,7 +469,7 @@ public class MedActivity extends Fragment
                             do
                             {
                                 counter += 1;
-                                if (counter%(count/10)==0)
+                                if (counter<10||counter%(count/10)==0)
                                 {
                                     pc.update(counter, count, context.getString(R.string.processingquery), false);
                                     publishProgress(pc);
@@ -488,6 +489,10 @@ public class MedActivity extends Fragment
                         c.close();
                     }
 
+                }
+                catch (Throwable ex)
+                {
+                    this.ex = ex;
                 }
                 finally
                 {
@@ -550,6 +555,7 @@ public class MedActivity extends Fragment
                 {
                     throwable.printStackTrace();
                 }
+                if (this.ex!=null)lib.ShowException(context,ex);
             }
 
 
@@ -566,6 +572,7 @@ public class MedActivity extends Fragment
         final Context context = getContext();
         new AsyncTask<Void, ProgressClass, Integer>()
         {
+            public Throwable ex;
             public int oldmax;
             public String oldmsg;
             ProgressDialog pd;
@@ -641,7 +648,7 @@ public class MedActivity extends Fragment
                                 }
                                 while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
                                     counter += 1;
-                                    if (counter%(pc.max/10)==0)
+                                    if (pc.max<10||counter%(pc.max/10)==0)
                                     {
                                         pc.counter = counter;
                                         this.publishProgress(pc);
@@ -683,6 +690,10 @@ public class MedActivity extends Fragment
                         c.close();
                     }
 
+                }
+                catch (Throwable ex)
+                {
+                    this.ex = ex;
                 }
                 finally
                 {
@@ -745,6 +756,7 @@ public class MedActivity extends Fragment
                 {
                     throwable.printStackTrace();
                 }
+                if (this.ex != null) lib.ShowException(context,ex);
 
             }
 
