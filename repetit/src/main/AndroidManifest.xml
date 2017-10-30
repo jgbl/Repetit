@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
     package="jmg.de.org.repetit">
     <uses-sdk tools:overrideLibrary="android.support.test.espresso"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application android:allowBackup="true" android:icon="@mipmap/medicine"
         android:label="@string/app_name"
         android:supportsRtl="true" android:theme="@style/AppTheme">

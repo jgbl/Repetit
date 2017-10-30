@@ -55,8 +55,16 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (db == null)
         {
-            db = new dbSqlite(this, false);
-            db.createDataBase();
+            try
+            {
+                db = new dbSqlite(this, false);
+                db.createDataBase();
+            }
+            catch (Throwable throwable)
+            {
+                throwable.printStackTrace();
+            }
+
         }
     }
 
@@ -84,8 +92,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         if (db == null)
         {
-            db = new dbSqlite(this, false);
-            db.createDataBase();
+            try
+            {
+                db = new dbSqlite(this, false);
+                db.createDataBase();
+            }
+            catch (Throwable throwable)
+            {
+                lib.ShowException(this,throwable);
+            }
+
         }
         //lib.main = this;
         lib.gStatus = "MainActivity onCreate";

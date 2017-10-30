@@ -54,7 +54,7 @@ public class dbSqlite extends SQLiteOpenHelper
 
     }
 
-    public dbSqlite(Context context, boolean blnErr)
+    public dbSqlite(Context context, boolean blnErr) throws Throwable
     {
         super(context, (blnErr ? DB_NAMEERR : DB_NAME), null, 1);
         if (blnErr) dbname = DB_NAMEERR;
@@ -62,9 +62,11 @@ public class dbSqlite extends SQLiteOpenHelper
         {
             throw new RuntimeException("context is null!");
         }
+        lib.gStatus = "getFilesDir";
         File FilesDir = context.getFilesDir();
         DB_PATH = Path.combine(FilesDir.getPath(), "databases");
         this.mContext = context;
+        lib.gStatus = "getExternalStorageDirectory";
         String extPath = Environment.getExternalStorageDirectory().getPath();
         File F = new File(extPath);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
@@ -176,6 +178,7 @@ public class dbSqlite extends SQLiteOpenHelper
 
         //Open your local db as the input stream
         assert (mContext != null);
+        lib.gStatus = "Copy Assets:"+ DB_NAME;
         AssetManager A = mContext.getAssets();
         InputStream myInput = A.open(DB_NAME);
 

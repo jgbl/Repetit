@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.View;
 
 import java.util.List;
@@ -73,12 +74,19 @@ public class TreeView implements SelectableTreeAction {
 
     @NonNull
     private RecyclerView buildRootView() {
+
         RecyclerView recyclerView = new RecyclerView(context);
         /**
          * disable multi touch event to prevent terrible data set error when calculate list.
          */
-        recyclerView.setMotionEventSplittingEnabled(false);
-
+        try
+        {
+            recyclerView.setMotionEventSplittingEnabled(false);
+        }
+        catch (Throwable ex)
+        {
+            Log.e("buildRootView",ex.getMessage(),ex);
+        }
         recyclerView.setItemAnimator(itemAnimator != null ? itemAnimator : new TreeItemAnimator());
         SimpleItemAnimator itemAnimator = (SimpleItemAnimator) recyclerView.getItemAnimator();
         itemAnimator.setSupportsChangeAnimations(false);
