@@ -1855,7 +1855,7 @@ public class lib
         is.close();
         lib.ShowMessage(context,
                 strPrivacyPolicy,
-                context.getString(R.string.PrivacyPolicyAccept)
+                context.getString(R.string.Help)
                 );
     }
 

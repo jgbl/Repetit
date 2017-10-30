@@ -68,4 +68,5 @@
     <string name="processingquery">Datenbankabfrage wird verarbeitet</string>
     <string name="startingRep">Repertorisierung wird gestartet</string>
     <string name="startingquery">Datenbankabfrage wird gestartet</string>
+    <string name="Help">Hilfe</string>
 </resources>

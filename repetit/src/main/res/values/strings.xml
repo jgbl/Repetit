@@ -55,6 +55,7 @@
     <string name="firstsymptom">first symptom</string>
     <string name="processingquery">starting repertoriasing</string>
     <string name="startingquery">starting query</string>
+    <string name="Help">Help</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
