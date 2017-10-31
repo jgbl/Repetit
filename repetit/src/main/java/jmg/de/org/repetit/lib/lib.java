@@ -523,6 +523,30 @@ public class lib
 
     }
 
+    public static AlertDialog getDialogOK(Context context, String msg, String title, DialogInterface.OnClickListener listener)
+    {
+        return getDialogOK(context,new SpannableString(msg),title, listener);
+    }
+
+
+        public static AlertDialog getDialogOK(Context context, Spannable msg, String title, DialogInterface.OnClickListener listener)
+    {
+        // System.Threading.SynchronizationContext.Current.Post(new
+        // System.Threading.SendOrPostCallback(DelShowException),new
+        // ExStateInfo(context, ex));
+        if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.message);
+
+        AlertDialog.Builder A = new AlertDialog.Builder(context);
+        A.setPositiveButton("OK", listener);
+        A.setMessage(msg);
+        A.setTitle(title);
+        AlertDialog dlg = A.create();
+        dlg.show();
+        ((TextView) dlg.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+        return dlg;
+
+    }
+
     public static boolean ShowMessageWithCheckbox(Context context, String title, String msg, String CheckboxTitle) throws Exception
     {
         // System.Threading.SynchronizationContext.Current.Post(new

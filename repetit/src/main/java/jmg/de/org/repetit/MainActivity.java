@@ -1,6 +1,7 @@
 package jmg.de.org.repetit;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -95,7 +96,16 @@ public class MainActivity extends AppCompatActivity
             try
             {
                 db = new dbSqlite(this, false);
-                db.createDataBase();
+                if (!db.createDataBase()){
+                    lib.getDialogOK(this, getString(R.string.DatabaseErrorOlderVersions), getString(R.string.database), new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            finish();
+                        }
+                    });
+                }
             }
             catch (Throwable throwable)
             {

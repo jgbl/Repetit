@@ -1,6 +1,7 @@
 package jmg.de.org.repetit.lib;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -26,7 +27,7 @@ public class dbSqlite extends SQLiteOpenHelper
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
 
-    private static String DB_NAME = "raw/replitekent.sqlite";
+    private static String DB_NAME = "replitekent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";
     private String dbname = DB_NAME;
     public SQLiteDatabase DataBase;
@@ -99,14 +100,14 @@ public class dbSqlite extends SQLiteOpenHelper
         }
     }
 
-    public final void createDataBase()
+    public final boolean createDataBase()
     {
 
         boolean dbExist = checkDataBase();
 
         if (dbExist)
         {
-            //do nothing - database already exist
+            return true;
         } else
         {
 
@@ -117,13 +118,14 @@ public class dbSqlite extends SQLiteOpenHelper
             try
             {
 
-                copyDataBase();
+               return copyDataBase();
 
             }
             catch (IOException e)
             {
                 System.out.println(e.getMessage());
                 if (mContext != null) lib.ShowException(mContext, e);
+                return false;
                 //throw new RuntimeException("Error copying database");
 
             }
@@ -164,15 +166,15 @@ public class dbSqlite extends SQLiteOpenHelper
         return checkDB != null;
     }
 
-    private void copyDataBase() throws IOException
+    private boolean copyDataBase() throws IOException
     {
 
         //Open your local db as the input stream
         assert (mContext != null);
         lib.gStatus = "Copy Assets:"+ DB_NAME;
-        //AssetManager A = mContext.getAssets();
-        int rID = mContext.getResources().getIdentifier("fortyonepost.com.lfas:raw/"+fileName, null, null);
-        InputStream myInput = mContext.getResources().openRawResource(R.id.RepLiteKent);  //A.open(DB_NAME);
+        AssetManager A = mContext.getAssets();
+        //int rID = mContext.getResources().getIdentifier("fortyonepost.com.lfas:raw/"+fileName, null, null);
+        InputStream myInput = A.open(DB_NAME);
 
         // Path to the just created empty db
         String outFileName = DB_PATH + dbname;
@@ -208,12 +210,21 @@ public class dbSqlite extends SQLiteOpenHelper
         catch (Throwable ex)
         {
             Log.e("copyDatabase",ex.getMessage(),ex);
+            if (file.exists())
+            {
+                file.delete();
+            }
+            return false;
         }
-
+        finally
+        {
+            myOutput.flush();
+            myOutput.close();
+            myInput.close();
+        }
+        return true;
         //Close the streams
-        myOutput.flush();
-        myOutput.close();
-        myInput.close();
+
 
     }
 

@@ -69,4 +69,7 @@
     <string name="startingRep">Repertorisierung wird gestartet</string>
     <string name="startingquery">Datenbankabfrage wird gestartet</string>
     <string name="Help">Hilfe</string>
+    <string name="DatabaseError">Datenbank Fehler</string>
+    <string name="DatabaseErrorOlderVersions">Datenbank Fehler. In älteren Android Versionen muss die Datenbank manuell kopiert werden.</string>
+    <string name="database">Datenbank</string>
 </resources>

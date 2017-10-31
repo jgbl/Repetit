@@ -56,6 +56,9 @@
     <string name="processingquery">starting repertoriasing</string>
     <string name="startingquery">starting query</string>
     <string name="Help">Help</string>
+    <string name="DatabaseError">The database could not be created!</string>
+    <string name="database">database</string>
+    <string name="DatabaseErrorOlderVersions">Database Error. In older android versions the database must be copied manually!</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
