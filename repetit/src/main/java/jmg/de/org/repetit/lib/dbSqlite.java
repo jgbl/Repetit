@@ -1,18 +1,10 @@
 package jmg.de.org.repetit.lib;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.res.AssetManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -25,17 +17,16 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
+
+import jmg.de.org.repetit.R;
 
 public class dbSqlite extends SQLiteOpenHelper
 {
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
 
-    private static String DB_NAME = "RepLiteKent.sqlite";
+    private static String DB_NAME = "raw/replitekent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";
     private String dbname = DB_NAME;
     public SQLiteDatabase DataBase;
@@ -179,8 +170,9 @@ public class dbSqlite extends SQLiteOpenHelper
         //Open your local db as the input stream
         assert (mContext != null);
         lib.gStatus = "Copy Assets:"+ DB_NAME;
-        AssetManager A = mContext.getAssets();
-        InputStream myInput = A.open(DB_NAME);
+        //AssetManager A = mContext.getAssets();
+        int rID = mContext.getResources().getIdentifier("fortyonepost.com.lfas:raw/"+fileName, null, null);
+        InputStream myInput = mContext.getResources().openRawResource(R.id.RepLiteKent);  //A.open(DB_NAME);
 
         // Path to the just created empty db
         String outFileName = DB_PATH + dbname;
