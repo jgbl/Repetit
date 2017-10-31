@@ -1,8 +1,9 @@
 package jmg.de.org.repetit;
 
 import android.database.Cursor;
+import android.os.Build;
 import android.view.View;
-import android.widget.ImageView;
+import android.support.v7.widget.AppCompatImageView;
 import android.widget.TextView;
 
 import jmg.de.org.repetit.lib.dbSqlite;
@@ -10,18 +11,18 @@ import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
 import me.texy.treeview.base.SpinnerNodeViewBinder;
-
+import android.support.v7.widget.AppCompatImageView;
 /**
  * Created by zxy on 17/4/23.
  */
 
 public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
     TextView textView;
-    ImageView imageView;
+    AppCompatImageView imageView;
     public FirstLevelNodeViewBinder(View itemView) {
         super(itemView);
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
-        imageView = (ImageView) itemView.findViewById(R.id.arrow_img);
+        imageView = (AppCompatImageView) itemView.findViewById(R.id.arrow_img);
     }
 
 
@@ -38,7 +39,9 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
     @Override
     public void bindView(final TreeNode treeNode) {
         textView.setText(treeNode.getValue().toString());
-        imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
+        }
         textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -59,10 +62,14 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
-            imageView.animate().rotation(90).setDuration(200).start();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                imageView.animate().rotation(90).setDuration(200);
+            }
 
         } else {
-            imageView.animate().rotation(0).setDuration(200).start();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                imageView.animate().rotation(0).setDuration(200);
+            }
         }
     }
     public static void buildTree(TreeView tv, TreeNode treeNodeParent) throws  Throwable {

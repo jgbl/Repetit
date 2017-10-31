@@ -91,12 +91,15 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        lib.gStatus = "MainActivity onCreate";
+        boolean blnStop = false;
         if (db == null)
         {
             try
             {
                 db = new dbSqlite(this, false);
                 if (!db.createDataBase()){
+                    blnStop = true;
                     lib.getDialogOK(this, getString(R.string.DatabaseErrorOlderVersions), getString(R.string.database), new DialogInterface.OnClickListener()
                     {
                         @Override
@@ -109,65 +112,57 @@ public class MainActivity extends AppCompatActivity
             }
             catch (Throwable throwable)
             {
+                blnStop = true;
                 lib.ShowException(this,throwable);
             }
 
         }
         //lib.main = this;
-        lib.gStatus = "MainActivity onCreate";
         //getting the kind of userinterface: television or watch or else
-        int UIMode = lib.getUIMode(this);
-        switch (UIMode)
-        {
-            case Configuration.UI_MODE_TYPE_TELEVISION:
-                isTV = true;
-                break;
-            case Configuration.UI_MODE_TYPE_WATCH:
-                isWatch = true;
-                break;
-        }
+        if (!blnStop) {
+            int UIMode = lib.getUIMode(this);
+            switch (UIMode) {
+                case Configuration.UI_MODE_TYPE_TELEVISION:
+                    isTV = true;
+                    break;
+                case Configuration.UI_MODE_TYPE_WATCH:
+                    isWatch = true;
+                    break;
+            }
 
 
-        setContentView(R.layout.activity_main_viewpager);
+            setContentView(R.layout.activity_main_viewpager);
 
         /* Getting a reference to ViewPager from the layout */
-        View pager = this.findViewById(R.id.pager);
-        Layout = (ViewGroup) pager;
-        mPager = (HackyViewPager) pager;
+            View pager = this.findViewById(R.id.pager);
+            Layout = (ViewGroup) pager;
+            mPager = (HackyViewPager) pager;
         /* Getting a reference to FragmentManager */
-        FragmentManager fm = getSupportFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
 
-        setPageChangedListener();
+            setPageChangedListener();
 
         /* Creating an instance of FragmentPagerAdapter */
-        if (fPA == null)
-        {
-            fPA = new MyFragmentPagerAdapter(fm, this, savedInstanceState != null);
-        }
+            if (fPA == null) {
+                fPA = new MyFragmentPagerAdapter(fm, this, savedInstanceState != null);
+            }
 
         /* Setting the FragmentPagerAdapter object to the viewPager object */
-        mPager.setAdapter(fPA);
+            mPager.setAdapter(fPA);
 
-        if (savedInstanceState != null)
-        {
-            lastQuery = savedInstanceState.getString("lastquery");
+            if (savedInstanceState != null) {
+                lastQuery = savedInstanceState.getString("lastquery");
 
-        } else
-        {
-            try
-            {
-                AcceptLicense();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            catch (Throwable throwable)
-            {
-                throwable.printStackTrace();
+            } else {
+                try {
+                    AcceptLicense();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
             }
         }
-
 
     }
 

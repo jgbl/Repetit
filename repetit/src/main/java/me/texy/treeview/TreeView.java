@@ -15,6 +15,7 @@
 package me.texy.treeview;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -81,7 +82,9 @@ public class TreeView implements SelectableTreeAction {
          */
         try
         {
-            recyclerView.setMotionEventSplittingEnabled(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                recyclerView.setMotionEventSplittingEnabled(false);
+            }
         }
         catch (Throwable ex)
         {

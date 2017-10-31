@@ -14,7 +14,7 @@
         android:layout_marginLeft="40dp"
         android:orientation="horizontal">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/arrow_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp" />
 -->
-    <Spinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

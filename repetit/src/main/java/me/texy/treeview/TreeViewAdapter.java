@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.Spinner;
+import android.support.v7.widget.AppCompatSpinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,11 +163,11 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
             final View view = nodeView
                     .findViewById(((SpinnerNodeViewBinder) viewBinder).getSpinnerViewId());
 
-            if (view != null && view instanceof Spinner) {
-                final Spinner spinnerView = (Spinner) view;
+            if (view != null && view instanceof android.support.v7.widget.AppCompatSpinner) {
+                final android.support.v7.widget.AppCompatSpinner spinnerView = (android.support.v7.widget.AppCompatSpinner) view;
                 spinnerView.setSelection(treeNode.getWeight());
                 ((SpinnerNodeViewBinder) viewBinder).setSpinner(spinnerView);
-                spinnerView.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+                spinnerView.setOnItemSelectedListener(new android.support.v7.widget.AppCompatSpinner.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         treeNode.setWeight(position);

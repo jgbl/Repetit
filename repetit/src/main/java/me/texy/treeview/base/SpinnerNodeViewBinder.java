@@ -16,7 +16,7 @@ package me.texy.treeview.base;
 
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.Spinner;
+import android.support.v7.widget.AppCompatSpinner;
 
 import me.texy.treeview.TreeNode;
 
@@ -26,7 +26,7 @@ import me.texy.treeview.TreeNode;
 
 public abstract class SpinnerNodeViewBinder extends BaseNodeViewBinder {
 
-    public Spinner spinner;
+    public android.support.v7.widget.AppCompatSpinner spinner;
 
     public SpinnerNodeViewBinder(View itemView) {
         super(itemView);
@@ -50,7 +50,7 @@ public abstract class SpinnerNodeViewBinder extends BaseNodeViewBinder {
         /*empty*/
     }
 
-    public void setSpinner(Spinner spinner) {
+    public void setSpinner(android.support.v7.widget.AppCompatSpinner spinner) {
         this.spinner = spinner;
     }
 }
