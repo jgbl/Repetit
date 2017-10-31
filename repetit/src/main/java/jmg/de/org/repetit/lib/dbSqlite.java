@@ -208,9 +208,14 @@ public class dbSqlite extends SQLiteOpenHelper
 //ORIGINAL LINE: byte[] buffer = new byte[1024];
         byte[] buffer = new byte[1024];
         int length;
-        while ((length = myInput.read(buffer, 0, 1024)) > 0)
+        try {
+            while ((length = myInput.read(buffer, 0, 1024)) > 0) {
+                myOutput.write(buffer, 0, length);
+            }
+        }
+        catch (Throwable ex)
         {
-            myOutput.write(buffer, 0, length);
+            Log.e("copyDatabase",ex.getMessage(),ex);
         }
 
         //Close the streams
