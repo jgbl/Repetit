@@ -74,9 +74,9 @@ public class TreeView implements SelectableTreeAction {
     }
 
     @NonNull
-    private RecyclerView buildRootView() {
+    private ContextMenuRecyclerView buildRootView() {
 
-        RecyclerView recyclerView = new RecyclerView(context);
+        ContextMenuRecyclerView recyclerView = new ContextMenuRecyclerView(context);
         /**
          * disable multi touch event to prevent terrible data set error when calculate list.
          */

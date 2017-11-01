@@ -27,7 +27,8 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder implement
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
         imageView = (AppCompatImageView) itemView.findViewById(R.id.arrow_img);
         //((MainActivity)(treeView.context)).registerForContextMenu(itemView);
-        itemView.setOnLongClickListener(this);
+        //itemView.setOnLongClickListener(this);
+        itemView.setLongClickable(true);
     }
 
     @Override

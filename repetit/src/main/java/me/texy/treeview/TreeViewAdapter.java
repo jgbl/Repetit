@@ -73,6 +73,16 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
         buildExpandedNodeList();
     }
 
+    private int position;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     private void buildExpandedNodeList() {
         expandedNodeList.clear();
 
@@ -97,6 +107,11 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         return expandedNodeList.get(position).getLevel();
+    }
+
+    public TreeNode getNodeAt(int position)
+    {
+        return expandedNodeList.get(position);
     }
 
     @Override

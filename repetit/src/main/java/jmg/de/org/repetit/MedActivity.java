@@ -33,6 +33,7 @@ import java.util.List;
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
+import me.texy.treeview.ContextMenuRecyclerView;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
@@ -81,16 +82,14 @@ public class MedActivity extends Fragment
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        ContextMenuRecyclerView.RecyclerViewContextMenuInfo info = (ContextMenuRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.cmnuSearch:
+                lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
                 //editNote(info.id);
                 return true;
             case R.id.cmnuShowAll:
-                /*lib.ShowMessage(getContext(),"Infoid: " + info.id
-                        + "\nPosition: " + info.position
-                        + "\nView: " + info.targetView.getClass().toString()
-                        ,"ShowAll");*/
+                lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
 
                 return true;
             default:
@@ -105,7 +104,7 @@ public class MedActivity extends Fragment
         root = TreeNode.root();
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
         View view2 = treeView.getView();
-        //registerForContextMenu(view2);
+        registerForContextMenu(view2);
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
