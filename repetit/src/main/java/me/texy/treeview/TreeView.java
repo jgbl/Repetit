@@ -37,7 +37,7 @@ import me.texy.treeview.helper.TreeHelper;
 public class TreeView implements SelectableTreeAction {
     private TreeNode root;
 
-    private Context context;
+    public Context context;
 
     private BaseNodeViewFactory baseNodeViewFactory;
 

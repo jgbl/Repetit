@@ -59,6 +59,8 @@
     <string name="DatabaseError">The database could not be created!</string>
     <string name="database">database</string>
     <string name="DatabaseErrorOlderVersions">Database Error. In older android versions the database must be copied manually!</string>
+    <string name="showAll">show all</string>
+    <string name="Search">search</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

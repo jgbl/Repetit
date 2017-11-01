@@ -52,7 +52,9 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
         }
-        switch (treeNode.getLevel())
+        int level = treeNode.getLevel();
+        if (level > 5) level = level - 5;
+        switch (level)
         {
             case 2:
                 //relLayout.setBackground(null);
@@ -73,6 +75,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
             l.setMargins(lib.dpToPx(40) + (treeNode.getLevel() - 1) * lib.dpToPx(20), 0, 0, 0);
             linLayout.setLayoutParams(l);
         }
+
         textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -82,6 +85,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
                 return false;
             }
         });
+
     }
 
     @Override

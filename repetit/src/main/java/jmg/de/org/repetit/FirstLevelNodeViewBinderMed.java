@@ -2,6 +2,7 @@ package jmg.de.org.repetit;
 
 import android.database.Cursor;
 import android.os.Build;
+import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.AppCompatImageView;
 import android.widget.TextView;
@@ -16,13 +17,17 @@ import me.texy.treeview.base.SpinnerNodeViewBinder;
  * Created by zxy on 17/4/23.
  */
 
-public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder {
+public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder implements View.OnLongClickListener {
     TextView textView;
     AppCompatImageView imageView;
+    private TreeNode treeNode;
+
     public FirstLevelNodeViewBinderMed(View itemView) {
         super(itemView);
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
         imageView = (AppCompatImageView) itemView.findViewById(R.id.arrow_img);
+        //((MainActivity)(treeView.context)).registerForContextMenu(itemView);
+        itemView.setOnLongClickListener(this);
     }
 
     @Override
@@ -41,7 +46,8 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
         }
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
+        this.treeNode = treeNode;
+        /*textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 FirstLevelNodeViewBinderMed.this.treeView.collapseNode(treeNode);
@@ -49,7 +55,7 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder {
                 onNodeToggled(treeNode,true);
                 return false;
             }
-        });
+        });*/
     }
 
     @Override
@@ -118,4 +124,11 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder {
         }
     }
 
+
+    @Override
+    public boolean onLongClick(View v) {
+        FirstLevelNodeViewBinderMed.this.treeView.collapseNode(treeNode);
+        treeNode.getChildren().clear();
+        onNodeToggled(treeNode,true);
+        return false;}
 }

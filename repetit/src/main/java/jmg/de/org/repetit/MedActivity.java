@@ -12,11 +12,15 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -67,6 +71,33 @@ public class MedActivity extends Fragment
         //initTreeView(view);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = _main.getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.cmnuSearch:
+                //editNote(info.id);
+                return true;
+            case R.id.cmnuShowAll:
+                /*lib.ShowMessage(getContext(),"Infoid: " + info.id
+                        + "\nPosition: " + info.position
+                        + "\nView: " + info.targetView.getClass().toString()
+                        ,"ShowAll");*/
+
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
     public void initTreeView(View view, Bundle savedinstancestate)
     {
         initView(view);
@@ -74,6 +105,7 @@ public class MedActivity extends Fragment
         root = TreeNode.root();
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
         View view2 = treeView.getView();
+        //registerForContextMenu(view2);
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);

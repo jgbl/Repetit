@@ -72,4 +72,6 @@
     <string name="DatabaseError">Datenbank Fehler</string>
     <string name="DatabaseErrorOlderVersions">Datenbank Fehler. In älteren Android Versionen muss die Datenbank manuell kopiert werden.</string>
     <string name="database">Datenbank</string>
+    <string name="Search">suchen</string>
+    <string name="showAll">alles anzeigen</string>
 </resources>
