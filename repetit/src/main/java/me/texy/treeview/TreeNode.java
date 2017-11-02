@@ -17,6 +17,8 @@ package me.texy.treeview;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.texy.treeview.base.BaseNodeViewBinder;
+
 /**
  * Created by xinyuanzhong on 2017/4/20.
  */
@@ -39,6 +41,8 @@ public class TreeNode {
     private boolean itemClickEnable = true;
 
     private int weight;
+
+    public BaseNodeViewBinder holder;
 
     public TreeNode(Object value) {
         this.value = value;

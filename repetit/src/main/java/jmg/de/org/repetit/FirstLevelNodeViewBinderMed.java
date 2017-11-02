@@ -48,6 +48,7 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder implement
             imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
         }
         this.treeNode = treeNode;
+        treeNode.holder = this;
         /*textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

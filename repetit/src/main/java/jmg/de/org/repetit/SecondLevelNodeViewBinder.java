@@ -49,6 +49,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
 
     @Override
     public void bindView(final TreeNode treeNode) {
+        treeNode.holder = this;
         textView.setText(treeNode.getValue().toString());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             imageView.setRotation(treeNode.isExpanded() ? 90 : 0);

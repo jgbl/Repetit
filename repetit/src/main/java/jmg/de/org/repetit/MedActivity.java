@@ -36,6 +36,7 @@ import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.ContextMenuRecyclerView;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
+import me.texy.treeview.base.BaseNodeViewBinder;
 
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
@@ -92,8 +93,21 @@ public class MedActivity extends Fragment
                 lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
                 treeView.collapseNode(info.treeNode);
                 info.treeNode.getChildren().clear();
-                treeView.toggleNode(info.treeNode);
-
+                /*if (info.treeNode.getLevel() == 1)
+                {
+                    try
+                    {
+                        FirstLevelNodeViewBinderMed.buildTree(treeView,info.treeNode);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
+                }
+                */
+                info.treeNode.holder.onNodeToggled(info.treeNode,true);
+                //treeView.toggleNode(info.treeNode);
+                //treeView.expandNode(info.treeNode);
                 return true;
             default:
                 return super.onContextItemSelected(item);
