@@ -90,6 +90,9 @@ public class MedActivity extends Fragment
                 return true;
             case R.id.cmnuShowAll:
                 lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
+                treeView.collapseNode(info.treeNode);
+                info.treeNode.getChildren().clear();
+                treeView.toggleNode(info.treeNode);
 
                 return true;
             default:

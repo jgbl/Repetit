@@ -26,7 +26,15 @@ public class ContextMenuRecyclerView extends RecyclerView
 
     @Override
     public boolean showContextMenuForChild(View originalView) {
-        final int longPressPosition = getChildPosition(originalView);
+        int longPressPosition;
+        try
+        {
+            longPressPosition = getChildPosition(originalView);
+        }
+        catch (Throwable ex)
+        {
+            longPressPosition = -1;
+        }
         if (longPressPosition >= 0) {
             final long longPressId = getAdapter().getItemId(longPressPosition);
             TreeNode n = ((TreeViewAdapter)getAdapter()).getNodeAt(longPressPosition);

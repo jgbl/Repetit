@@ -33,6 +33,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
         imageView = (AppCompatImageView) itemView.findViewById(R.id.arrow_img);
         linLayout = (LinearLayout) itemView.findViewById(R.id.node_container);
+        itemView.setLongClickable(true);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
             l.setMargins(lib.dpToPx(40) + (treeNode.getLevel() - 1) * lib.dpToPx(20), 0, 0, 0);
             linLayout.setLayoutParams(l);
         }
-
+        /*
         textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -85,6 +86,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
                 return false;
             }
         });
+        */
 
     }
 
