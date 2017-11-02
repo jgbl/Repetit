@@ -74,4 +74,8 @@
     <string name="database">Datenbank</string>
     <string name="Search">suchen</string>
     <string name="showAll">alles anzeigen</string>
+    <string name="save_result">Ergebnis speichern</string>
+    <string name="save">speichern</string>
+    <string name="name">Name</string>
+    <string name="delete">löschen</string>
 </resources>

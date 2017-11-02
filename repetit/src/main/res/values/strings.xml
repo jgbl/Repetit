@@ -61,6 +61,10 @@
     <string name="DatabaseErrorOlderVersions">Database Error. In older android versions the database must be copied manually!</string>
     <string name="showAll">show all</string>
     <string name="Search">search</string>
+    <string name="save_result">save result</string>
+    <string name="save">save</string>
+    <string name="name">name</string>
+    <string name="delete">delete</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
