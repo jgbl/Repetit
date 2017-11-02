@@ -23,6 +23,7 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
         super(itemView);
         textView = (TextView) itemView.findViewById(R.id.node_name_view);
         imageView = (AppCompatImageView) itemView.findViewById(R.id.arrow_img);
+        itemView.setLongClickable(true);
     }
 
 
@@ -42,7 +43,7 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             imageView.setRotation(treeNode.isExpanded() ? 90 : 0);
         }
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
+        /*textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 FirstLevelNodeViewBinder.this.treeView.collapseNode(treeNode);
@@ -51,6 +52,10 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
                 return false;
             }
         });
+       */
+        treeNode.holder = this;
+
+
     }
 
     @Override

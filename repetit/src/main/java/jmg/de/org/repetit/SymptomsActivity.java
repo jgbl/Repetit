@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +40,7 @@ import java.util.List;
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
+import me.texy.treeview.ContextMenuRecyclerView;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
@@ -80,6 +84,7 @@ public class SymptomsActivity extends Fragment {
         root = TreeNode.root();
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
         View view2 = treeView.getView();
+        registerForContextMenu(view2);
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
@@ -301,6 +306,52 @@ public class SymptomsActivity extends Fragment {
                 onOptionsItemSelected(item);
 
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = _main.getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        ContextMenuRecyclerView.RecyclerViewContextMenuInfo info = (ContextMenuRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.cmnuSearch:
+                //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
+                TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                Uri uri = Uri.parse("http://www.google.com/#q=" + h.SymptomText );
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                //editNote(info.id);
+                return true;
+            case R.id.cmnuShowAll:
+                //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
+                treeView.collapseNode(info.treeNode);
+                info.treeNode.getChildren().clear();
+                /*if (info.treeNode.getLevel() == 1)
+                {
+                    try
+                    {
+                        FirstLevelNodeViewBinderMed.buildTree(treeView,info.treeNode);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
+                }
+                */
+                info.treeNode.holder.onNodeToggled(info.treeNode,true);
+                //treeView.toggleNode(info.treeNode);
+                //treeView.expandNode(info.treeNode);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
 
     public static String getWhereWhole(String column, String search)
     {

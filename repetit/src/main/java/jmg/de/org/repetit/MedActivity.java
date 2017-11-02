@@ -2,8 +2,10 @@ package jmg.de.org.repetit;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,11 +88,23 @@ public class MedActivity extends Fragment
         ContextMenuRecyclerView.RecyclerViewContextMenuInfo info = (ContextMenuRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.cmnuSearch:
-                lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
-                //editNote(info.id);
+                String search;
+                if (info.treeNode.getValue() instanceof  TreeNodeHolderMed)
+                {
+                    TreeNodeHolderMed h = (TreeNodeHolderMed) info.treeNode.getValue();
+                    search = h.Name;
+                }
+                else
+                {
+                    TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                    search = h.SymptomText;
+                }
+                Uri uri = Uri.parse("http://www.google.com/#q=" + search);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
                 return true;
             case R.id.cmnuShowAll:
-                lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
+                //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
                 treeView.collapseNode(info.treeNode);
                 info.treeNode.getChildren().clear();
                 /*if (info.treeNode.getLevel() == 1)
