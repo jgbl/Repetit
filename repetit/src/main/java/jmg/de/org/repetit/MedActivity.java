@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -39,6 +40,7 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -55,6 +57,7 @@ import me.texy.treeview.base.BaseNodeViewBinder;
 
 import static android.content.Context.MODE_PRIVATE;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
+import static org.apache.commons.codec.binary.Base64.*;
 
 
 public class MedActivity extends Fragment {
@@ -98,43 +101,67 @@ public class MedActivity extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
         String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null);
-        String[]arrSaves = (strSaves!=null?strSaves.split(";"):null);
+        String[]arrSaves = (strSaves!=null?strSaves.replaceAll("^\"|\"$","").split("\";\""):null);
+        if (arrSaves == null) saves = 0; else saves = arrSaves.length;
         //String[] strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null).split(",");
         for (int i = 1; i <= saves; i++) {
             if (menu.findItem(ID_MENU_SAVE + i)!= null) continue;
-            SubMenu item =
-                    menu.addSubMenu(Menu.NONE, ID_MENU_SAVE + i, Menu.NONE, arrSaves[i-1]);
-            item.add(R.string.delete);
+            MenuItem item =
+                    menu.add(Menu.NONE, ID_MENU_SAVE + i, Menu.NONE, arrSaves[i-1]);
+            //item.add(R.string.delete);
+
+            MenuItemCompat.setActionView(item,new View(getContext()));
+            MenuItemCompat.getActionView(item).setOnLongClickListener(LongDeleteSave);
         }
 
         super.onPrepareOptionsMenu(menu);
 
     }
 
+    private View.OnLongClickListener LongDeleteSave = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            MenuItem item = (MenuItem)v.getParent();
+            String title = (item.getTitle()).toString();
+            lib.yesnoundefined res = lib.ShowMessageYesNo(getContext(),String.format(getString(R.string.deletesave),title),getString(R.string.delete),false);
+            if (res == lib.yesnoundefined.yes)
+            {
+                String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null);
+                strSaves = strSaves.replace(title,"").replace(";;","").replaceAll("^;|;$", "");
+                _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves",strSaves).commit();
+                int count = item.getItemId() - ID_MENU_SAVE;
+                _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
+            }
+            return true;
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
         switch (item.getItemId()) {
             case R.id.mnu_save:
-                lib.OkCancelStringResult res = lib.InputBox(getContext(),getString(R.string.save_result),getString(R.string.name),getString(R.string.name),false);
+                String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null);
+                String[] arrSaves = null;
+                if (strSaves!=null) {
+                    arrSaves = strSaves.replaceAll("^\"|\"$","").split("\";\"");
+                    saves = arrSaves.length;
+                }
+                lib.OkCancelStringResult res = null;
+                do {
+                    res = lib.InputBox(getContext(), (res != null?getString(R.string.nameexists, res.input):getString(R.string.save_result)),getString(R.string.name),getString(R.string.name),false);
+                } while(res.res == lib.okcancelundefined.ok && !lib.libString.IsNullOrEmpty(res.input) && !lib.libString.IsNullOrEmpty(strSaves) && Arrays.asList(arrSaves).contains(res.input));
                 if (res.res != lib.okcancelundefined.ok || lib.libString.IsNullOrEmpty(res.input) ) break;
                 Bundle b = new Bundle();
                 onSaveInstanceState(b);
-                // _main.getPreferences(Context.MODE_PRIVATE).edit().pu
                 saves += 1;
-                /*
-                ComplexPreferences prefs = ComplexPreferences.getComplexPreferences(getContext(), "save", MODE_PRIVATE);
-                prefs.putObject("save" + saves, b, Bundle.class);
-                prefs.commit();
-                */
-                _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves).commit();
                 Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
                 b.writeToParcel(p,0);
                 try {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     byte[] bytes = p.marshall();
                     bos.write(bytes,0,bytes.length);
-                    String data = org.apache.commons.codec.binary.Base64.encodeBase64String(bos.toByteArray());
+                    String data = new String(encodeBase64(bos.toByteArray()),"UTF-8");
                     _main.getPreferences(MODE_PRIVATE).edit().putString("save" + saves, data).commit();
                     bos.close();
                 } catch (Exception e) {
@@ -143,10 +170,11 @@ public class MedActivity extends Fragment {
                 } finally {
                     p.recycle();
                 }
-                String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null);
                 if (strSaves != null) strSaves += ";"; else strSaves = "";
                 strSaves += "\"" + res.input + "\"";
+                _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves).commit();
                 _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves",strSaves).commit();
+
                 break;
             default:
                 if (item.getItemId() > this.ID_MENU_SAVE && item.getItemId() <= this.ID_MENU_SAVE + saves) {
@@ -158,7 +186,7 @@ public class MedActivity extends Fragment {
                             //b = prefs2.getObject("save" + count, Bundle.class);
                             p = Parcel.obtain(); // i make an empty one here, but you can use yours
                             try {
-                                byte[] data = org.apache.commons.codec.binary.Base64.decodeBase64(bytes);
+                                byte[] data = decodeBase64(bytes.getBytes("UTF-8"));
                                 p.unmarshall(data, 0, data.length);
                                 p.setDataPosition(0);
                                 b = p.readBundle();

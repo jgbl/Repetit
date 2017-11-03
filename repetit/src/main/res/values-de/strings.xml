@@ -78,4 +78,6 @@
     <string name="save">speichern</string>
     <string name="name">Name</string>
     <string name="delete">löschen</string>
+    <string name="deletesave">Möchten Sie wirklich die gespeicherten Daten für  %1$s löschen?</string>
+    <string name="nameexists">Der Name %1$s existiert schon!</string>
 </resources>

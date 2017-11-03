@@ -65,6 +65,8 @@
     <string name="save">save</string>
     <string name="name">name</string>
     <string name="delete">delete</string>
+    <string name="deletesave">Do you really want to delete the saved data for %1$s ?</string>
+    <string name="nameexists">The name %1$s exists!</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
