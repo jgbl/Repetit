@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -34,6 +36,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -125,9 +129,20 @@ public class MedActivity extends Fragment {
                 */
                 _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves).commit();
                 Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
-                p.writeBundle(b);
-                String data = new String(p.marshall());
-                _main.getPreferences(MODE_PRIVATE).edit().putString("save" + saves, data).commit();
+                b.writeToParcel(p,0);
+                try {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    byte[] bytes = p.marshall();
+                    bos.write(bytes,0,bytes.length);
+                    String data = org.apache.commons.codec.binary.Base64.encodeBase64String(bos.toByteArray());
+                    _main.getPreferences(MODE_PRIVATE).edit().putString("save" + saves, data).commit();
+                    bos.close();
+                } catch (Exception e) {
+                    lib.ShowException(getContext(),e);
+                    Log.e(getClass().getSimpleName(), e.toString(), e);
+                } finally {
+                    p.recycle();
+                }
                 String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null);
                 if (strSaves != null) strSaves += ";"; else strSaves = "";
                 strSaves += "\"" + res.input + "\"";
@@ -142,10 +157,14 @@ public class MedActivity extends Fragment {
                         if (!lib.libString.IsNullOrEmpty(bytes)) {
                             //b = prefs2.getObject("save" + count, Bundle.class);
                             p = Parcel.obtain(); // i make an empty one here, but you can use yours
-                            byte[]bbytes = bytes != null ? bytes.getBytes() : new byte[0];
-                            p.unmarshall(bbytes, 0, bbytes.length);
-                            p.setDataPosition(0);
-                            b = p.readBundle();
+                            try {
+                                byte[] data = org.apache.commons.codec.binary.Base64.decodeBase64(bytes);
+                                p.unmarshall(data, 0, data.length);
+                                p.setDataPosition(0);
+                                b = p.readBundle();
+                            } finally {
+                                p.recycle();
+                            }
                             _lastQuery = b.getString("lastquery");
                             _txt = b.getStringArray("txt");
                             Selected = b.getIntegerArrayList("Selected");
