@@ -5,4 +5,10 @@
         android:id="@+id/mnu_save"
         android:title="@string/save_result"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/mnu_results"
+        android:title="@string/results"
+        app:showAsAction="never">
+        <menu />
+    </item>
 </menu>

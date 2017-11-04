@@ -80,4 +80,8 @@
     <string name="delete">löschen</string>
     <string name="deletesave">Möchten Sie wirklich die gespeicherten Daten für  %1$s löschen?</string>
     <string name="nameexists">Der Name %1$s existiert schon!</string>
+    <string name="results">Ergebnisse</string>
+    <string name="open">öffnen</string>
+    <string name="rename">umbenennen</string>
+    <string name="rename_result">Ergebnis umbenennen</string>
 </resources>

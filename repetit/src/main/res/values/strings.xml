@@ -69,6 +69,8 @@
     <string name="nameexists">The name %1$s exists!</string>
     <string name="open">open</string>
     <string name="rename">rename</string>
+    <string name="results">results</string>
+    <string name="rename_result">rename result</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
