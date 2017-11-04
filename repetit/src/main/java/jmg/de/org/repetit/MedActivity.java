@@ -106,12 +106,14 @@ public class MedActivity extends Fragment {
         //String[] strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null).split(",");
         for (int i = 1; i <= saves; i++) {
             if (menu.findItem(ID_MENU_SAVE + i)!= null) continue;
-            MenuItem item =
-                    menu.add(Menu.NONE, ID_MENU_SAVE + i, Menu.NONE, arrSaves[i-1]);
-            //item.add(R.string.delete);
+            SubMenu item =
+                    menu.addSubMenu(Menu.NONE, ID_MENU_SAVE + i, Menu.NONE, arrSaves[i-1]);
+            item.add(R.string.open);
+            item.add(R.string.rename);
+            item.add(R.string.delete);
 
-            MenuItemCompat.setActionView(item,new View(getContext()));
-            MenuItemCompat.getActionView(item).setOnLongClickListener(LongDeleteSave);
+            //MenuItemCompat.setActionView(item,new View(getContext()));
+            //MenuItemCompat.getActionView(item).setOnLongClickListener(LongDeleteSave);
         }
 
         super.onPrepareOptionsMenu(menu);
