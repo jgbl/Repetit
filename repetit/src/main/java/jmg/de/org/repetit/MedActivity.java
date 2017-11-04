@@ -46,7 +46,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import jmg.de.org.repetit.lib.ComplexPreferences;
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
