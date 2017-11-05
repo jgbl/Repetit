@@ -19,12 +19,12 @@ android {
             storeFile file('/pub/keystore')
             storePassword '89374thd'
         }
-        /*debug {
+        debug {
             keyAlias 'repetit'
             keyPassword '89374thd'
             storeFile file('/pub/keystore')
             storePassword '89374thd'
-        }*/
+        }
     }
 
     buildTypes {

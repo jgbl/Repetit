@@ -100,7 +100,7 @@ public class MedActivity extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
         String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
-        String[] arrSaves = (strSaves != null ? strSaves.replaceAll("^\"|\"$", "").split("\";\"") : null);
+        String[] arrSaves = (!lib.libString.IsNullOrEmpty(strSaves) ? strSaves.replaceAll("^\"|\"$", "").split("\";\"") : null);
         if (arrSaves == null) saves = 0;
         else saves = arrSaves.length;
         //String[] strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves",null).split(",");
@@ -216,19 +216,20 @@ public class MedActivity extends Fragment {
                             case 2:
                                 res = null;
                                 do {
-                                    res = lib.InputBox(getContext(), (res != null ? getString(R.string.nameexists, res.input) : getString(R.string.rename_result)), getString(R.string.name), getString(R.string.name), false);
+                                    res = lib.InputBox(getContext(), (res != null ? getString(R.string.nameexists, res.input) : getString(R.string.rename_result)), getString(R.string.name), res == null ? arrSaves[count-1] : res.input, false);
                                 }
                                 while (res.res == lib.okcancelundefined.ok && !lib.libString.IsNullOrEmpty(arrSaves[count-1]) && !lib.libString.IsNullOrEmpty(strSaves) && Arrays.asList(arrSaves).contains(res.input));
                                 if (res.res != lib.okcancelundefined.ok || lib.libString.IsNullOrEmpty(res.input))
                                     return  true;
-                                strSaves = strSaves.replace(arrSaves[count-1],res.input);
+                                arrSaves[count-1] = res.input;
+                                strSaves = lib.arrStrToCSV(arrSaves);
                                 _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
                                 return true;
                             case 3:
-                                _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
                                 lib.yesnoundefined res2 = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), arrSaves[count-1]), getString(R.string.delete), false);
                                 if (res2 == lib.yesnoundefined.yes) {
-                                    strSaves = strSaves.replace(arrSaves[count-1], "").replace(";;", "").replaceAll("^;|;$", "");
+                                    arrSaves[count-1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
+                                    strSaves = lib.arrStrToCSV(arrSaves);
                                     _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
                                     _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
                                     _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves-1).commit();

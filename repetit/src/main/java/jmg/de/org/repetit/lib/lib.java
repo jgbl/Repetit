@@ -65,6 +65,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -1884,7 +1885,16 @@ public class lib
     }
 
 
-
+    public static java.lang.String arrStrToCSV(String[] arrSaves) {
+        StringBuilder strSaves = new StringBuilder();
+        for (String s : arrSaves) {
+            if (lib.libString.IsNullOrEmpty(s)) continue;
+            if (strSaves != null) strSaves.append(";");
+            else strSaves.append("");
+            strSaves.append("\"" + s + "\"");
+        }
+            return strSaves.toString();
+    }
 
     public enum yesnoundefined
     {
