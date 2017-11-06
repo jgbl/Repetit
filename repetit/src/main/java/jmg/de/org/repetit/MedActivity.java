@@ -54,6 +54,7 @@ import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 import me.texy.treeview.base.BaseNodeViewBinder;
 
+import static android.R.id.input;
 import static android.content.Context.MODE_PRIVATE;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 import static org.apache.commons.codec.binary.Base64.*;
@@ -76,6 +77,8 @@ public class MedActivity extends Fragment {
     private String _lastQuery;
     private String[] _txt;
     private ArrayList<Integer> Selected;
+    private String[] finalArrSaves;
+    private int finalCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,126 +126,195 @@ public class MedActivity extends Fragment {
 
     }
 
+    private int finalSaves;
+    private String finalStrSaves;
+    private  EditText input;
     /*private View.OnLongClickListener LongDeleteSave = new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    MenuItem item = (MenuItem) v.getParent();
+                    String title = (item.getTitle()).toString();
+                    lib.yesnoundefined res = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), title), getString(R.string.delete), false);
+                    if (res == lib.yesnoundefined.yes) {
+                        String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
+                        strSaves = strSaves.replace(title, "").replace(";;", "").replaceAll("^;|;$", "");
+                        _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
+                        int count = item.getItemId() - ID_MENU_SAVE;
+                        _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
+                    }
+                    return true;
+                }
+            };
+
+
+        */
+    DialogInterface.OnClickListener ClickListenerSave = new DialogInterface.OnClickListener() {
         @Override
-        public boolean onLongClick(View v) {
-            MenuItem item = (MenuItem) v.getParent();
-            String title = (item.getTitle()).toString();
-            lib.yesnoundefined res = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), title), getString(R.string.delete), false);
-            if (res == lib.yesnoundefined.yes) {
-                String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
-                strSaves = strSaves.replace(title, "").replace(";;", "").replaceAll("^;|;$", "");
-                _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
-                int count = item.getItemId() - ID_MENU_SAVE;
-                _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
+        public void onClick(DialogInterface dialog, int which) {
+            try {
+                String txt = input.getText().toString();
+                if (!lib.libString.IsNullOrEmpty(txt) && !lib.libString.IsNullOrEmpty(finalStrSaves) && finalArrSaves != null && Arrays.asList(finalArrSaves).contains(txt)) {
+                    dialog.dismiss();
+                    input = new EditText(getContext());
+                    AlertDialog dlg = lib.getInputBox(getContext(), getString(R.string.nameexists, txt), getString(R.string.name), txt, false, ClickListenerSave, null, input);
+                    dlg.show();
+                }
+                else {
+                    int lSaves = finalSaves;
+                    Bundle b = new Bundle();
+                    onSaveInstanceState(b);
+                    lSaves += 1;
+                    Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
+                    b.writeToParcel(p, 0);
+                    try {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        byte[] bytes = p.marshall();
+                        bos.write(bytes, 0, bytes.length);
+                        String data = new String(encodeBase64(bos.toByteArray()), "UTF-8");
+                        _main.getPreferences(MODE_PRIVATE).edit().putString("save" + lSaves, data).commit();
+                        bos.close();
+                    } catch (Exception e) {
+                        lib.ShowException(getContext(), e);
+                        Log.e(getClass().getSimpleName(), e.toString(), e);
+                    } finally {
+                        p.recycle();
+                    }
+
+                    String lStrSaves = finalStrSaves;
+                    if (!lib.libString.IsNullOrEmpty(lStrSaves)) lStrSaves += ";";
+                    else lStrSaves = "";
+                    lStrSaves += "\"" + txt + "\"";
+                    _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", lSaves).commit();
+                    _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", lStrSaves).commit();
+                }
+
+
             }
-            return true;
+            catch (Throwable ex)
+            {
+                lib.ShowException(getContext(),ex);
+            }
         }
     };
-*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
-        String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
-        String[] arrSaves = null;
-        if (strSaves != null) {
-            arrSaves = strSaves.replaceAll("^\"|\"$", "").split("\";\"");
-            saves = arrSaves.length;
-        }
-        int ID = item.getItemId();
-        switch (ID) {
-            case R.id.mnu_save:
-                lib.OkCancelStringResult res = null;
-                do {
-                    res = lib.InputBox(getContext(), (res != null ? getString(R.string.nameexists, res.input) : getString(R.string.save_result)), getString(R.string.name), getString(R.string.name), false);
+
+    DialogInterface.OnClickListener ClickListenerRename = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            try {
+                String txt = input.getText().toString();
+                if (!lib.libString.IsNullOrEmpty(txt) && !lib.libString.IsNullOrEmpty(finalStrSaves) && finalArrSaves != null && Arrays.asList(finalArrSaves).contains(txt)) {
+                    dialog.dismiss();
+                    input = new EditText(getContext());
+                    AlertDialog dlg = lib.getInputBox(getContext(), getString(R.string.nameexists, txt), getString(R.string.name), txt, false, ClickListenerRename, null, input);
+                    dlg.show();
                 }
-                while (res.res == lib.okcancelundefined.ok && !lib.libString.IsNullOrEmpty(res.input) && !lib.libString.IsNullOrEmpty(strSaves) && Arrays.asList(arrSaves).contains(res.input));
-                if (res.res != lib.okcancelundefined.ok || lib.libString.IsNullOrEmpty(res.input))
-                    break;
-                Bundle b = new Bundle();
-                onSaveInstanceState(b);
-                saves += 1;
-                Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
-                b.writeToParcel(p, 0);
-                try {
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    byte[] bytes = p.marshall();
-                    bos.write(bytes, 0, bytes.length);
-                    String data = new String(encodeBase64(bos.toByteArray()), "UTF-8");
-                    _main.getPreferences(MODE_PRIVATE).edit().putString("save" + saves, data).commit();
-                    bos.close();
-                } catch (Exception e) {
-                    lib.ShowException(getContext(), e);
-                    Log.e(getClass().getSimpleName(), e.toString(), e);
-                } finally {
-                    p.recycle();
-                }
-                if (strSaves != null) strSaves += ";";
-                else strSaves = "";
-                strSaves += "\"" + res.input + "\"";
-                _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves).commit();
-                _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
-                return true;
-            default:
-                if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 4) {
-                    try {
-                        //ComplexPreferences prefs2 = ComplexPreferences.getComplexPreferences(getContext(), "save", MODE_PRIVATE);
-                        int count = (ID - ID_MENU_SAVE) / 4 + 1;
-                        int sub = (ID - ID_MENU_SAVE) % 4;
-                        switch (sub) {
-                            case 0:
-                                break;
-                            case 1:
-                                String bytes = _main.getPreferences(MODE_PRIVATE).getString("save" + count, null);
-                                if (!lib.libString.IsNullOrEmpty(bytes)) {
-                                    //b = prefs2.getObject("save" + count, Bundle.class);
-                                    p = Parcel.obtain(); // i make an empty one here, but you can use yours
-                                    try {
-                                        byte[] data = decodeBase64(bytes.getBytes("UTF-8"));
-                                        p.unmarshall(data, 0, data.length);
-                                        p.setDataPosition(0);
-                                        b = p.readBundle();
-                                    } finally {
-                                        p.recycle();
-                                    }
-                                    _lastQuery = b.getString("lastquery");
-                                    _txt = b.getStringArray("txt");
-                                    Selected = b.getIntegerArrayList("Selected");
-                                    if (!lib.libString.IsNullOrEmpty(_lastQuery)) {
-                                        buildTreeRep(_lastQuery, true, _txt, Selected, b);
-                                    }
-                                    }
-                                return true;
-                            case 2:
-                                res = null;
-                                do {
-                                    res = lib.InputBox(getContext(), (res != null ? getString(R.string.nameexists, res.input) : getString(R.string.rename_result)), getString(R.string.name), res == null ? arrSaves[count-1] : res.input, false);
-                                }
-                                while (res.res == lib.okcancelundefined.ok && !lib.libString.IsNullOrEmpty(arrSaves[count-1]) && !lib.libString.IsNullOrEmpty(strSaves) && Arrays.asList(arrSaves).contains(res.input));
-                                if (res.res != lib.okcancelundefined.ok || lib.libString.IsNullOrEmpty(res.input))
-                                    return  true;
-                                arrSaves[count-1] = res.input;
-                                strSaves = lib.arrStrToCSV(arrSaves);
-                                _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
-                                return true;
-                            case 3:
-                                lib.yesnoundefined res2 = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), arrSaves[count-1]), getString(R.string.delete), false);
-                                if (res2 == lib.yesnoundefined.yes) {
-                                    arrSaves[count-1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
-                                    strSaves = lib.arrStrToCSV(arrSaves);
-                                    _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
-                                    _main.getPreferences(MODE_PRIVATE).edit().remove("save" + count).commit();
-                                    _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves-1).commit();
-                                }
-                                return true;
-                            default:
-                                throw new RuntimeException("invalid menu");
-                        }
-                    } catch (Throwable ex) {
-                        lib.ShowException(getContext(), ex);
+                else
+                {
+                    if (!lib.libString.IsNullOrEmpty(txt)) {
+                        finalArrSaves[finalCount - 1] = txt;
+                        String strSaves = lib.arrStrToCSV(finalArrSaves);
+                        _main.getPreferences(MODE_PRIVATE).edit().putString("strSaves", strSaves).commit();
                     }
                 }
-                break;
+
+
+            }
+            catch (Throwable ex)
+            {
+                lib.ShowException(getContext(),ex);
+            }
+        }
+    };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        try {
+            int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
+            String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
+            String[] arrSaves;
+            if (strSaves != null) {
+                arrSaves = strSaves.replaceAll("^\"|\"$", "").split("\";\"");
+                saves = arrSaves.length;
+            }
+            else
+            {
+                arrSaves = null;
+            }
+            int ID = item.getItemId();
+            finalSaves = saves;
+            finalStrSaves = strSaves;
+            finalArrSaves = arrSaves;
+            switch (ID) {
+                case R.id.mnu_save:
+                    input = new EditText(getContext());
+                    AlertDialog dlg = lib.getInputBox(getContext(), getString(R.string.save_result), getString(R.string.name), "", false, ClickListenerSave ,null,input);
+                    dlg.show();
+                    return true;
+                default:
+                    if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 4) {
+                        try {
+                            //ComplexPreferences prefs2 = ComplexPreferences.getComplexPreferences(getContext(), "save", MODE_PRIVATE);
+                            int count = (ID - ID_MENU_SAVE) / 4 + 1;
+                            int sub = (ID - ID_MENU_SAVE) % 4;
+                            switch (sub) {
+                                case 0:
+                                    break;
+                                case 1:
+                                    String bytes = _main.getPreferences(MODE_PRIVATE).getString("save" + count, null);
+                                    if (!lib.libString.IsNullOrEmpty(bytes)) {
+                                        //b = prefs2.getObject("save" + count, Bundle.class);
+                                        Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
+                                        Bundle b;
+                                        try {
+                                            byte[] data = decodeBase64(bytes.getBytes("UTF-8"));
+                                            p.unmarshall(data, 0, data.length);
+                                            p.setDataPosition(0);
+                                            b = p.readBundle();
+                                        } finally {
+                                            p.recycle();
+                                        }
+                                        _lastQuery = b.getString("lastquery");
+                                        _txt = b.getStringArray("txt");
+                                        Selected = b.getIntegerArrayList("Selected");
+                                        if (!lib.libString.IsNullOrEmpty(_lastQuery)) {
+                                            buildTreeRep(_lastQuery, true, _txt, Selected, b);
+                                        }
+                                    }
+                                    return true;
+                                case 2:
+                                    input = new EditText(getContext());
+                                    finalCount = count;
+                                    dlg = lib.getInputBox(getContext(), getString(R.string.rename_result), getString(R.string.name), arrSaves[count - 1], false, ClickListenerRename ,null,input);
+                                    dlg.show();
+                                    return true;
+                                case 3:
+                                    lib.yesnoundefined res2 = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), arrSaves[count - 1]), getString(R.string.delete), false);
+                                    if (res2 == lib.yesnoundefined.yes) {
+                                        arrSaves[count - 1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
+                                        strSaves = lib.arrStrToCSV(arrSaves);
+                                        SharedPreferences prefs = _main.getPreferences(MODE_PRIVATE);
+                                        prefs.edit().putString("strSaves", strSaves).commit();
+                                        prefs.edit().remove("save" + count).commit();
+                                        for (int i = count; i < saves; i++) {
+                                            prefs.edit().putString("save" + i, prefs.getString("save" + (i + 1), null)).commit();
+                                        }
+                                        if (count < saves) prefs.edit().remove("save" + saves);
+                                        _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves - 1).commit();
+                                    }
+                                    return true;
+                                default:
+                                    throw new RuntimeException("invalid menu");
+                            }
+                        } catch (Throwable ex) {
+                            lib.ShowException(getContext(), ex);
+                        }
+                    }
+                    break;
+            }
+        }
+        catch (Throwable ex)
+        {
+            lib.ShowException(getContext(),ex);
         }
 
         return super.onOptionsItemSelected(item);
@@ -1027,6 +1099,9 @@ public class MedActivity extends Fragment {
         viewGroup = (RelativeLayout) view.findViewById(R.id.container);
         //_main.setSupportActionBar(toolbar);
         //setLightStatusBar(viewGroup);
+    }
+
+    private class ClickListenerSave {
     }
 }
 

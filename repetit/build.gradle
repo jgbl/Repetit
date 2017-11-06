@@ -7,8 +7,8 @@ android {
         applicationId "jmg.de.org.repetit"
         minSdkVersion 7
         targetSdkVersion 23
-        versionCode 511
-        versionName "0.511"
+        versionCode 512
+        versionName "0.512"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary= true
     }
@@ -19,12 +19,14 @@ android {
             storeFile file('/pub/keystore')
             storePassword '89374thd'
         }
+        /*
         debug {
             keyAlias 'repetit'
             keyPassword '89374thd'
             storeFile file('/pub/keystore')
             storePassword '89374thd'
         }
+        */
     }
 
     buildTypes {

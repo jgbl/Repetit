@@ -824,6 +824,47 @@ public class lib
         return null;
     }
 
+    public static AlertDialog getInputBox(Context context,
+                                                String title,
+                                                String msg,
+                                                String prompt,
+                                                boolean center,AlertDialog.OnClickListener listenerOK, AlertDialog.OnClickListener listenerCancel, final EditText input)
+    {
+        // System.Threading.SynchronizationContext.Current.Post(new
+        // System.Threading.SendOrPostCallback(DelShowException),new
+        // ExStateInfo(context, ex));
+        if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
+        gStatus = "ShowMessageYesNoWithCheckbox";
+        try
+        {
+
+            DialogResultYes = yesnoundefined.undefined;
+            AlertDialog.Builder A = new AlertDialog.Builder(context);
+            A.setPositiveButton(context.getString(R.string.ok), listenerOK);
+            A.setNegativeButton(context.getString(R.string.cancel), listenerCancel);
+            A.setMessage(msg);
+            A.setTitle(title);
+            // = new EditText(context);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            input.setText(prompt);
+            A.setView(input);
+            AlertDialog dlg = A.create();
+
+            if (center)
+            {
+                TextView messageView = (TextView) dlg.findViewById(android.R.id.message);
+                messageView.setGravity(Gravity.CENTER);
+            }
+            return  dlg;
+}
+        catch (Exception ex)
+        {
+            ShowException(context, ex);
+        }
+        return null;
+    }
+
     public static OkCancelStringResult InputBox(Context context,
                                                 String title,
                                                 String msg,
@@ -1889,7 +1930,7 @@ public class lib
         StringBuilder strSaves = new StringBuilder();
         for (String s : arrSaves) {
             if (lib.libString.IsNullOrEmpty(s)) continue;
-            if (strSaves != null) strSaves.append(";");
+            if (strSaves.length()>0) strSaves.append(";");
             else strSaves.append("");
             strSaves.append("\"" + s + "\"");
         }
