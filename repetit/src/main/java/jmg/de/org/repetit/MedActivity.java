@@ -1101,7 +1101,6 @@ public class MedActivity extends Fragment {
         //setLightStatusBar(viewGroup);
     }
 
-    private class ClickListenerSave {
-    }
+
 }
 

@@ -1,5 +1,7 @@
 package jmg.de.org.repetit;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity
 {
 
     private static final String TAG = "MainActivity";
+    private final Thread.UncaughtExceptionHandler defaultUEH;
     private TextView mTextMessage;
     private boolean isTV;
     private boolean isWatch;
@@ -45,9 +48,55 @@ public class MainActivity extends AppCompatActivity
     public String lastQuery = "";
     public boolean blnSearchWholeWord;
     public ArrayList<Integer> selected = new ArrayList<>();
+    private Thread.UncaughtExceptionHandler _unCaughtExceptionHandler =
+            new Thread.UncaughtExceptionHandler()
+            {
+                @Override
+                public void uncaughtException(Thread thread, Throwable ex)
+                {
+                    try
+                    {
+                        dbSqlite sql;
+                        if (MainActivity.this.db != null)
+                        {
+                            sql = MainActivity.this.db;
+                        }
+                        else
+                        {
+                            sql = new dbSqlite(getApplicationContext(), false);
+                        }
+                        sql.createDataBase();
+                        sql.InsertError(ex, "uncaughtExceptionHandler", null);
+                        sql.close();
+                    }
+                    catch (Throwable throwable)
+                    {
+                        Log.e(TAG,"dbSqlite",throwable);
+                        throwable.printStackTrace();
+                    }
+                    /*
+                    // here I do logging of exception to a db
+                    PendingIntent myActivity = PendingIntent.getActivity(MainActivity.this,
+                            192837, new Intent(MainActivity.this, MainActivity.class),
+                            PendingIntent.FLAG_ONE_SHOT);
+                    AlarmManager alarmManager;
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            15000, myActivity);
+                    System.exit(2);
+                    */
+                    // re-throw critical exception further to the os (important)
+                    defaultUEH.uncaughtException(thread, ex);
+                }
+            };
+
 
     public MainActivity()
     {
+        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+
+        // setup handler for uncaught exception
+        Thread.setDefaultUncaughtExceptionHandler(_unCaughtExceptionHandler);
     }
 
     @Override

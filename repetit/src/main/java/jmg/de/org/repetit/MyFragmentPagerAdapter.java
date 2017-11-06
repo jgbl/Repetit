@@ -32,7 +32,8 @@ import jmg.de.org.repetit.lib.lib;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-	int PAGE_COUNT = 2;
+	int PAGE_COUNT = 3;
+	public SQLiteDataActivity fragData;
 	public SymptomsActivity fragSymptoms;
 	public MedActivity fragMed;
 	public SettingsActivity fragSettings;
@@ -64,6 +65,12 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 					{
 						fragSymptoms = (SymptomsActivity) f;
 						fragSymptoms._main = main;
+						//fragChooser.onCreateView(Li, main.Layout, null);
+					}
+					else if (f instanceof SQLiteDataActivity)
+					{
+						fragData = (SQLiteDataActivity) f;
+						fragData._main = main;
 						//fragChooser.onCreateView(Li, main.Layout, null);
 					}
 					/*
@@ -123,6 +130,20 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 				}
 				LastItem = fragSettings;
 				return fragSettings;
+			case SQLiteDataActivity.fragID:
+				if (fragData==null)
+				{
+					fragData = new SQLiteDataActivity();
+					//fragSettings.init(main.getSettingsIntent(),main);
+				}
+				LastItem = fragData;
+				try {
+					fragData.init(main.db);
+				} catch (Throwable throwable) {
+					throwable.printStackTrace();
+				}
+				return fragData;
+
 
 		}
 		
@@ -132,7 +153,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 	/** Returns the number of pages */
 	@Override
 	public int getCount() {		
-		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 2;
+		if (Build.VERSION.SDK_INT < 11) PAGE_COUNT = 3;
 		return PAGE_COUNT;
 	}
 	@Override

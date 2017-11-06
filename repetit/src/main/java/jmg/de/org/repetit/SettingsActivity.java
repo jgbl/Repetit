@@ -25,7 +25,7 @@ import me.texy.treeview.TreeView;
  */
 
 public class SettingsActivity extends Fragment {
-public final  static int fragID = 2;
+public final  static int fragID = 3;
     public MainActivity _main;
 
     protected Toolbar toolbar;

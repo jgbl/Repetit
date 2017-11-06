@@ -71,6 +71,10 @@
     <string name="rename">rename</string>
     <string name="results">results</string>
     <string name="rename_result">rename result</string>
+    <string name="gotolast">goto last error</string>
+    <string name="deleteerrors">delete all errors</string>
+    <string name="export">export errors</string>
+    <string name="closeerrors">goto medicaments</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

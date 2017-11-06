@@ -84,4 +84,8 @@
     <string name="open">öffnen</string>
     <string name="rename">umbenennen</string>
     <string name="rename_result">Ergebnis umbenennen</string>
+    <string name="gotolast">Zum letzten Fehler springen</string>
+    <string name="deleteerrors">Alle Fehlerdaten löschen</string>
+    <string name="closeerrors">Zum ersten Fenster springen</string>
+    <string name="export">Fehlerdatenbank exportieren</string>
 </resources>
