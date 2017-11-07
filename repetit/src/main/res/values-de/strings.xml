@@ -88,4 +88,5 @@
     <string name="deleteerrors">Alle Fehlerdaten löschen</string>
     <string name="closeerrors">Zum ersten Fenster springen</string>
     <string name="export">Fehlerdatenbank exportieren</string>
+    <string name="DisclaimerAccept">Den Disclaimer akzeptieren</string>
 </resources>

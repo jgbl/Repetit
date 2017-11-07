@@ -1903,6 +1903,29 @@ public class lib
         return res2;
     }
 
+    public static yesnoundefined AcceptDisclaimer(Context context, Locale L) throws IOException
+    {
+        InputStream is;
+        if ((L.equals( Locale.GERMAN)) || (L.equals( Locale.GERMANY)))
+        {
+            is = context.getAssets().open("DISCLAIMERDe");
+        }
+        else
+        {
+            is = context.getAssets().open("DISCLAIMER");
+        }
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        String strPrivacyPolicy = s.hasNext() ? s.next() : "";
+        s.close();
+        is.close();
+        lib.yesnoundefined res2 = (lib.ShowMessageYesNo(context,
+                strPrivacyPolicy,
+                context.getString(R.string.DisclaimerAccept),
+                true));
+        return res2;
+    }
+
+
     public static void ShowHelp(Context context, Locale L) throws IOException
     {
         InputStream is;

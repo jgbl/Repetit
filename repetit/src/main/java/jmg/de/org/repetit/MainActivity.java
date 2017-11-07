@@ -232,7 +232,10 @@ public class MainActivity extends AppCompatActivity
 
             lib.yesnoundefined res2 = lib.AcceptPrivacyPolicy(this, Locale.getDefault());
 
-            if (res == lib.yesnoundefined.yes && res2 == lib.yesnoundefined.yes)
+            lib.yesnoundefined res3 = lib.AcceptDisclaimer(this, Locale.getDefault());
+
+
+            if (res == lib.yesnoundefined.yes && res2 == lib.yesnoundefined.yes && res3 == lib.yesnoundefined.yes)
             {
                 getPreferences(Context.MODE_PRIVATE).edit().putBoolean("LicenseAccepted", true).commit();
             }
