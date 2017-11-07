@@ -321,12 +321,18 @@ public class SymptomsActivity extends Fragment {
         switch (item.getItemId()) {
             case R.id.cmnuSearch:
                 //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
-                TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
-                Uri uri = Uri.parse("http://www.google.com/#q=" + h.SymptomText );
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-                //editNote(info.id);
-                return true;
+                if (info.treeNode.getValue() instanceof TreeNodeHolderSympt) {
+                    TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                    Uri uri = Uri.parse("http://www.google.com/#q=" + h.SymptomText);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                    //editNote(info.id);
+                    return true;
+                }
+                else
+                {
+                    return super.onContextItemSelected(item);
+                }
             case R.id.cmnuShowAll:
                 //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
                 treeView.collapseNode(info.treeNode);

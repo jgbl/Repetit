@@ -332,25 +332,28 @@ public class MedActivity extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        ContextMenuRecyclerView.RecyclerViewContextMenuInfo info = (ContextMenuRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.cmnuSearch:
-                String search;
-                if (info.treeNode.getValue() instanceof TreeNodeHolderMed) {
-                    TreeNodeHolderMed h = (TreeNodeHolderMed) info.treeNode.getValue();
-                    search = h.Name;
-                } else {
-                    TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
-                    search = h.SymptomText;
-                }
-                Uri uri = Uri.parse("http://www.google.com/#q=" + search);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-                return true;
-            case R.id.cmnuShowAll:
-                //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
-                treeView.collapseNode(info.treeNode);
-                info.treeNode.getChildren().clear();
+        try {
+            ContextMenuRecyclerView.RecyclerViewContextMenuInfo info = (ContextMenuRecyclerView.RecyclerViewContextMenuInfo) item.getMenuInfo();
+            switch (item.getItemId()) {
+                case R.id.cmnuSearch:
+                    String search;
+                    if (info.treeNode.getValue() instanceof TreeNodeHolderMed) {
+                        TreeNodeHolderMed h = (TreeNodeHolderMed) info.treeNode.getValue();
+                        search = h.Name;
+                    } else if (info.treeNode.getValue() instanceof TreeNodeHolderSympt) {
+                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                        search = h.SymptomText;
+                    } else {
+                        throw new RuntimeException("TreeNodeHolder not found!");
+                    }
+                    Uri uri = Uri.parse("http://www.google.com/#q=" + search);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                    return true;
+                case R.id.cmnuShowAll:
+                    //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
+                    treeView.collapseNode(info.treeNode);
+                    info.treeNode.getChildren().clear();
                 /*if (info.treeNode.getLevel() == 1)
                 {
                     try
@@ -363,12 +366,18 @@ public class MedActivity extends Fragment {
                     }
                 }
                 */
-                info.treeNode.holder.onNodeToggled(info.treeNode, true);
-                //treeView.toggleNode(info.treeNode);
-                //treeView.expandNode(info.treeNode);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+                    info.treeNode.holder.onNodeToggled(info.treeNode, true);
+                    //treeView.toggleNode(info.treeNode);
+                    //treeView.expandNode(info.treeNode);
+                    return true;
+                default:
+                    return super.onContextItemSelected(item);
+            }
+        }
+        catch (Throwable ex)
+        {
+            lib.ShowException(getContext(),ex);
+            return super.onContextItemSelected(item);
         }
     }
 
