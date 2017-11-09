@@ -88,6 +88,14 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 		}
 	}
 
+	public void clear ()
+	{
+		fragData = null;
+		fragMed = null;
+		fragSettings = null;
+		fragSymptoms = null;
+	}
+
 	/** This method will be invoked when a page is requested to create */
 	public Fragment LastItem;
 	

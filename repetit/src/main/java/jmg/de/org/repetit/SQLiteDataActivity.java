@@ -171,6 +171,10 @@ public class SQLiteDataActivity extends Fragment
 
         //cursor.close();
     }
+
+    public void refresh() throws Throwable {
+        ShowSQLiteDBdata();
+    }
 }
 
 

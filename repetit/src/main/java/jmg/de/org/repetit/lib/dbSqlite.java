@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import jmg.de.org.repetit.R;
 
@@ -29,7 +30,7 @@ public class dbSqlite extends SQLiteOpenHelper {
 
     private static String DB_NAME = "replitekent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";
-    private String dbname = DB_NAME;
+    public String dbname = DB_NAME;
     public SQLiteDatabase DataBase;
 
     public Context mContext;
@@ -150,55 +151,69 @@ public class dbSqlite extends SQLiteOpenHelper {
         AssetManager A = mContext.getAssets();
         //int rID = mContext.getResources().getIdentifier("fortyonepost.com.lfas:raw/"+fileName, null, null);
         //InputStream myInput = A.open(DB_NAME);
-
-        // Path to the just created empty db
-        String outFileName = DB_PATH + dbname;
-        if ((new java.io.File(DB_PATH)).isDirectory() == false) {
-            (new java.io.File(DB_PATH)).mkdirs();
-        }
-        //Open the empty db as the output stream
-
-        File file = new File(outFileName);
-
-        if (file.exists()) {
-            file.delete();
-        }
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        OutputStream myOutput = new FileOutputStream(file);
-
-        //transfer bytes from the inputfile to the outputfile
-//C# TO JAVA CONVERTER WARNING: Unsigned integer types have no direct equivalent in Java:
-//ORIGINAL LINE: byte[] buffer = new byte[1024];
-        String[] assetfiles = A.list("db");
-        Arrays.sort(assetfiles);
-        byte[] buffer = new byte[1024];
-        int length;
-        try {
-            for (int i = 0; i < assetfiles.length; i++) //I have definitely less than 10 files; you might have more
-            {
-                String partname = assetfiles[i];
-                if (partname.startsWith("db") && partname.length()==4) {
-                    InputStream instream = A.open("db/" + partname);
-                    while ((length = instream.read(buffer, 0, 1024)) > 0) {
-                        myOutput.write(buffer, 0, length);
-                    }
-                    instream.close();
-                }
+        for (int ii = 0; ii <= 1; ii++) {
+            // Path to the just created empty db
+            String outFileName = DB_PATH + dbname;
+            if (ii == 1) outFileName = outFileName.replace("kent","kent2");
+            if ((new java.io.File(DB_PATH)).isDirectory() == false) {
+                (new java.io.File(DB_PATH)).mkdirs();
             }
+            //Open the empty db as the output stream
 
-        } catch (Throwable ex) {
-            Log.e("copyDatabase", ex.getMessage(), ex);
+            File file = new File(outFileName);
+
             if (file.exists()) {
                 file.delete();
             }
-            return false;
-        } finally {
-            myOutput.flush();
-            myOutput.close();
-            //myInput.close();
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            OutputStream myOutput = new FileOutputStream(file);
+
+            //transfer bytes from the inputfile to the outputfile
+//C# TO JAVA CONVERTER WARNING: Unsigned integer types have no direct equivalent in Java:
+//ORIGINAL LINE: byte[] buffer = new byte[1024];
+            String[] assetfiles;
+            Locale L = Locale.getDefault();
+            String folder;
+            if ((L.equals(Locale.GERMAN)) || (L.equals(Locale.GERMANY))) {
+                folder = "db";
+            } else {
+                folder = "dbEn";
+            }
+            if (ii == 1)
+            {
+                if (folder == "db") folder = "dbEn"; else folder = "db";
+            }
+            assetfiles = A.list(folder);
+            Arrays.sort(assetfiles);
+            byte[] buffer = new byte[1024];
+            int length;
+            try {
+                for (int i = 0; i < assetfiles.length; i++) //I have definitely less than 10 files; you might have more
+                {
+                    String partname = assetfiles[i];
+                    if (partname.startsWith("db") && partname.length() == 4) {
+                        InputStream instream = A.open(folder + "/" + partname);
+                        while ((length = instream.read(buffer, 0, 1024)) > 0) {
+                            myOutput.write(buffer, 0, length);
+                        }
+                        instream.close();
+                    }
+                }
+
+            } catch (Throwable ex) {
+                Log.e("copyDatabase", ex.getMessage(), ex);
+                if (file.exists()) {
+                    file.delete();
+                }
+                return false;
+            } finally {
+                myOutput.flush();
+                myOutput.close();
+                //myInput.close();
+            }
         }
         return true;
         //Close the streams

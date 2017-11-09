@@ -76,6 +76,7 @@
     <string name="export">export errors</string>
     <string name="closeerrors">goto medicaments</string>
     <string name="DisclaimerAccept">accept disclaimer</string>
+    <string name="switch_db">switch database</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

@@ -381,8 +381,8 @@ public class MedActivity extends Fragment {
         }
     }
 
-    public void initTreeView(View view, Bundle savedinstancestate) {
-        initView(view);
+    public void initTreeView(View view, Bundle savedinstancestate) throws  Throwable {
+        if (view!=null)initView(view);
 
         root = TreeNode.root();
         treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
@@ -659,6 +659,10 @@ public class MedActivity extends Fragment {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public void refresh() throws Throwable {
+        buildTree("SELECT * FROM Medikamente ORDER BY Name", true, null);
     }
 
 

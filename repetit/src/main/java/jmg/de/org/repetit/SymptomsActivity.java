@@ -79,7 +79,7 @@ public class SymptomsActivity extends Fragment {
     }
 
     public void initTreeView(View view, Bundle savedinstancestate) throws Throwable {
-        initView(view);
+        if (view!=null)initView(view);
 
         root = TreeNode.root();
         treeView = new TreeView(root, _main, new MyNodeViewFactory());
@@ -96,7 +96,7 @@ public class SymptomsActivity extends Fragment {
         } else {
             buildTree(root, qry, true, false, savedinstancestate);
         }
-        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedinstancestate) {
@@ -797,6 +797,11 @@ public class SymptomsActivity extends Fragment {
         } finally {
             if (c != null) c.close();
         }
+    }
+
+    public void refresh() throws Throwable {
+        String qry = "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text COLLATE NOCASE";
+        buildTree(root, qry, true, false, null);
     }
 }
 

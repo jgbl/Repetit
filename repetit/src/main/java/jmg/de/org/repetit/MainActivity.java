@@ -297,6 +297,23 @@ public class MainActivity extends AppCompatActivity
                 case R.id.mnuHelp:
                     lib.ShowHelp(this,Locale.getDefault());
                     break;
+                case R.id.mnuSwitchDB:
+                    if (db!=null){
+                        db.close();
+                        if(db.dbname.indexOf("kent2")>-1)
+                        {
+                            db.dbname = db.dbname.replace("kent2","kent");
+                        }
+                        else
+                        {
+                            db.dbname = db.dbname.replace("kent","kent2");
+                        }
+                        if (fPA.fragMed!=null)fPA.fragMed.refresh();
+                        if (fPA.fragSymptoms!=null)fPA.fragSymptoms.refresh();
+                        if (fPA.fragData!=null)fPA.fragData.refresh();
+                        mPager.setCurrentItem(MedActivity.fragID);
+                    }
+                    break;
                 case R.id.deselect_all:
                     treeView.deselectAll();
                     break;
