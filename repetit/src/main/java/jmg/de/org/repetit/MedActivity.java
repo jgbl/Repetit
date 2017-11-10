@@ -699,7 +699,7 @@ public class MedActivity extends Fragment {
 
             private void createProgress() {
                 pd = new ProgressDialog(context);
-                pd.setTitle(getString(R.string.Repertoriasing));
+                pd.setTitle(getString(R.string.repertorising));
                 pd.setMessage(getString(R.string.startingRep));
                 pd.setIndeterminate(false);
                 pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -822,7 +822,7 @@ public class MedActivity extends Fragment {
 
             private void createProgress() {
                 pd = new ProgressDialog(context);
-                pd.setTitle(getString(R.string.Repertoriasing));
+                pd.setTitle(getString(R.string.repertorising));
                 pd.setMessage(getString(R.string.startingRep));
                 pd.setIndeterminate(false);
                 pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

@@ -468,7 +468,7 @@ public class SymptomsActivity extends Fragment {
             {
 
                 pd = new ProgressDialog(context);
-                pd.setTitle(getString(R.string.Repertoriasing));
+                pd.setTitle(getString(R.string.repertorising));
                 pd.setMessage(getString(R.string.startingRep));
                 pd.setIndeterminate(false);
                 pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

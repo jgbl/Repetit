@@ -63,7 +63,7 @@
     </string-array>
     <string name="alreadysearched">Es wird bereits eine Suche angezeigt! Möchten Sie diese Suche löschen?</string>
     <string name="continuesearch">Fortfahren</string>
-    <string name="Repertoriasing">repertorisiere</string>
+    <string name="repertorising">repertorisiere</string>
     <string name="firstsymptom">erstes Symptom</string>
     <string name="processingquery">Datenbankabfrage wird verarbeitet</string>
     <string name="startingRep">Repertorisierung wird gestartet</string>
