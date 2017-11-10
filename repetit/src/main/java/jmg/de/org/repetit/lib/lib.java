@@ -1935,8 +1935,7 @@ public class lib
         }
         else
         {
-            return;
-            //is = context.getAssets().open("README");
+            is = context.getAssets().open("README");
         }
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         String strPrivacyPolicy = s.hasNext() ? s.next() : "";
