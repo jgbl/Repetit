@@ -238,6 +238,7 @@ public class dbSqlite extends SQLiteOpenHelper {
                     "\t`exported`\tINTEGER DEFAULT 0\n" +
                     ")";
             this.DataBase.execSQL(sql);
+            this.DataBase.execSQL("PRAGMA foreign_keys = ON;");
         } catch (Throwable ex) {
             try {
                 this.InsertError(ex, "OpenDatabase", "Create Table Errors");
@@ -268,6 +269,14 @@ public class dbSqlite extends SQLiteOpenHelper {
             openDataBase();
         }
         return DataBase.rawQuery(SQL, null);
+
+    }
+
+    public final android.database.Cursor query(String SQL, String[] params) {
+        if (DataBase == null) {
+            openDataBase();
+        }
+        return DataBase.rawQuery(SQL, params);
 
     }
 

@@ -645,7 +645,23 @@ public class SymptomsActivity extends Fragment {
     private static void getParents(MainActivity activity, int ParentSymptomID, ArrayList<TreeNode> list, int ParentMedID) throws Throwable {
         dbSqlite db = activity.db;
         try {
-            Cursor c = db.query("SELECT * FROM Symptome WHERE ID = " + ParentSymptomID);
+            String qry = null;
+            Cursor c;
+            if (ParentMedID<-1000)
+            {
+                qry = "Select SymptomeOFMedikament.GRADE, Symptome.ID, Symptome.Text, "
+                + "Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM "
+                + "Symptome INNER JOIN SymptomeOfMedikament ON Symptome.ID = SymptomeOFMedikament.SymptomID "
+                + "WHERE Symptome.ID = ?"
+                + " AND SymptomeOFMedikament.MedikamentID = ?";
+                c = db.query(qry,new String[]{String.valueOf(ParentSymptomID),String.valueOf(ParentMedID)});
+            }
+            else
+            {
+                qry = "SELECT * FROM Symptome WHERE ID = ?";
+                c = db.query(qry, new String[]{String.valueOf(ParentSymptomID)});
+            }
+
             try {
                 if (c.moveToFirst()) {
                     int ColumnTextId = c.getColumnIndex("Text");
@@ -653,16 +669,20 @@ public class SymptomsActivity extends Fragment {
                     int ColumnShortTextId = c.getColumnIndex("ShortText");
                     int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
                     int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                    int ColumnGrade = ParentMedID>=0 ? c.getColumnIndex(("Grade")) : -1;
                     do {
                         int ID = c.getInt(ColumnIDId);
                         String Text = c.getString(ColumnTextId);
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(activity, 0, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID, 0));
+                        Integer Grade = ColumnGrade>=0 ? c.getInt(ColumnGrade) : null;
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(activity, 0, ShortText + (Grade != null ? "(" + Grade + ")" : ""), "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID, 0));
                         list.add(treeNode);
-                        if (!(ParentSymptomId == null))
+                        if (!(ParentSymptomId == null || ParentSymptomID == 0))
                             getParents(activity, ParentSymptomId, list, ParentMedID);
+                        else
+                            Log.i(TAG,"Sympt" + ID + "ParentSymptomID null");
                     } while (c.moveToNext());
                     //this.treeView.expandNode(treeNodeParent);
                 }
