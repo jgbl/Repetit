@@ -139,7 +139,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
                         Integer Grade = (ColumnGradeId>=0?c.getInt(ColumnGradeId):0);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,h.ParentMedID,Grade));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), h.level + 1, ShortText + ((Grade > 0) ? "(" + Grade + ")" : "") , "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId,h.ParentMedID,Grade));
                         treeNode.setLevel(h.level + 1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());

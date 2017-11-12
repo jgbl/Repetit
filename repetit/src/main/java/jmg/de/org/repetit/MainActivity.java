@@ -344,6 +344,11 @@ public class MainActivity extends AppCompatActivity
                     } else
                         if (mPager.getCurrentItem() == MedActivity.fragID)
                         {
+                            if (!blnAdd && !lib.libString.IsNullOrEmpty(lastQuery)) {
+                                lib.yesnoundefined res = (lib.ShowMessageYesNo(this, getString(R.string.alreadysearched), getString(R.string.continuesearch), false));
+                                if (res != lib.yesnoundefined.yes) break;
+                            }
+
                             qry = fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
                         } else
                         {

@@ -110,7 +110,7 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder implement
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
                         Integer Grade = c.getInt(ColumeGradeID);
-                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID,Grade));
+                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt(h.getContext(), 1, ShortText + "(" + Grade + ")", "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, ParentMedID,Grade));
                         treeNode.setLevel(1);
                         treeNodeParent.addChild(treeNode);
                     } while (c.moveToNext());
