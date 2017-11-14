@@ -338,17 +338,16 @@ public class MainActivity extends AppCompatActivity
                     String[] qry;
                     boolean blnAdd = false;
                     if (item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
+                    if (!blnAdd && !lib.libString.IsNullOrEmpty(lastQuery)) {
+                        lib.yesnoundefined res = (lib.ShowMessageYesNo(this, getString(R.string.alreadysearched), getString(R.string.continuesearch), false));
+                        if (res != lib.yesnoundefined.yes) break;
+                    }
                     if (mPager.getCurrentItem() == SymptomsActivity.fragID)
                     {
                         qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selected);
                     } else
                         if (mPager.getCurrentItem() == MedActivity.fragID)
                         {
-                            if (!blnAdd && !lib.libString.IsNullOrEmpty(lastQuery)) {
-                                lib.yesnoundefined res = (lib.ShowMessageYesNo(this, getString(R.string.alreadysearched), getString(R.string.continuesearch), false));
-                                if (res != lib.yesnoundefined.yes) break;
-                            }
-
                             qry = fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
                         } else
                         {
