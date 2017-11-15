@@ -90,4 +90,5 @@
     <string name="export">Fehlerdatenbank exportieren</string>
     <string name="DisclaimerAccept">Den Disclaimer akzeptieren</string>
     <string name="switch_db">Datenbank wechseln</string>
+    <string name="openfile">Datenbank öffnen</string>
 </resources>

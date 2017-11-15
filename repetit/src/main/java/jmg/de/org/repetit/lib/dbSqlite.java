@@ -26,7 +26,7 @@ import jmg.de.org.repetit.R;
 
 public class dbSqlite extends SQLiteOpenHelper {
     //The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
+    public String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
 
     private static String DB_NAME = "replitekent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";

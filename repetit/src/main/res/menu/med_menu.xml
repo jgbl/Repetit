@@ -11,4 +11,10 @@
         app:showAsAction="never">
         <menu />
     </item>
+    <item
+        android:id="@+id/mnu_open"
+        android:title="@string/openfile"
+        app:showAsAction="never">
+        <menu />
+    </item>
 </menu>

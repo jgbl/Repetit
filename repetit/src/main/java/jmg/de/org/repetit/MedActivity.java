@@ -38,6 +38,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,7 +227,41 @@ public class MedActivity extends Fragment {
         }
     };
 
+    private final static int OpenResultCode = 1001;
+
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (_main==null||data == null)return;
+        Uri uri = data.getData();
+        try
+        {
+            String file = uri.getPath(); // = lib.getRealFilePath(_main,uri);
+            file = file.replace("/document/raw:","");
+            if(!lib.libString.IsNullOrEmpty(file))
+            {
+                if (_main.db!=null){
+                    _main.db.close();
+                    File f = new File(file);
+                    _main.db.DB_PATH = f.getParent() + "/";
+                    _main.db.dbname = f.getName();
+                    _main.db.openDataBase();
+                    if (_main.fPA.fragMed!=null)_main.fPA.fragMed.refresh();
+                    if (_main.fPA.fragSymptoms!=null)_main.fPA.fragSymptoms.refresh();
+                    if (_main.fPA.fragData!=null)_main.fPA.fragData.refresh();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+        }
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         try {
             int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
@@ -249,6 +284,12 @@ public class MedActivity extends Fragment {
                     input = new EditText(getContext());
                     AlertDialog dlg = lib.getInputBox(getContext(), getString(R.string.save_result), getString(R.string.name), "", false, ClickListenerSave ,null,input);
                     dlg.show();
+                    return true;
+                case R.id.mnu_open:
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, OpenResultCode);
                     return true;
                 default:
                     if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 4) {
