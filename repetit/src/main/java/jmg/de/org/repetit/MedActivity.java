@@ -1,5 +1,6 @@
 package jmg.de.org.repetit;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -232,33 +233,49 @@ public class MedActivity extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        super.onActivityResult(requestCode,resultCode,data);
         if (_main==null||data == null)return;
-        Uri uri = data.getData();
-        try
+        if (requestCode == OpenResultCode && resultCode == Activity.RESULT_OK)
         {
-            String file = uri.getPath(); // = lib.getRealFilePath(_main,uri);
-            file = file.replace("/document/raw:","");
-            if(!lib.libString.IsNullOrEmpty(file))
+            Uri uri = data.getData();
+            try
             {
-                if (_main.db!=null){
-                    _main.db.close();
-                    File f = new File(file);
-                    _main.db.DB_PATH = f.getParent() + "/";
-                    _main.db.dbname = f.getName();
-                    _main.db.openDataBase();
-                    if (_main.fPA.fragMed!=null)_main.fPA.fragMed.refresh();
-                    if (_main.fPA.fragSymptoms!=null)_main.fPA.fragSymptoms.refresh();
-                    if (_main.fPA.fragData!=null)_main.fPA.fragData.refresh();
+                String file = uri.getPath(); // = lib.getRealFilePath(_main,uri);
+                file = file.replace("/document/raw:", "");
+                if (!lib.libString.IsNullOrEmpty(file))
+                {
+                    if (_main.db != null)
+                    {
+                        _main.db.close();
+                        File f = new File(file);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+                        {
+                            f.setReadable(true);
+                            f.setWritable(true);
+                        }
+                        boolean a = f.exists();
+                        boolean b = f.canRead();
+                        boolean c = f.canWrite();
+                        if (a && b && c)
+                        {
+                            _main.db.DB_PATH = f.getParent() + "/";
+                            _main.db.dbname = f.getName();
+                            _main.db.openDataBase();
+                            if (_main.fPA.fragMed != null) _main.fPA.fragMed.refresh();
+                            if (_main.fPA.fragSymptoms != null) _main.fPA.fragSymptoms.refresh();
+                            if (_main.fPA.fragData != null) _main.fPA.fragData.refresh();
+                        }
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        catch (Throwable throwable)
-        {
-            throwable.printStackTrace();
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            catch (Throwable throwable)
+            {
+                throwable.printStackTrace();
+            }
         }
     }
 
@@ -289,7 +306,7 @@ public class MedActivity extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
-                    startActivityForResult(intent, OpenResultCode);
+                    startActivityForResult(Intent.createChooser(intent,getString(R.string.openfile)), OpenResultCode);
                     return true;
                 default:
                     if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 4) {
