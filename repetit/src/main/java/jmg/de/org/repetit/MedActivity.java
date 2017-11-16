@@ -242,6 +242,10 @@ public class MedActivity extends Fragment {
             {
                 String file = uri.getPath(); // = lib.getRealFilePath(_main,uri);
                 file = file.replace("/document/raw:", "");
+                if (!new File(file).exists())
+                {
+                    file = lib.getPath(_main,uri);
+                }
                 if (!lib.libString.IsNullOrEmpty(file))
                 {
                     if (_main.db != null)

@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity
                 }
             };
 
+    private Bundle savedInstanceState;
+
 
     public MainActivity()
     {
@@ -142,8 +144,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        requestPermission();
+        requestPermission(savedInstanceState);
         lib.gStatus = "MainActivity onCreate";
+
+    }
+
+    private void init(Bundle savedInstanceState)
+    {
         boolean blnStop = false;
         if (db == null)
         {
@@ -222,18 +229,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //openFilePicker();
+        if (requestCode == REQUEST_WRITE_PERMISSION ) {//&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            init(savedInstanceState);
         }
     }
 
 
 
-    private void requestPermission() {
+    private void requestPermission(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            this.savedInstanceState = savedInstanceState;
             requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
         } else {
-            //openFilePicker();
+            init(savedInstanceState);
         }
     }
 
