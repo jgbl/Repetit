@@ -7,8 +7,8 @@ android {
         applicationId "jmg.de.org.repetit"
         minSdkVersion 7
         targetSdkVersion 23
-        versionCode 558
-        versionName "0.558"
+        versionCode 560
+        versionName "0.560"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary= true
     }
