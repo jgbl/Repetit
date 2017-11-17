@@ -144,8 +144,22 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        requestPermission(savedInstanceState);
         lib.gStatus = "MainActivity onCreate";
+        setContentView(R.layout.activity_main_viewpager);
+        if (savedInstanceState != null) {
+            lastQuery = savedInstanceState.getString("lastquery");
+
+        } else {
+            try {
+                AcceptLicense();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+
+        requestPermission(savedInstanceState);
 
     }
 
@@ -157,6 +171,7 @@ public class MainActivity extends AppCompatActivity
             try
             {
                 db = new dbSqlite(this, false);
+
                 if (!db.createDataBase()){
                     blnStop = true;
                     lib.getDialogOK(this, getString(R.string.DatabaseErrorOlderVersions), getString(R.string.database), new DialogInterface.OnClickListener()
@@ -166,7 +181,7 @@ public class MainActivity extends AppCompatActivity
                         {
                             finish();
                         }
-                    });
+                    }).show();
                 }
             }
             catch (Throwable throwable)
@@ -190,7 +205,6 @@ public class MainActivity extends AppCompatActivity
             }
 
 
-            setContentView(R.layout.activity_main_viewpager);
 
         /* Getting a reference to ViewPager from the layout */
             View pager = this.findViewById(R.id.pager);
@@ -209,18 +223,6 @@ public class MainActivity extends AppCompatActivity
         /* Setting the FragmentPagerAdapter object to the viewPager object */
             mPager.setAdapter(fPA);
 
-            if (savedInstanceState != null) {
-                lastQuery = savedInstanceState.getString("lastquery");
-
-            } else {
-                try {
-                    AcceptLicense();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
         }
 
     }

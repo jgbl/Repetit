@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
 import android.util.Log;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
+import jmg.de.org.repetit.MainActivity;
 import jmg.de.org.repetit.R;
 
 public class dbSqlite extends SQLiteOpenHelper {
@@ -225,6 +227,10 @@ public class dbSqlite extends SQLiteOpenHelper {
 
         //Open the database
         String myPath = DB_PATH + dbname;
+        if (Looper.myLooper() == Looper.getMainLooper() && mContext!=null && mContext instanceof MainActivity)
+        {
+            ((MainActivity) mContext).setTitle(dbname);
+        }
         DataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         isClosed = false;
         stInsertRow = null;
