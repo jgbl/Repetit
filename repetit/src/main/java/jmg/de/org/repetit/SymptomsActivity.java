@@ -131,7 +131,9 @@ public class SymptomsActivity extends Fragment {
                     searchSymptoms(txt, false);
                 }
             });
-            if (savedinstancestate != null) lastQuery = savedinstancestate.getString("lastquery");
+            if (savedinstancestate != null) {
+                lastQuery = savedinstancestate.getString("lastquery");
+            }
             initTreeView(v,savedinstancestate);
 
             return v;
@@ -145,6 +147,11 @@ public class SymptomsActivity extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("lastquery", lastQuery);
+        if (_main.db!=null)
+        {
+            outState.putString("dbname", _main.db.dbname);
+            outState.putString("dbpath", _main.db.DB_PATH);
+        }
         if (treeView != null) {
             if (root != null) {
                 ArrayList<Integer> expSymp = new ArrayList<>();
@@ -181,6 +188,13 @@ public class SymptomsActivity extends Fragment {
     }
 
     private void restoreTreeView(Bundle savedinstancestate) throws Throwable {
+        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+        {
+            _main.db.close();
+            _main.db.dbname = savedinstancestate.getString("dbname");
+            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
+            _main.db.openDataBase();
+        }
         if (treeView != null && savedinstancestate != null) {
             if (root != null) {
                 ArrayList<Integer> expSymp = savedinstancestate.getIntegerArrayList("expSymp");
@@ -450,7 +464,13 @@ public class SymptomsActivity extends Fragment {
 
     private void buildTree(final TreeNode treeNodeParent, final String qry, final boolean refresh, final boolean getParents, final Bundle savedinstancestate) throws Throwable {
         final Context context = getContext();
-
+        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+        {
+            _main.db.close();
+            _main.db.dbname = savedinstancestate.getString("dbname");
+            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
+            _main.db.openDataBase();
+        }
         new AsyncTask<Void, ProgressClass, Integer>()
         {
             public Throwable ex;

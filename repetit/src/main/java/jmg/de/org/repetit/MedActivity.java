@@ -288,13 +288,14 @@ public class MedActivity extends Fragment {
             int saves = _main.getPreferences(MODE_PRIVATE).getInt("saves", 0);
             String strSaves = _main.getPreferences(MODE_PRIVATE).getString("strSaves", null);
             String[] arrSaves;
-            if (strSaves != null) {
+            if (! lib.libString.IsNullOrEmpty(strSaves)) {
                 arrSaves = strSaves.replaceAll("^\"|\"$", "").split("\";\"");
                 saves = arrSaves.length;
             }
             else
             {
                 arrSaves = null;
+                saves = 0;
             }
             int ID = item.getItemId();
             finalSaves = saves;
@@ -361,7 +362,8 @@ public class MedActivity extends Fragment {
                                             prefs.edit().putString("save" + i, prefs.getString("save" + (i + 1), null)).commit();
                                         }
                                         if (count < saves) prefs.edit().remove("save" + saves);
-                                        _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves - 1).commit();
+                                        saves -= 1;
+                                        _main.getPreferences(MODE_PRIVATE).edit().putInt("saves",saves).commit();
                                     }
                                     return true;
                                 default:
@@ -505,6 +507,13 @@ public class MedActivity extends Fragment {
                 _lastQuery = savedinstancestate.getString("lastquery");
                 _txt = savedinstancestate.getStringArray("txt");
                 Selected = savedinstancestate.getIntegerArrayList("Selected");
+                if (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH))
+                {
+                    _main.db.close();
+                    _main.db.dbname = savedinstancestate.getString("dbname");
+                    _main.db.DB_PATH = savedinstancestate.getString("dbpath");
+                    _main.db.openDataBase();
+                }
             }
 
             initTreeView(v, savedinstancestate);
@@ -618,6 +627,11 @@ public class MedActivity extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putString("lastquery", _lastQuery);
         outState.putStringArray("txt", _txt);
+        if (_main.db!=null)
+        {
+            outState.putString("dbname", _main.db.dbname);
+            outState.putString("dbpath", _main.db.DB_PATH);
+        }
         if (treeView != null) {
             if (root != null) {
                 ArrayList<Integer> expMed = new ArrayList<>();
@@ -870,6 +884,13 @@ public class MedActivity extends Fragment {
 
     public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
         final Context context = getContext();
+        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+        {
+            _main.db.close();
+            _main.db.dbname = savedinstancestate.getString("dbname");
+            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
+            _main.db.openDataBase();
+        }
         new AsyncTask<Void, ProgressClass, Integer>() {
             public Throwable ex;
             public int oldmax;

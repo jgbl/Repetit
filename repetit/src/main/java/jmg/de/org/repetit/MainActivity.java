@@ -137,6 +137,12 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle savedInstanceState)
     {
         super.onSaveInstanceState(savedInstanceState);
+        if (db!=null)
+        {
+            savedInstanceState.putString("dbname", db.dbname);
+            savedInstanceState.putString("dbpath", db.DB_PATH);
+        }
+
         savedInstanceState.putString("lastquery", lastQuery);
     }
 
@@ -185,6 +191,12 @@ public class MainActivity extends AppCompatActivity
                 }
                 else
                 {
+                    if (savedInstanceState!=null)
+                    {
+                        db.dbname= savedInstanceState.getString("dbname");
+                        db.DB_PATH = savedInstanceState.getString("dbpath");
+                    }
+
                     db.openDataBase();
                 }
             }
@@ -193,6 +205,19 @@ public class MainActivity extends AppCompatActivity
                 blnStop = true;
                 lib.ShowException(this,throwable);
             }
+
+        }
+        else if(savedInstanceState!=null)
+        {
+                if (!savedInstanceState.getString("dbname").equalsIgnoreCase(db.dbname)||!savedInstanceState.getString("dbpath").equalsIgnoreCase(db.DB_PATH))
+                {
+                    db.close();
+                    db.dbname = savedInstanceState.getString("dbname");
+                    db.DB_PATH = savedInstanceState.getString("dbpath");
+                    db.openDataBase();
+                }
+
+
 
         }
         //lib.main = this;
@@ -289,6 +314,14 @@ public class MainActivity extends AppCompatActivity
     {
         getMenuInflater().inflate(R.menu.home_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        MenuItem item = menu.findItem(R.id.mnuSearchWholeWord);
+        item.setChecked(blnSearchWholeWord);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

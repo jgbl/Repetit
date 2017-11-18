@@ -154,7 +154,8 @@ public class SQLiteDataActivity extends Fragment
 
         if (LISTVIEW == null) return;
         //sqLiteDatabase = sqLiteHelper.getWritableDatabase();
-
+        if (sqLiteHelper==null) sqLiteHelper = ((MainActivity)getActivity()).db;
+        if (sqLiteHelper == null) return;
         cursor = sqLiteHelper.query((blndata?"SELECT * FROM Data":"SELECT * FROM Errors"));
 
         listAdapter = new jmg.de.org.repetit.lib.ListAdapter(SQLiteDataActivity.this, cursor);
