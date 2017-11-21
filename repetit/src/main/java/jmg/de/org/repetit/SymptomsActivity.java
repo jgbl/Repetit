@@ -462,172 +462,193 @@ public class SymptomsActivity extends Fragment {
         return stringBuilder.toString();
     }
 
-    private void buildTree(final TreeNode treeNodeParent, final String qry, final boolean refresh, final boolean getParents, final Bundle savedinstancestate) throws Throwable {
+    private void buildTree(final TreeNode treeNodeParent, final String qry, final boolean refresh, final boolean getParents, final Bundle savedinstancestate) throws Throwable
+    {
         final Context context = getContext();
-        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+
+        if (savedinstancestate != null && _main != null && _main.db != null)
         {
-            _main.db.close();
-            _main.db.dbname = savedinstancestate.getString("dbname");
-            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
-            _main.db.openDataBase();
+            String dbname = savedinstancestate.getString("dbname");
+            String dbpath = savedinstancestate.getString("dbpath");
+            if (dbname != null && dbpath != null && (!dbname.equalsIgnoreCase(_main.db.dbname) || !dbpath.equalsIgnoreCase(_main.db.DB_PATH)))
+            {
+                _main.db.close();
+                _main.db.dbname = dbname;
+                _main.db.DB_PATH = dbname;
+                _main.db.openDataBase();
+            }
         }
-        new AsyncTask<Void, ProgressClass, Integer>()
-        {
-            public Throwable ex;
-            public int counter;
-            public int oldmax;
-            public String oldmsg;
-            ProgressDialog pd;
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                createProgress();
-            }
-
-            private void createProgress()
+            new AsyncTask<Void, ProgressClass, Integer>()
             {
+                public Throwable ex;
+                public int counter;
+                public int oldmax;
+                public String oldmsg;
+                ProgressDialog pd;
 
-                pd = new ProgressDialog(context);
-                pd.setTitle(getString(R.string.repertorising));
-                pd.setMessage(getString(R.string.startingRep));
-                pd.setIndeterminate(false);
-                pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                pd.setCancelable(false);
-                pd.setCanceledOnTouchOutside(false);
-                pd.show();
-
-            }
-
-            @Override
-            protected Integer doInBackground(Void... params)
-            {
-                ProgressClass pc = new ProgressClass(0,100,context.getString(R.string.startingquery),false);
-                publishProgress(pc);
-                if (treeNodeParent.getChildren().size() > 0) {
-                    List<TreeNode> l = treeNodeParent.getChildren();
-                    l.clear();
-                    treeNodeParent.setChildren(l);
-                    //treeView.collapseNode(treeNodeParent);
+                @Override
+                protected void onPreExecute()
+                {
+                    super.onPreExecute();
+                    createProgress();
                 }
-                //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
-                dbSqlite db = ((MainActivity) getActivity()).db;
-                try {
-                    Cursor c = db.query(qry);
-                    try {
-                        if (c.moveToFirst()) {
-                            int ColumnTextId = c.getColumnIndex("Text");
-                            int ColumnIDId = c.getColumnIndex("ID");
-                            int ColumnShortTextId = c.getColumnIndex("ShortText");
-                            int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
-                            int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
-                            if (getParents) lastQuery = qry;
-                            int count = c.getCount();
-                            do {
-                                counter += 1;
-                                if (count<10||counter%(count/10)==0)
+
+                private void createProgress()
+                {
+
+                    pd = new ProgressDialog(context);
+                    pd.setTitle(getString(R.string.repertorising));
+                    pd.setMessage(getString(R.string.startingRep));
+                    pd.setIndeterminate(false);
+                    pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    pd.setCancelable(false);
+                    pd.setCanceledOnTouchOutside(false);
+                    pd.show();
+
+                }
+
+                @Override
+                protected Integer doInBackground(Void... params)
+                {
+                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
+                    publishProgress(pc);
+                    if (treeNodeParent.getChildren().size() > 0)
+                    {
+                        List<TreeNode> l = treeNodeParent.getChildren();
+                        l.clear();
+                        treeNodeParent.setChildren(l);
+                        //treeView.collapseNode(treeNodeParent);
+                    }
+                    //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
+                    dbSqlite db = ((MainActivity) getActivity()).db;
+                    try
+                    {
+                        Cursor c = db.query(qry);
+                        try
+                        {
+                            if (c.moveToFirst())
+                            {
+                                int ColumnTextId = c.getColumnIndex("Text");
+                                int ColumnIDId = c.getColumnIndex("ID");
+                                int ColumnShortTextId = c.getColumnIndex("ShortText");
+                                int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+                                int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                                if (getParents) lastQuery = qry;
+                                int count = c.getCount();
+                                do
                                 {
-                                    pc.update(counter, count, context.getString(R.string.processingquery), false);
-                                    publishProgress(pc);
-                                }
-                                int ID = c.getInt(ColumnIDId);
-                                String Text = c.getString(ColumnTextId);
-                                String ShortText = c.getString(ColumnShortTextId);
-                                Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
-                                Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                                int Level = treeNodeParent.getLevel();
-                                if (treeNodeParent == root) Level = -1;
-                                TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
-                                if (!getParents || ParentSymptomId == null) {
-                                    treeNode.setLevel(Level + 1);
-                                    treeNodeParent.addChild(treeNode);
-                                } else {
-                                    try
+                                    counter += 1;
+                                    if (count < 10 || counter % (count / 10) == 0)
                                     {
-                                        AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                                        pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                        publishProgress(pc);
                                     }
-                                    catch (Throwable throwable)
+                                    int ID = c.getInt(ColumnIDId);
+                                    String Text = c.getString(ColumnTextId);
+                                    String ShortText = c.getString(ColumnShortTextId);
+                                    Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+                                    Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+                                    int Level = treeNodeParent.getLevel();
+                                    if (treeNodeParent == root) Level = -1;
+                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
+                                    if (!getParents || ParentSymptomId == null)
                                     {
-                                        this.ex = throwable;
+                                        treeNode.setLevel(Level + 1);
+                                        treeNodeParent.addChild(treeNode);
+                                    } else
+                                    {
+                                        try
+                                        {
+                                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                                        }
+                                        catch (Throwable throwable)
+                                        {
+                                            this.ex = throwable;
+                                        }
                                     }
-                                }
-                            } while (c.moveToNext());
-                            //this.treeView.expandNode(treeNodeParent);
+                                } while (c.moveToNext());
+                                //this.treeView.expandNode(treeNodeParent);
+                            }
                         }
-                    } finally {
-                        c.close();
+                        finally
+                        {
+                            c.close();
+                        }
+                    }
+                    catch (Throwable ex)
+                    {
+                        this.ex = ex;
+                    }
+                    finally
+                    {
+                        db.close();
+                    }
+
+
+                    return counter;
+
+                }
+
+                @Override
+                protected void onProgressUpdate(ProgressClass... params)
+                {
+                    try
+                    {
+                        super.onProgressUpdate(params);
+                        ProgressClass p = params[0];
+                        if (pd != null)
+                        {
+                            if (p.blnRestart)
+                            {
+                                pd.dismiss();
+                                createProgress();
+                                pd.show();
+                            }
+                            pd.setProgress(p.counter);
+                            if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg))
+                            {
+                                pd.setMessage(p.msg);
+                                oldmsg = p.msg;
+                            }
+                            if (p.max > 0 && !(p.max == oldmax))
+                            {
+                                pd.setMax(p.max);
+                                oldmax = p.max;
+                            }
+                        } else
+                        {
+                            Log.i("dbsqlite", "no progress");
+                        }
+                    }
+                    catch (Throwable ex)
+                    {
+                        ex.printStackTrace();
                     }
                 }
-                catch (Throwable ex)
+
+                @Override
+                protected void onPostExecute(final Integer result)
                 {
-                    this.ex = ex;
-                }
-                finally {
-                    db.close();
-                }
+                    // continue what you are doing...
 
-
-                return  counter;
-
-            }
-
-            @Override
-            protected void onProgressUpdate(ProgressClass... params)
-            {
-                try
-                {
-                    super.onProgressUpdate(params);
-                    ProgressClass p = params[0];
-                    if (pd != null)
+                    pd.dismiss();
+                    if (refresh && treeView != null) treeView.refreshTreeView();
+                    if (this.ex != null) lib.ShowException(context, ex);
+                    if (savedinstancestate != null) try
                     {
-                        if (p.blnRestart)
-                        {
-                            pd.dismiss();
-                            createProgress();
-                            pd.show();
-                        }
-                        pd.setProgress(p.counter);
-                        if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg))
-                        {
-                            pd.setMessage(p.msg);
-                            oldmsg = p.msg;
-                        }
-                        if (p.max > 0 && !(p.max==oldmax))
-                        {
-                            pd.setMax(p.max);
-                            oldmax = p.max;
-                        }
-                    } else
+                        restoreTreeView(savedinstancestate);
+                    }
+                    catch (Throwable throwable)
                     {
-                        Log.i("dbsqlite", "no progress");
+                        throwable.printStackTrace();
                     }
                 }
-                catch (Throwable ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-
-            @Override
-            protected void onPostExecute( final Integer result ) {
-                // continue what you are doing...
-
-                pd.dismiss();
-                if (refresh && treeView != null) treeView.refreshTreeView();
-                if (this.ex != null) lib.ShowException(context,ex);
-                if (savedinstancestate!=null) try
-                {
-                    restoreTreeView(savedinstancestate);
-                }
-                catch (Throwable throwable)
-                {
-                    throwable.printStackTrace();
-                }
-            }
 
 
+            }.execute();
+        }
 
-        }.execute();
-    }
+
 
     public static void AddNodesRecursive(MainActivity activity, int Level, TreeNode treeNode, TreeNode treeNodeParent, Integer ParentSymptomId, Integer Weight, int ParentMedID) throws Throwable {
         ArrayList<TreeNode> list = new ArrayList<>();

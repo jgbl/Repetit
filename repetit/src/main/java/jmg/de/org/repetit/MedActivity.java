@@ -503,18 +503,6 @@ public class MedActivity extends Fragment {
                     if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, false);
                 }
             });
-            if (savedinstancestate != null) {
-                _lastQuery = savedinstancestate.getString("lastquery");
-                _txt = savedinstancestate.getStringArray("txt");
-                Selected = savedinstancestate.getIntegerArrayList("Selected");
-                if (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH))
-                {
-                    _main.db.close();
-                    _main.db.dbname = savedinstancestate.getString("dbname");
-                    _main.db.DB_PATH = savedinstancestate.getString("dbpath");
-                    _main.db.openDataBase();
-                }
-            }
 
             initTreeView(v, savedinstancestate);
             return v;
@@ -760,136 +748,182 @@ public class MedActivity extends Fragment {
 
     public void buildTree(final String qry, final boolean refresh, final Bundle savedinstancestate) {
         final Context context = getContext();
-        new AsyncTask<Void, ProgressClass, Integer>() {
-            public Throwable ex;
-            public int counter;
-            public int oldmax;
-            public String oldmsg;
-            ProgressDialog pd;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                createProgress();
+        if (savedinstancestate!=null && _main != null && _main.db != null)
+        {
+            String dbname = savedinstancestate.getString("dbname");
+            String dbpath = savedinstancestate.getString("dbpath");
+            if (dbname != null && dbpath != null && (!dbname.equalsIgnoreCase(_main.db.dbname) || !dbpath.equalsIgnoreCase(_main.db.DB_PATH)))
+            {
+                _main.db.close();
+                _main.db.dbname = dbname;
+                _main.db.DB_PATH = dbname;
+                _main.db.openDataBase();
             }
+        }
+            new AsyncTask<Void, ProgressClass, Integer>()
+            {
+                public Throwable ex;
+                public int counter;
+                public int oldmax;
+                public String oldmsg;
+                ProgressDialog pd;
 
-            private void createProgress() {
-                pd = new ProgressDialog(context);
-                pd.setTitle(getString(R.string.repertorising));
-                pd.setMessage(getString(R.string.startingRep));
-                pd.setIndeterminate(false);
-                pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                pd.setCancelable(false);
-                pd.setCanceledOnTouchOutside(false);
-                pd.show();
-            }
-
-            @Override
-            protected Integer doInBackground(Void... params) {
-                ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
-                publishProgress(pc);
-                if (root.getChildren().size() > 0) {
-                    List<TreeNode> l = root.getChildren();
-                    l.clear();
-                    root.setChildren(l);
+                @Override
+                protected void onPreExecute()
+                {
+                    super.onPreExecute();
+                    createProgress();
                 }
-                dbSqlite db = ((MainActivity) getActivity()).db;
-                try {
 
-                    Cursor c = db.query(qry);
-                    try {
-                        if (c.moveToFirst()) {
-                            final int ColumnNameId = c.getColumnIndex("Name");
-                            final int ColumnIDId = c.getColumnIndex("ID");
-                            final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
-                            int count = c.getCount();
-                            do {
-                                counter += 1;
-                                if (count < 10 || counter % (count / 10) == 0) {
-                                    pc.update(counter, count, context.getString(R.string.processingquery), false);
-                                    publishProgress(pc);
-                                }
-                                int ID = c.getInt(ColumnIDId);
-                                String Name = c.getString(ColumnNameId);
-                                String Beschreibung = c.getString(ColumnBeschreibungId);
-                                TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, Name, "Med" + ID, ID, Name, Beschreibung));
-                                treeNode.setLevel(0);
-                                root.addChild(treeNode);
+                private void createProgress()
+                {
+                    pd = new ProgressDialog(context);
+                    pd.setTitle(getString(R.string.repertorising));
+                    pd.setMessage(getString(R.string.startingRep));
+                    pd.setIndeterminate(false);
+                    pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    pd.setCancelable(false);
+                    pd.setCanceledOnTouchOutside(false);
+                    pd.show();
+                }
 
-                            } while (c.moveToNext());
+                @Override
+                protected Integer doInBackground(Void... params)
+                {
+                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
+                    publishProgress(pc);
+                    if (root.getChildren().size() > 0)
+                    {
+                        List<TreeNode> l = root.getChildren();
+                        l.clear();
+                        root.setChildren(l);
+                    }
+                    dbSqlite db = ((MainActivity) getActivity()).db;
+                    try
+                    {
+
+                        Cursor c = db.query(qry);
+                        try
+                        {
+                            if (c.moveToFirst())
+                            {
+                                final int ColumnNameId = c.getColumnIndex("Name");
+                                final int ColumnIDId = c.getColumnIndex("ID");
+                                final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                                int count = c.getCount();
+                                do
+                                {
+                                    counter += 1;
+                                    if (count < 10 || counter % (count / 10) == 0)
+                                    {
+                                        pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                        publishProgress(pc);
+                                    }
+                                    int ID = c.getInt(ColumnIDId);
+                                    String Name = c.getString(ColumnNameId);
+                                    String Beschreibung = c.getString(ColumnBeschreibungId);
+                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, Name, "Med" + ID, ID, Name, Beschreibung));
+                                    treeNode.setLevel(0);
+                                    root.addChild(treeNode);
+
+                                } while (c.moveToNext());
+                            }
                         }
-                    } finally {
-                        c.close();
+                        finally
+                        {
+                            c.close();
+                        }
+
+                    }
+                    catch (Throwable ex)
+                    {
+                        this.ex = ex;
+                    }
+                    finally
+                    {
+                        db.close();
                     }
 
-                } catch (Throwable ex) {
-                    this.ex = ex;
-                } finally {
-                    db.close();
+
+                    return counter;
+
                 }
 
-
-                return counter;
-
-            }
-
-            @Override
-            protected void onProgressUpdate(ProgressClass... params) {
-                try {
-                    super.onProgressUpdate(params);
-                    ProgressClass p = params[0];
-                    if (pd != null) {
-                        if (p.blnRestart) {
-                            pd.dismiss();
-                            createProgress();
-                            pd.show();
+                @Override
+                protected void onProgressUpdate(ProgressClass... params)
+                {
+                    try
+                    {
+                        super.onProgressUpdate(params);
+                        ProgressClass p = params[0];
+                        if (pd != null)
+                        {
+                            if (p.blnRestart)
+                            {
+                                pd.dismiss();
+                                createProgress();
+                                pd.show();
+                            }
+                            pd.setProgress(p.counter);
+                            if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg))
+                            {
+                                pd.setMessage(p.msg);
+                                oldmsg = p.msg;
+                            }
+                            if (p.max > 0 && !(p.max == oldmax))
+                            {
+                                pd.setMax(p.max);
+                                oldmax = p.max;
+                            }
+                        } else
+                        {
+                            Log.i("dbsqlite", "no progress");
                         }
-                        pd.setProgress(p.counter);
-                        if (p.msg != null && !p.msg.equalsIgnoreCase(oldmsg)) {
-                            pd.setMessage(p.msg);
-                            oldmsg = p.msg;
-                        }
-                        if (p.max > 0 && !(p.max == oldmax)) {
-                            pd.setMax(p.max);
-                            oldmax = p.max;
-                        }
-                    } else {
-                        Log.i("dbsqlite", "no progress");
                     }
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
+                    catch (Throwable ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            protected void onPostExecute(final Integer result) {
-                // continue what you are doing...
+                @Override
+                protected void onPostExecute(final Integer result)
+                {
+                    // continue what you are doing...
 
-                pd.dismiss();
-                if (refresh && treeView != null) treeView.refreshTreeView();
-                if (savedinstancestate != null) try {
-                    restoreTreeView(savedinstancestate);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+                    pd.dismiss();
+                    if (refresh && treeView != null) treeView.refreshTreeView();
+                    if (savedinstancestate != null) try
+                    {
+                        restoreTreeView(savedinstancestate);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
+                    if (this.ex != null) lib.ShowException(context, ex);
                 }
-                if (this.ex != null) lib.ShowException(context, ex);
-            }
 
 
-        }.execute();
+            }.execute();
+        }
 
 
-    }
 
 
     public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
         final Context context = getContext();
-        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+        if (savedinstancestate!=null && _main != null && _main.db!=null)
         {
-            _main.db.close();
-            _main.db.dbname = savedinstancestate.getString("dbname");
-            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
-            _main.db.openDataBase();
+            String dbname = savedinstancestate.getString("dbname");
+            String dbpath = savedinstancestate.getString("dbpath");
+            if (dbname != null && dbpath != null && (!dbname.equalsIgnoreCase(_main.db.dbname) || !dbpath.equalsIgnoreCase(_main.db.DB_PATH)))
+            {
+                _main.db.close();
+                _main.db.dbname = dbname;
+                _main.db.DB_PATH = dbname;
+                _main.db.openDataBase();
+            }
         }
         new AsyncTask<Void, ProgressClass, Integer>() {
             public Throwable ex;

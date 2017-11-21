@@ -209,14 +209,15 @@ public class MainActivity extends AppCompatActivity
         }
         else if(savedInstanceState!=null)
         {
-                if (!savedInstanceState.getString("dbname").equalsIgnoreCase(db.dbname)||!savedInstanceState.getString("dbpath").equalsIgnoreCase(db.DB_PATH))
-                {
-                    db.close();
-                    db.dbname = savedInstanceState.getString("dbname");
-                    db.DB_PATH = savedInstanceState.getString("dbpath");
-                    db.openDataBase();
-                }
-
+            String dbname = savedInstanceState.getString("dbname");
+            String dbpath = savedInstanceState.getString("dbpath");
+            if (dbname != null && dbpath != null && (!dbname.equalsIgnoreCase(db.dbname) || !dbpath.equalsIgnoreCase(db.DB_PATH)))
+            {
+                db.close();
+                db.dbname = dbname;
+                db.DB_PATH = dbname;
+                db.openDataBase();
+            }
 
 
         }
@@ -268,7 +269,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private void requestPermission(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             this.savedInstanceState = savedInstanceState;
             requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
         } else {
@@ -370,14 +371,22 @@ public class MainActivity extends AppCompatActivity
                 case R.id.mnuSwitchDB:
                     if (db!=null){
                         db.close();
-                        if(db.dbname.indexOf("kent2")>-1)
+                        if(db.DB_PATH.equalsIgnoreCase(db.original_path))
                         {
-                            db.dbname = db.dbname.replace("kent2","kent");
+                            if (db.dbname.indexOf("kent2") > -1)
+                            {
+                                db.dbname = db.dbname.replace("kent2", "kent");
+                            } else
+                            {
+                                db.dbname = db.dbname.replace("kent", "kent2");
+                            }
                         }
                         else
                         {
-                            db.dbname = db.dbname.replace("kent","kent2");
+                            db.DB_PATH = db.original_path;
+                            db.dbname = db.original_name;
                         }
+                        db.openDataBase();
                         if (fPA.fragMed!=null)fPA.fragMed.refresh();
                         if (fPA.fragSymptoms!=null)fPA.fragSymptoms.refresh();
                         if (fPA.fragData!=null)fPA.fragData.refresh();

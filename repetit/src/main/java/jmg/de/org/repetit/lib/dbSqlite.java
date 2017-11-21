@@ -29,13 +29,15 @@ import jmg.de.org.repetit.R;
 public class dbSqlite extends SQLiteOpenHelper {
     //The Android's default system path of your application database.
     public String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
-
+    public String original_path = null;
     private static String DB_NAME = "replitekent.sqlite";
     private static String DB_NAMEERR = "Errors.sqlite";
     public String dbname = DB_NAME;
     public SQLiteDatabase DataBase;
 
     public Context mContext;
+
+    public String original_name;
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -88,6 +90,8 @@ public class dbSqlite extends SQLiteOpenHelper {
         if (DB_PATH.endsWith("/") == false) {
             DB_PATH = DB_PATH + "/";
         }
+        original_path = DB_PATH;
+        original_name = dbname;
     }
 
     public final boolean createDataBase() {
@@ -224,7 +228,7 @@ public class dbSqlite extends SQLiteOpenHelper {
     }
 
     public final void openDataBase() {
-
+        if (DataBase!=null)return;
         //Open the database
         String myPath = DB_PATH + dbname;
         if (Looper.myLooper() == Looper.getMainLooper() && mContext!=null && mContext instanceof MainActivity)
