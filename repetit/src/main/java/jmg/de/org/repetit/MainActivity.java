@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
             {
                 db.close();
                 db.dbname = dbname;
-                db.DB_PATH = dbname;
+                db.DB_PATH = dbpath;
                 db.openDataBase();
             }
 
@@ -439,6 +439,8 @@ public class MainActivity extends AppCompatActivity
                     String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                             "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                     qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+                    lastQuery = qry[1];
+                    fPA.fragMed._lastQuery = null;
                     fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected, null);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;

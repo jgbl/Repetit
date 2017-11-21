@@ -76,7 +76,7 @@ public class MedActivity extends Fragment {
     private AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
-    private String _lastQuery;
+    String _lastQuery;
     private String[] _txt;
     private ArrayList<Integer> Selected;
     private String[] finalArrSaves;
@@ -503,7 +503,10 @@ public class MedActivity extends Fragment {
                     if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, false);
                 }
             });
-
+            if (savedinstancestate!=null) {
+                _lastQuery = savedinstancestate.getString("lastquery");
+                Selected = savedinstancestate.getIntegerArrayList("Selected");
+            }
             initTreeView(v, savedinstancestate);
             return v;
         } catch (Throwable ex) {
@@ -535,7 +538,7 @@ public class MedActivity extends Fragment {
 
                     }
                 }
-                if (Selected.size() > 0) {
+                if (Selected != null && Selected.size() > 0) {
                     for (TreeNode t : root.getChildren()) {
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
                         while (Selected.size() > 0 && h.ID == Selected.get(0)) {
@@ -594,6 +597,7 @@ public class MedActivity extends Fragment {
     }
 
     private void CheckSelected(int id, TreeNode t, ArrayList<Integer> selected) {
+        if (selected == null) return;
         for (TreeNode tt : t.getChildren()) {
             if (selected.size() <= 0) break;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
@@ -705,7 +709,7 @@ public class MedActivity extends Fragment {
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, true, txt, null, null);
-
+            _lastQuery = qryMedGrade;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -756,7 +760,7 @@ public class MedActivity extends Fragment {
             {
                 _main.db.close();
                 _main.db.dbname = dbname;
-                _main.db.DB_PATH = dbname;
+                _main.db.DB_PATH = dbpath;
                 _main.db.openDataBase();
             }
         }
@@ -921,7 +925,7 @@ public class MedActivity extends Fragment {
             {
                 _main.db.close();
                 _main.db.dbname = dbname;
-                _main.db.DB_PATH = dbname;
+                _main.db.DB_PATH = dbpath;
                 _main.db.openDataBase();
             }
         }

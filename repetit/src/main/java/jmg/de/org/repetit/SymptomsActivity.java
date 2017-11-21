@@ -188,12 +188,17 @@ public class SymptomsActivity extends Fragment {
     }
 
     private void restoreTreeView(Bundle savedinstancestate) throws Throwable {
-        if (savedinstancestate!= null && (!savedinstancestate.getString("dbname").equalsIgnoreCase(_main.db.dbname)||!savedinstancestate.getString("dbpath").equalsIgnoreCase(_main.db.DB_PATH)))
+        if (savedinstancestate != null && _main != null && _main.db != null)
         {
-            _main.db.close();
-            _main.db.dbname = savedinstancestate.getString("dbname");
-            _main.db.DB_PATH = savedinstancestate.getString("dbpath");
-            _main.db.openDataBase();
+            String dbname = savedinstancestate.getString("dbname");
+            String dbpath = savedinstancestate.getString("dbpath");
+            if (dbname != null && dbpath != null && (!dbname.equalsIgnoreCase(_main.db.dbname) || !dbpath.equalsIgnoreCase(_main.db.DB_PATH)))
+            {
+                _main.db.close();
+                _main.db.dbname = dbname;
+                _main.db.DB_PATH = dbpath;
+                _main.db.openDataBase();
+            }
         }
         if (treeView != null && savedinstancestate != null) {
             if (root != null) {
@@ -474,7 +479,7 @@ public class SymptomsActivity extends Fragment {
             {
                 _main.db.close();
                 _main.db.dbname = dbname;
-                _main.db.DB_PATH = dbname;
+                _main.db.DB_PATH = dbpath;
                 _main.db.openDataBase();
             }
         }
