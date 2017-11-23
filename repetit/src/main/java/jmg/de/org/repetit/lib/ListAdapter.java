@@ -2,6 +2,7 @@ package jmg.de.org.repetit.lib;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,16 @@ public class ListAdapter extends BaseAdapter
     public int getCount()
     {
         // TODO Auto-generated method stub
-        return cursor.getCount();
+        int count = 0;
+        try
+        {
+            count = cursor.getCount();
+        }
+        catch (Throwable ex)
+        {
+            Log.e("ListAdapter.getCount", ex.getMessage(),ex);
+        }
+        return count;
     }
 
     public Object getItem(int position)
