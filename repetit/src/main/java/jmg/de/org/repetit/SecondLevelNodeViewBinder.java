@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
@@ -93,9 +95,14 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
 
     @Override
     public void onNodeToggled(TreeNode treeNode, boolean expand) {
+        onNodeToggled(treeNode,expand,null);
+    }
+
+    @Override
+    public void onNodeToggled(TreeNode treeNode, boolean expand, ArrayList<TreeNode>children) {
         if (expand) {
             try {
-                buildTree(treeView,treeNode);
+                buildTree(treeView,treeNode,children);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -109,7 +116,7 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
         }
     }
 
-    public static void buildTree(TreeView tv, TreeNode treeNodeParent) throws Throwable {
+    public static void buildTree(TreeView tv, TreeNode treeNodeParent, ArrayList<TreeNode> children) throws Throwable {
         if (treeNodeParent.getChildren().size() > 0) return;
         TreeNodeHolderSympt h = (TreeNodeHolderSympt) treeNodeParent.getValue();
         dbSqlite db = h.getContext().db;
@@ -135,6 +142,20 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
                     do {
                         int ID = c.getInt(ColumnIDId);
                         String Text = c.getString(ColumnTextId);
+                        boolean found = false;
+                        if (children != null)
+                        {
+                            for (TreeNode T: children)
+                            {
+                                if (((TreeNodeHolderSympt) T.getValue()).SymptomText.equalsIgnoreCase(Text))
+                                {
+                                    treeNodeParent.addChild(T);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) continue;
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);

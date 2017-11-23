@@ -12,6 +12,9 @@ import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
 import me.texy.treeview.base.SpinnerNodeViewBinder;
 import android.support.v7.widget.AppCompatImageView;
+
+import java.util.ArrayList;
+
 /**
  * Created by zxy on 17/4/23.
  */
@@ -60,10 +63,16 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
 
     @Override
     public void onNodeToggled(TreeNode treeNode, boolean expand) {
+        onNodeToggled(treeNode,expand,null);
+    }
+
+
+        @Override
+    public void onNodeToggled(TreeNode treeNode, boolean expand, ArrayList<TreeNode> children) {
 
         if (expand) {
             try {
-                buildTree(treeView,treeNode);
+                buildTree(treeView,treeNode, children);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -77,7 +86,7 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
             }
         }
     }
-    public static void buildTree(TreeView tv, TreeNode treeNodeParent) throws  Throwable {
+    public static void buildTree(TreeView tv, TreeNode treeNodeParent, ArrayList<TreeNode> children) throws  Throwable {
         if (treeNodeParent.getChildren().size()>0) return;
         TreeNodeHolder h = (TreeNodeHolder) treeNodeParent.getValue();
         int ParentMedID = -1;
@@ -104,6 +113,20 @@ public class FirstLevelNodeViewBinder extends SpinnerNodeViewBinder {
                     do {
                         int ID = c.getInt(ColumnIDId);
                         String Text = c.getString(ColumnTextId);
+                        boolean found = false;
+                        if (children != null)
+                        {
+                            for (TreeNode T: children)
+                            {
+                                if (((TreeNodeHolderSympt) T.getValue()).SymptomText.equalsIgnoreCase(Text))
+                                {
+                                    treeNodeParent.addChild(T);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) continue;
                         String ShortText = c.getString(ColumnShortTextId);
                         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
                         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);

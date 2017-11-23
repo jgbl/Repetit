@@ -98,7 +98,7 @@ public class dbSqlite extends SQLiteOpenHelper {
 
         boolean dbExist = checkDataBase();
 
-        if ((mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") == MainActivity.versionName) && dbExist) {
+        if ((mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") .equalsIgnoreCase(MainActivity.versionName)) && dbExist) {
             return true;
         } else {
             mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("version",MainActivity.versionName).commit();

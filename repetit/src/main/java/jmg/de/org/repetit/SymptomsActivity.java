@@ -238,10 +238,10 @@ public class SymptomsActivity extends Fragment {
             if (h.ID == expSymp.get(0)) {
                 expSymp.remove(0);
                 if (t == root) {
-                    if (tt.hasChild() == false) FirstLevelNodeViewBinder.buildTree(treeView, tt);
+                    if (tt.hasChild() == false) FirstLevelNodeViewBinder.buildTree(treeView, tt, null);
                     else treeView.expandNode(tt);
                 } else {
-                    if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt);
+                    if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt, null);
                     else treeView.expandNode(tt);
                 }
                 if (expSymp.size() <= 0) {

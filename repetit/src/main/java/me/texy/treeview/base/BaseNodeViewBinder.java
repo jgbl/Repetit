@@ -17,6 +17,8 @@ package me.texy.treeview.base;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
@@ -75,5 +77,8 @@ public abstract class BaseNodeViewBinder extends RecyclerView.ViewHolder {
 
     public void beforeNodeToggled(TreeNode treeNode, boolean expand) {
         //empty
+    }
+
+    public void onNodeToggled(TreeNode treeNode, boolean b, ArrayList<TreeNode> children) {
     }
 }

@@ -16,11 +16,8 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.util.Base64;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -32,7 +29,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -40,13 +36,11 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
@@ -54,9 +48,7 @@ import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.ContextMenuRecyclerView;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
-import me.texy.treeview.base.BaseNodeViewBinder;
 
-import static android.R.id.input;
 import static android.content.Context.MODE_PRIVATE;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 import static org.apache.commons.codec.binary.Base64.*;
@@ -417,6 +409,8 @@ public class MedActivity extends Fragment {
                 case R.id.cmnuShowAll:
                     //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
                     treeView.collapseNode(info.treeNode);
+                    ArrayList<TreeNode>children = new ArrayList<>();
+                    children.addAll(info.treeNode.getChildren());
                     info.treeNode.getChildren().clear();
                 /*if (info.treeNode.getLevel() == 1)
                 {
@@ -430,9 +424,10 @@ public class MedActivity extends Fragment {
                     }
                 }
                 */
-                    info.treeNode.holder.onNodeToggled(info.treeNode, true);
+                    info.treeNode.holder.onNodeToggled(info.treeNode, true,children);
                     //treeView.toggleNode(info.treeNode);
                     //treeView.expandNode(info.treeNode);
+
                     return true;
                 default:
                     return super.onContextItemSelected(item);
@@ -529,7 +524,7 @@ public class MedActivity extends Fragment {
                             while (expMedSymp.size() > 0 && expMedSymp.get(0) == -99)
                                 expMedSymp.remove(0);
                             if (t.hasChild() == false)
-                                FirstLevelNodeViewBinderMed.buildTree(treeView, t);
+                                FirstLevelNodeViewBinderMed.buildTree(treeView, t, null);
                             else treeView.expandNode(t);
                             lib.gStatus = "expSympMed";
                             expSympMed(h.ID, t, expMedSymp, Selected);
@@ -578,7 +573,7 @@ public class MedActivity extends Fragment {
             if (h.ParentMedID == expMedSymp.get(0) && h.ID == expMedSymp.get(1)) {
                 expMedSymp.remove(0);
                 expMedSymp.remove(0);
-                if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt);
+                if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt, null);
                 else treeView.expandNode(tt);
                 if (expMedSymp.size() <= 0) {
                     CheckSelected(id, tt, selected);
