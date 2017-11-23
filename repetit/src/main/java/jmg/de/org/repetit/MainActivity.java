@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity
             };
 
     private Bundle savedInstanceState;
+    public  static String versionName;
+
 
 
     public MainActivity()
@@ -150,6 +152,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        try {
+            this.versionName = this.getPackageManager()
+                    .getPackageInfo(this.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         lib.gStatus = "MainActivity onCreate";
         setContentView(R.layout.activity_main_viewpager);
         if (savedInstanceState != null) {

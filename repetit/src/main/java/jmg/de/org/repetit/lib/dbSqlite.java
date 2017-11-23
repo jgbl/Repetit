@@ -98,10 +98,10 @@ public class dbSqlite extends SQLiteOpenHelper {
 
         boolean dbExist = checkDataBase();
 
-        if (dbExist) {
+        if ((mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") == MainActivity.versionName) && dbExist) {
             return true;
         } else {
-
+            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("version",MainActivity.versionName).commit();
             //By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
             this.getReadableDatabase();
