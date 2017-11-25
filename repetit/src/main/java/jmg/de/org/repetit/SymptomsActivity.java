@@ -485,6 +485,7 @@ public class SymptomsActivity extends Fragment {
         }
             new AsyncTask<Void, ProgressClass, Integer>()
             {
+                public boolean cancelled;
                 public Throwable ex;
                 public int counter;
                 public int oldmax;
@@ -506,8 +507,14 @@ public class SymptomsActivity extends Fragment {
                     pd.setMessage(getString(R.string.startingRep));
                     pd.setIndeterminate(false);
                     pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    pd.setCancelable(false);
-                    pd.setCanceledOnTouchOutside(false);
+                    pd.setCancelable(true);
+                    pd.setCanceledOnTouchOutside(true);
+                    pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            cancelled = true;
+                        }
+                    });
                     pd.show();
 
                 }
@@ -571,6 +578,7 @@ public class SymptomsActivity extends Fragment {
                                             this.ex = throwable;
                                         }
                                     }
+                                    if (cancelled) break;
                                 } while (c.moveToNext());
                                 //this.treeView.expandNode(treeNodeParent);
                             }

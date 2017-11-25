@@ -761,6 +761,7 @@ public class MedActivity extends Fragment {
         }
             new AsyncTask<Void, ProgressClass, Integer>()
             {
+                public boolean cancelled;
                 public Throwable ex;
                 public int counter;
                 public int oldmax;
@@ -781,8 +782,14 @@ public class MedActivity extends Fragment {
                     pd.setMessage(getString(R.string.startingRep));
                     pd.setIndeterminate(false);
                     pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    pd.setCancelable(false);
-                    pd.setCanceledOnTouchOutside(false);
+                    pd.setCancelable(true);
+                    pd.setCanceledOnTouchOutside(true);
+                    pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            cancelled = true;
+                        }
+                    });
                     pd.show();
                 }
 
@@ -824,7 +831,7 @@ public class MedActivity extends Fragment {
                                     TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, Name, "Med" + ID, ID, Name, Beschreibung));
                                     treeNode.setLevel(0);
                                     root.addChild(treeNode);
-
+                                    if (cancelled) break;
                                 } while (c.moveToNext());
                             }
                         }
@@ -925,10 +932,16 @@ public class MedActivity extends Fragment {
             }
         }
         new AsyncTask<Void, ProgressClass, Integer>() {
+            public boolean cancelled;
             public Throwable ex;
             public int oldmax;
             public String oldmsg;
             ProgressDialog pd;
+
+            public void cancel()
+            {
+                this.cancelled = true;
+            }
 
             @Override
             protected void onPreExecute() {
@@ -942,8 +955,14 @@ public class MedActivity extends Fragment {
                 pd.setMessage(getString(R.string.startingRep));
                 pd.setIndeterminate(false);
                 pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                pd.setCancelable(false);
-                pd.setCanceledOnTouchOutside(false);
+                pd.setCancelable(true);
+                pd.setCanceledOnTouchOutside(true);
+                pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel();
+                    }
+                });
                 pd.show();
             }
 
@@ -1005,11 +1024,13 @@ public class MedActivity extends Fragment {
                                         nexts += 1;
                                         sum += c.getInt(ColumnGrade) * f;
                                     }
+                                    if (cancelled) break;
                                 }
                                 counter += 1;
                                 hMed.totalGrade = sum;
                                 hMed.count = nexts;
                                 hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
+                                if (cancelled) break;
                             } while (!c.isAfterLast());
                             List<TreeNode> l = root.getChildren();
 
