@@ -92,6 +92,12 @@ public class dbSqlite extends SQLiteOpenHelper {
         }
         original_path = DB_PATH;
         original_name = dbname;
+        if (mContext != null)
+        {
+           DB_PATH = mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("dbpath", DB_PATH);
+           dbname = mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("dbname", dbname);
+        }
+
     }
 
     public final boolean createDataBase() {
@@ -230,6 +236,11 @@ public class dbSqlite extends SQLiteOpenHelper {
     public final void openDataBase() {
         if (DataBase!=null)return;
         //Open the database
+        if (mContext != null)
+        {
+            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("dbpath", DB_PATH).commit();
+            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("dbname", dbname).commit();
+        }
         String myPath = DB_PATH + dbname;
         if (Looper.myLooper() == Looper.getMainLooper() && mContext!=null && mContext instanceof MainActivity)
         {
