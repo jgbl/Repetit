@@ -379,6 +379,7 @@ public class MainActivity extends AppCompatActivity
                 case R.id.mnuSwitchDB:
                     if (db!=null){
                         db.close();
+                        lastQuery = null;
                         if(db.DB_PATH.equalsIgnoreCase(db.original_path))
                         {
                             if (db.dbname.indexOf("kent2") > -1)

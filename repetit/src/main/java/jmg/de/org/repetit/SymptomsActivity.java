@@ -874,6 +874,7 @@ public class SymptomsActivity extends Fragment {
     }
 
     public void refresh() throws Throwable {
+        lastQuery = null;
         String qry = "Select Symptome.* FROM Symptome WHERE Symptome.ParentSymptomID IS Null ORDER BY Text COLLATE NOCASE";
         buildTree(root, qry, true, false, null);
     }

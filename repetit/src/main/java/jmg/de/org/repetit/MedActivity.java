@@ -725,6 +725,7 @@ public class MedActivity extends Fragment {
     }
 
     public void refresh() throws Throwable {
+        _lastQuery = null;
         buildTree("SELECT * FROM Medikamente ORDER BY Name", true, null);
     }
 
