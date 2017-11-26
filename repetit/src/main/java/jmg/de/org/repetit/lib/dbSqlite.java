@@ -165,7 +165,7 @@ public class dbSqlite extends SQLiteOpenHelper {
         //InputStream myInput = A.open(DB_NAME);
         for (int ii = 0; ii <= 1; ii++) {
             // Path to the just created empty db
-            String outFileName = DB_PATH + dbname;
+            String outFileName = original_path + original_name;
             if (ii == 1) outFileName = outFileName.replace("kent","kent2");
             if ((new java.io.File(DB_PATH)).isDirectory() == false) {
                 (new java.io.File(DB_PATH)).mkdirs();
