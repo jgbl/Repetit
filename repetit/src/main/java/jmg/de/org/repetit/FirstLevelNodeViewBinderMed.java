@@ -1,15 +1,19 @@
 package jmg.de.org.repetit;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Build;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.AppCompatImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import jmg.de.org.repetit.lib.dbSqlite;
+import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 import me.texy.treeview.base.CheckableNodeViewBinder;
@@ -51,6 +55,11 @@ public class FirstLevelNodeViewBinderMed extends SpinnerNodeViewBinder implement
         }
         this.treeNode = treeNode;
         treeNode.holder = this;
+        if (lib.NookSimpleTouch()) {
+            itemView.setBackgroundColor(Color.WHITE);
+            textView.setTextColor(Color.BLACK);
+            imageView.setBackgroundColor(Color.BLACK);
+        }
         /*textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

@@ -15,6 +15,7 @@
 package me.texy.treeview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.support.v7.widget.AppCompatSpinner;
 import java.util.ArrayList;
 import java.util.List;
 
+import jmg.de.org.repetit.lib.lib;
 import me.texy.treeview.base.BaseNodeViewBinder;
 import me.texy.treeview.base.BaseNodeViewFactory;
 import me.texy.treeview.base.CheckableNodeViewBinder;
@@ -182,6 +184,8 @@ public class TreeViewAdapter extends RecyclerView.Adapter {
                 final android.support.v7.widget.AppCompatSpinner spinnerView = (android.support.v7.widget.AppCompatSpinner) view;
                 spinnerView.setSelection(treeNode.getWeight());
                 ((SpinnerNodeViewBinder) viewBinder).setSpinner(spinnerView);
+                if (lib.NookSimpleTouch())    spinnerView.setBackgroundColor(Color.BLACK);
+
                 spinnerView.setOnItemSelectedListener(new android.support.v7.widget.AppCompatSpinner.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

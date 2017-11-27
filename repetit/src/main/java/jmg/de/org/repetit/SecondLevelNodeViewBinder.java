@@ -3,6 +3,7 @@ package jmg.de.org.repetit;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.AppCompatImageView;
@@ -58,20 +59,26 @@ public class SecondLevelNodeViewBinder extends SpinnerNodeViewBinder {
         }
         int level = treeNode.getLevel();
         if (level > 5) level = level - 5;
-        switch (level)
-        {
-            case 2:
-                //relLayout.setBackground(null);
-                itemView.setBackgroundColor(Color.BLUE);
-                break;
-            case 3:
-                itemView.setBackgroundColor(Color.DKGRAY);
-                break;
-            case 4:
-                itemView.setBackgroundColor(Color.rgb(104,69,69));
-                break;
-            case 5:
-                itemView.setBackgroundColor(Color.BLACK);
+        if (!lib.NookSimpleTouch()) {
+            switch (level) {
+                case 2:
+                    //relLayout.setBackground(null);
+                    itemView.setBackgroundColor(Color.BLUE);
+                    break;
+                case 3:
+                    itemView.setBackgroundColor(Color.DKGRAY);
+                    break;
+                case 4:
+                    itemView.setBackgroundColor(Color.rgb(104, 69, 69));
+                    break;
+                case 5:
+                    itemView.setBackgroundColor(Color.BLACK);
+            }
+        }
+        else {
+            itemView.setBackgroundColor(Color.WHITE);
+            textView.setTextColor(Color.BLACK);
+            imageView.setBackgroundColor(Color.BLACK);
         }
         if (treeNode.getLevel()>1)
         {
