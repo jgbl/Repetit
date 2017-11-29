@@ -433,6 +433,7 @@ public class MainActivity extends AppCompatActivity
                     if (mPager.getCurrentItem() == SymptomsActivity.fragID)
                     {
                         qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selected);
+                        fPA.fragSymptoms.blnHasbeenRepertorised = true;
                     } else
                         if (mPager.getCurrentItem() == MedActivity.fragID)
                         {

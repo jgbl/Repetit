@@ -133,6 +133,7 @@ public class SymptomsActivity extends Fragment {
             });
             if (savedinstancestate != null) {
                 lastQuery = savedinstancestate.getString("lastquery");
+                blnHasbeenRepertorised = savedinstancestate.getBoolean("hasbeenrepertorised",blnHasbeenRepertorised);
             }
             initTreeView(v,savedinstancestate);
 
@@ -147,6 +148,7 @@ public class SymptomsActivity extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("lastquery", lastQuery);
+        outState.putBoolean("hasbeenrepertorised",blnHasbeenRepertorised);
         if (_main.db!=null)
         {
             outState.putString("dbname", _main.db.dbname);
@@ -383,9 +385,34 @@ public class SymptomsActivity extends Fragment {
         return "(" + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '%, " + search + " %' OR " + column + " like '% " + search + ", %' OR " + column + " like '" + search + "')";
     }
 
-
-    private void searchSymptoms(String searchtxt, boolean AndFlag) {
+    public boolean blnHasbeenRepertorised;
+    private void searchSymptoms(final String searchtxt, final boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
+        if (!blnHasbeenRepertorised && treeView != null)
+        {
+            List <TreeNode> sel = treeView.getSelectedNodes();
+            if (sel != null && sel.size()>0)
+            {
+                AlertDialog dlg = lib.getMessageOKCancel(getContext(), getString(R.string.clearselection), getString(R.string.clear), false, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        blnHasbeenRepertorised = true;
+                        searchSymptoms(searchtxt,AndFlag);
+                    }
+                }, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+
+                    }
+                });
+                dlg.show();
+                return;
+            }
+        }
         String[] txt = searchtxt.split("\\.");
         try {
             String qry = "SELECT * FROM Symptome WHERE ";
@@ -646,6 +673,7 @@ public class SymptomsActivity extends Fragment {
 
                     pd.dismiss();
                     if (refresh && treeView != null) treeView.refreshTreeView();
+                    blnHasbeenRepertorised = false;
                     if (this.ex != null) lib.ShowException(context, ex);
                     if (savedinstancestate != null) try
                     {

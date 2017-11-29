@@ -914,6 +914,32 @@ public class lib
         return DialogResultYes;
     }
 
+    public static AlertDialog getMessageOKCancel(Context context,
+                                                     String msg, String title, boolean center, DialogInterface.OnClickListener listenerOK, DialogInterface.OnClickListener listenerCancel)
+    {
+        // System.Threading.SynchronizationContext.Current.Post(new
+        // System.Threading.SendOrPostCallback(DelShowException),new
+        // ExStateInfo(context, ex));
+        if (libString.IsNullOrEmpty(title)) title = context.getString(R.string.question);
+
+        DialogResultYes = yesnoundefined.undefined;
+        AlertDialog.Builder A = new AlertDialog.Builder(context);
+        A.setPositiveButton(context.getString(R.string.ok), listenerOK);
+        A.setNegativeButton(context.getString(R.string.cancel), listenerCancel);
+        A.setMessage(msg);
+        A.setTitle(title);
+        AlertDialog dlg = A.create();
+
+        if (center)
+        {
+            TextView messageView = (TextView) dlg.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+        }
+        return dlg;
+    }
+
+
+
     public static YesNoCheckResult ShowMessageYesNoWithCheckbox(Context context,
                                                                 String title,
                                                                 String msg,

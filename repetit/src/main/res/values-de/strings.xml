@@ -91,4 +91,6 @@
     <string name="DisclaimerAccept">Den Disclaimer akzeptieren</string>
     <string name="switch_db">Datenbank wechseln</string>
     <string name="openfile">Datenbank öffnen</string>
+    <string name="clearselection">Wenn Sie eine neue Suche machen gehen alle ausgewählten Symptome verloren!</string>
+    <string name="clear">Auswahl löschen</string>
 </resources>

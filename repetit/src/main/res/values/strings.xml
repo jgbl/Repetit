@@ -78,6 +78,8 @@
     <string name="DisclaimerAccept">accept disclaimer</string>
     <string name="switch_db">switch database</string>
     <string name="openfile">open database</string>
+    <string name="clearselection">If you make a new search all selections are lost!</string>
+    <string name="clear">clear selections</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
