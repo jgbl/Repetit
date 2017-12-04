@@ -146,6 +146,11 @@ public class SQLiteDataActivity extends Fragment
 
         if (sqLiteHelper!= null) {
             sqLiteHelper.close();
+            sqLiteHelper = null;
+        }
+        if (cursor!= null) {
+            cursor.close();
+            cursor=null;
         }
         super.onDestroy();
     }
