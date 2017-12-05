@@ -22,6 +22,10 @@
         android:icon="@android:drawable/ic_input_add"
         app:showAsAction="always" />
     <item
+        android:id="@+id/mnuResetSearch"
+        android:title="@string/search_reset"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mnuSwitchDB"
         android:title="@string/switch_db"
         app:showAsAction="never" />

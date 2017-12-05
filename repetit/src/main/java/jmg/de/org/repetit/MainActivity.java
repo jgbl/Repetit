@@ -421,6 +421,16 @@ public class MainActivity extends AppCompatActivity
                 case R.id.mnuShowSympt:
                     mPager.setCurrentItem(SymptomsActivity.fragID);
                     break;
+                case R.id.mnuResetSearch:
+                    if (mPager.getCurrentItem() == SymptomsActivity.fragID)
+                    {
+                        fPA.fragSymptoms.refresh();
+                    } else
+                    if (mPager.getCurrentItem() == MedActivity.fragID)
+                    {
+                        fPA.fragMed.refresh();
+                    }
+                    break;
                 case R.id.mnuFindMeds:
                 case R.id.mnuFindMedsAdd:
                     String[] qry;
