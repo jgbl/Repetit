@@ -374,6 +374,10 @@ public class SymptomsActivity extends Fragment {
                 //treeView.toggleNode(info.treeNode);
                 //treeView.expandNode(info.treeNode);
                 return true;
+            case R.id.cmnuAddTerm:
+                Intent intent = new Intent(getContext(), ActivityTerms.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }

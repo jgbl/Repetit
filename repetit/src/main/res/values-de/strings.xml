@@ -94,4 +94,6 @@
     <string name="clearselection">Wenn Sie eine neue Suche machen gehen alle ausgewählten Symptome verloren!</string>
     <string name="clear">Auswahl löschen</string>
     <string name="search_reset">Reset</string>
+    <string name="addTerm">Fachbegriff hinzufügen</string>
+    <string name="term">Fachbegriff</string>
 </resources>

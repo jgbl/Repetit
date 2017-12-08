@@ -20,6 +20,9 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".ActivityTerms" android:theme="@style/Theme.AppCompat.Dialog" android:excludeFromRecents="true">
+
+        </activity>
     </application>
 
 </manifest>

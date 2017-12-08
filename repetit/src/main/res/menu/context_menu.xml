@@ -9,4 +9,8 @@
         android:id="@+id/cmnuSearch"
         android:title="@string/Search"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/cmnuAddTerm"
+        android:title="@string/addTerm"
+        app:showAsAction="never" />
 </menu>

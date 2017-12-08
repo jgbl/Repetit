@@ -81,6 +81,8 @@
     <string name="clearselection">If you make a new search all selections are lost!</string>
     <string name="clear">clear selections</string>
     <string name="search_reset">reset</string>
+    <string name="addTerm">add term</string>
+    <string name="term">Term</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
