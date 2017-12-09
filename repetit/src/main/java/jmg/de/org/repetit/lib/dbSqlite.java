@@ -390,4 +390,29 @@ public class dbSqlite extends SQLiteOpenHelper {
     }
 
 
+    public int InsertTerm(String strTerm)
+    {
+        if (stInsertError == null) {
+
+            stInsertError = DataBase.compileStatement("INSERT INTO Fachbegriffe (ID, Text) VALUES(?,?)");
+        }
+        int ID
+        this.DataBase.beginTransaction();
+        try {
+            SQLiteStatement st = stInsertError;
+            //ContentValues values = new ContentValues();
+            st.clearBindings();
+            st.bindString(1, err);
+            st.bindString(2, CodeLoc);
+            st.bindString(3, comment);
+            st.executeInsert();
+            //this.DataBase.insert("Data", null, values);
+            this.DataBase.setTransactionSuccessful();
+        } catch (Throwable eex) {
+            return false;
+        } finally {
+            this.DataBase.endTransaction();
+        }
+        return true;
+    }
 }
