@@ -3,7 +3,7 @@
     package="jmg.de.org.repetit">
     <uses-sdk tools:overrideLibrary="android.support.test.espresso"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <application android:allowBackup="true" android:icon="@mipmap/robot_ill"
+    <application android:name=".repApplication" android:allowBackup="true" android:icon="@mipmap/robot_ill"
         android:label="@string/app_name"
         android:supportsRtl="true" android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" android:label="@string/app_name">

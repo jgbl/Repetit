@@ -82,7 +82,9 @@
     <string name="clear">clear selections</string>
     <string name="search_reset">reset</string>
     <string name="addTerm">add term</string>
-    <string name="term">Term</string>
+    <string name="term">term</string>
+    <string name="meaning">meaning</string>
+    <string name="btnAdd">add</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

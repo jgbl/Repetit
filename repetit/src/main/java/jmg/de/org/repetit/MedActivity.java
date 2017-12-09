@@ -429,6 +429,17 @@ public class MedActivity extends Fragment {
                     //treeView.expandNode(info.treeNode);
 
                     return true;
+                case R.id.cmnuAddTerm:
+                if (info.treeNode.getValue() instanceof TreeNodeHolderSympt)
+                {
+                    TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                    search = h.ShortText;
+                    Intent intent2 = new Intent(getContext(), ActivityTerms.class);
+                    intent2.putExtra("term",search);
+                    startActivity(intent2);
+                    return true;
+                }
+
                 default:
                     return super.onContextItemSelected(item);
             }

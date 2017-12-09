@@ -96,4 +96,6 @@
     <string name="search_reset">Reset</string>
     <string name="addTerm">Fachbegriff hinzufügen</string>
     <string name="term">Fachbegriff</string>
+    <string name="meaning">Bedeutung</string>
+    <string name="btnAdd">add</string>
 </resources>

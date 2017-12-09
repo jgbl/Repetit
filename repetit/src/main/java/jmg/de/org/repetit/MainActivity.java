@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity
             {
                 db = new dbSqlite(this, false);
                 if (db.createDataBase()) db.openDataBase();
+                ((repApplication)getApplication()).db = db;
             }
             catch (Throwable throwable)
             {
@@ -207,6 +208,7 @@ public class MainActivity extends AppCompatActivity
 
                     db.openDataBase();
                 }
+                ((repApplication)getApplication()).db = db;
             }
             catch (Throwable throwable)
             {

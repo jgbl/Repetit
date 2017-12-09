@@ -5,11 +5,33 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <TextView
+
+    <EditText
         android:id="@+id/txtTerm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.03"
+        android:contentDescription="@string/term"
         android:text="@string/term"
-        tools:text="Term" />
+        tools:text="@string/term"/>
+
+    <EditText
+        android:id="@+id/txtMeaning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/meaning"
+        android:text="@string/meaning"
+        tools:text="@string/meaning"/>
+
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btnAdd"/>
+
+    <ListView
+        android:id="@+id/lstMeanings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
 </LinearLayout>
