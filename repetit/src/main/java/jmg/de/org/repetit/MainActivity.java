@@ -332,6 +332,8 @@ public class MainActivity extends AppCompatActivity
     {
         MenuItem item = menu.findItem(R.id.mnuSearchWholeWord);
         item.setChecked(blnSearchWholeWord);
+        item = menu.findItem(R.id.mnuSearchTerms);
+        item.setChecked(blnSearchTerms);
         return super.onPrepareOptionsMenu(menu);
     }
 

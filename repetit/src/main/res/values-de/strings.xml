@@ -100,4 +100,6 @@
     <string name="btnAdd">Hinzufügen</string>
     <string name="getMeanings">Zeige Bedeutungen</string>
     <string name="search_terms">Fachbegriffe durchsuchen</string>
+    <string name="DeleteMeaning">Lösche Bedeutung</string>
+    <string name="btnDeleteTerm">Fachbegriff löschen</string>
 </resources>

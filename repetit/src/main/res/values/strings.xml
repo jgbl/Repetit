@@ -87,6 +87,8 @@
     <string name="btnAdd">add</string>
     <string name="getMeanings">get meainings</string>
     <string name="search_terms">search terms</string>
+    <string name="DeleteMeaning">delete meaning</string>
+    <string name="btnDeleteTerm">delete term</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

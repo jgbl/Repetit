@@ -368,9 +368,9 @@ public class dbSqlite extends SQLiteOpenHelper {
     }
 
     private SQLiteStatement stInsertMeaning = null;
-    public boolean InsertMeaning(int FBID, String strMeaning)
+    public int InsertMeaning(int FBID, String strMeaning)
     {
-        int ID = 0;
+        int ID = -1;
         if (DataBase == null) {
             openDataBase();
         }
@@ -379,7 +379,7 @@ public class dbSqlite extends SQLiteOpenHelper {
         if (c.moveToFirst())
         {
             c.close();
-            return false;
+            return c.getInt(c.getColumnIndex("ID"));
         }
         c.close();
         if (stInsertMeaning == null) {
@@ -402,11 +402,11 @@ public class dbSqlite extends SQLiteOpenHelper {
             //this.DataBase.insert("Data", null, values);
             this.DataBase.setTransactionSuccessful();
         } catch (Throwable eex) {
-            return false;
+            return -1;
         } finally {
             this.DataBase.endTransaction();
         }
-        return true;
+        return ID;
     }
 
     public int getTermID(String strTerm) {
@@ -422,5 +422,26 @@ public class dbSqlite extends SQLiteOpenHelper {
         }
         c.close();
         return  ID;
+    }
+
+    public void deleteMeaning(int ID) {
+        if (DataBase == null) {
+            openDataBase();
+        }
+        this.DataBase.execSQL("DELETE FROM Bedeutungen WHERE ID = " + ID);
+    }
+
+    public void deleteTerm(String strTerm, int idTerm) {
+        if (DataBase == null) {
+            openDataBase();
+        }
+        if (idTerm > -12)
+        {
+            this.DataBase.execSQL("DELETE FROM Fachbegriffe WHERE ID = " + idTerm);
+        }
+        else
+        {
+            this.DataBase.execSQL("DELETE FROM Fachbegriffe WHERE Text = " + strTerm);
+        }
     }
 }

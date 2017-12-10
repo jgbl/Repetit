@@ -1,11 +1,15 @@
 package jmg.de.org.repetit;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.MenuInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,11 +28,29 @@ public class ActivityTerms extends AppCompatActivity {
     private EditText txtMeaning;
     private ListView lstMeanings;
     private String strTerm;
+    private int IDTerm = - 1;
     private dbSqlite db;
-    private ArrayAdapter<String> listAdapter;
+    private ArrayAdapter<Meaning> listAdapter;
     private boolean isNewTerm;
     private Button btnAdd;
+    private Button btnDeleteTerm;
 
+    private class Meaning {
+        int ID;
+        int FachbegriffsID;
+        String Text;
+
+        public Meaning(int ID, int FachbegriffsID, String Text) {
+            this.ID = ID;
+            this.FachbegriffsID = FachbegriffsID;
+            this.Text = Text;
+        }
+
+        @Override
+        public String toString() {
+            return Text;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,60 +61,104 @@ public class ActivityTerms extends AppCompatActivity {
         }
         setContentView(R.layout.activity_terms);
         txtTerm = (EditText) findViewById(R.id.txtTerm);
-        txtMeaning = (EditText)findViewById(R.id.txtMeaning);
+        txtMeaning = (EditText) findViewById(R.id.txtMeaning);
         txtMeaning.setText("");
-        lstMeanings = (ListView)findViewById(R.id.lstMeanings);
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow);
+        lstMeanings = (ListView) findViewById(R.id.lstMeanings);
+        lstMeanings.setLongClickable(true);
+        listAdapter = new ArrayAdapter<Meaning>(this, R.layout.simplerow);
         lstMeanings.setAdapter(listAdapter);
-        btnAdd = (Button)findViewById(R.id.btnAdd);
+        btnAdd = (Button) findViewById(R.id.btnAdd);
+        btnDeleteTerm = (Button) findViewById(R.id.btnDeleteTerm);
         strTerm = getIntent().getStringExtra("term");
 
-        db = ((repApplication)getApplication()).db;
+        db = ((repApplication) getApplication()).db;
 
-        if (db!=null)
-        {
-            txtTerm.setText(strTerm);
-            Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
-            if (c.moveToFirst())
-            {
-                int ID = c.getInt(c.getColumnIndex("ID"));
-                Cursor cc = db.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID = " + ID + "");
-                if (cc.moveToFirst())
-                {
-                    do
-                    {
-                        {
-                            listAdapter.add(cc.getString(cc.getColumnIndex("Text")));
-                        }
-                    } while (cc.moveToNext());
-                }
-            }
-            else
-            {
-                isNewTerm = true;
-            }
-
-            btnAdd.setOnClickListener(new View.OnClickListener()
-            {
+        if (db != null) {
+            txtTerm.setOnKeyListener(new View.OnKeyListener() {
                 @Override
-                public void onClick(View v)
-                {
-                  strTerm = txtTerm.getText().toString();
-                  if (strTerm != null && strTerm.length()>0 )
-                  {
-                      int FachbegriffsID = db.InsertTerm(strTerm);
-                      if (txtMeaning.getText().toString().length()>0)
-                      {
-                          boolean BedInserted = db.InsertMeaning(FachbegriffsID,txtMeaning.getText().toString());
-                          if (BedInserted) listAdapter.add(txtMeaning.getText().toString());
-                      }
-                  }
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    strTerm = txtTerm.getText().toString();
+                    updatelst();
+                    return true;
                 }
             });
-        }
-        else
-        {
+            txtTerm.setText(strTerm);
+
+            updatelst();
+
+            lstMeanings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    txtMeaning.setText(listAdapter.getItem(position).Text);
+                }
+            });
+
+            lstMeanings.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                    try {
+                        lib.getMessageYesNo(ActivityTerms.this, getString(R.string.DeleteMeaning) + " " + listAdapter.getItem(position), getString(R.string.DeleteMeaning), false, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                db.deleteMeaning(listAdapter.getItem(position).ID);
+                                listAdapter.remove(listAdapter.getItem(position));
+                                txtMeaning.setText("");
+                            }
+                        }, null).show();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    return true;
+                }
+            });
+
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    strTerm = txtTerm.getText().toString();
+                    if (strTerm != null && strTerm.length() > 0) {
+                        int FachbegriffsID = db.InsertTerm(strTerm);
+                        if (txtMeaning.getText().toString().length() > 0) {
+                            int ID = db.InsertMeaning(FachbegriffsID, txtMeaning.getText().toString());
+                            if (ID > -1)
+                                listAdapter.add(new Meaning(ID, FachbegriffsID, txtMeaning.getText().toString()));
+                        }
+                    }
+                }
+            });
+            btnDeleteTerm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    db.deleteTerm(strTerm,IDTerm);
+                    strTerm = "";
+                    txtTerm.setText(strTerm);
+                    listAdapter.clear();
+                    txtTerm.setText("");
+                }
+            });
+        } else {
             finish();
+        }
+    }
+
+    private void updatelst() {
+        Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
+        if (c.moveToFirst()) {
+            isNewTerm = false;
+            listAdapter.clear();
+            int ID = c.getInt(c.getColumnIndex("ID"));
+            IDTerm = ID;
+            Cursor cc = db.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID = " + ID + "");
+            if (cc.moveToFirst()) {
+                do {
+                    {
+                        listAdapter.add(new Meaning(cc.getInt(cc.getColumnIndex("ID")), ID, cc.getString(cc.getColumnIndex("Text"))));
+                    }
+                } while (cc.moveToNext());
+            }
+        } else {
+            isNewTerm = true;
+            IDTerm = -1;
         }
     }
 }
