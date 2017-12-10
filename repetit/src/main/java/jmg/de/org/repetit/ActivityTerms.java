@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.View;
@@ -75,16 +77,24 @@ public class ActivityTerms extends AppCompatActivity {
         db = ((repApplication) getApplication()).db;
 
         if (db != null) {
-            txtTerm.setOnKeyListener(new View.OnKeyListener() {
+            txtTerm.addTextChangedListener(new TextWatcher() {
                 @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    strTerm = txtTerm.getText().toString();
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    strTerm = s.toString();
                     IDTerm = -1;
                     updatelst();
-                    return false;
                 }
-            });
+       });
 
             lstMeanings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
