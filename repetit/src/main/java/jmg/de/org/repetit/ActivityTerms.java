@@ -20,7 +20,7 @@ import jmg.de.org.repetit.lib.lib;
  */
 
 public class ActivityTerms extends AppCompatActivity {
-    private TextView txtTerm;
+    private EditText txtTerm;
     private EditText txtMeaning;
     private ListView lstMeanings;
     private String strTerm;
@@ -38,7 +38,7 @@ public class ActivityTerms extends AppCompatActivity {
             this.setFinishOnTouchOutside(true);
         }
         setContentView(R.layout.activity_terms);
-        txtTerm = (TextView)findViewById(R.id.txtTerm);
+        txtTerm = (EditText) findViewById(R.id.txtTerm);
         txtMeaning = (EditText)findViewById(R.id.txtMeaning);
         txtMeaning.setText("");
         lstMeanings = (ListView)findViewById(R.id.lstMeanings);
@@ -77,6 +77,7 @@ public class ActivityTerms extends AppCompatActivity {
                 @Override
                 public void onClick(View v)
                 {
+                  strTerm = txtTerm.getText().toString();
                   if (strTerm != null )
                   {
                       int FachbegriffsID = db.InsertTerm(strTerm);
