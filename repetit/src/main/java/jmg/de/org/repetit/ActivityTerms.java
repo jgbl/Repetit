@@ -78,7 +78,7 @@ public class ActivityTerms extends AppCompatActivity {
                 public void onClick(View v)
                 {
                   strTerm = txtTerm.getText().toString();
-                  if (strTerm != null )
+                  if (strTerm != null && strTerm.length()>0 )
                   {
                       int FachbegriffsID = db.InsertTerm(strTerm);
                       if (txtMeaning.getText().toString().length()>0)
