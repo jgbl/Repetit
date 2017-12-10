@@ -79,8 +79,9 @@ public class ActivityTerms extends AppCompatActivity {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     strTerm = txtTerm.getText().toString();
+                    IDTerm = -1;
                     updatelst();
-                    return true;
+                    return false;
                 }
             });
 
@@ -151,6 +152,7 @@ public class ActivityTerms extends AppCompatActivity {
         strTerm = txtTerm.getText().toString();
         Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
         listAdapter.clear();
+        IDTerm = -1;
         if (c.moveToFirst()) {
             isNewTerm = false;
             int ID = c.getInt(c.getColumnIndex("ID"));
