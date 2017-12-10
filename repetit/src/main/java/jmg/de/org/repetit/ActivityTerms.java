@@ -78,6 +78,7 @@ public class ActivityTerms extends AppCompatActivity {
             txtTerm.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
+
                     strTerm = txtTerm.getText().toString();
                     IDTerm = -1;
                     updatelst();
@@ -118,7 +119,12 @@ public class ActivityTerms extends AppCompatActivity {
                     if (strTerm != null && strTerm.length() > 0) {
                         int FachbegriffsID = db.InsertTerm(strTerm);
                         if (FachbegriffsID > -1 && txtMeaning.getText().toString().length() > 0) {
-                            int ID = db.InsertMeaning(FachbegriffsID, txtMeaning.getText().toString());
+                            int ID = -1;
+                            try {
+                                ID = db.InsertMeaning(FachbegriffsID, txtMeaning.getText().toString());
+                            } catch (Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
                             if (ID > -1)
                                 listAdapter.add(new Meaning(ID, FachbegriffsID, txtMeaning.getText().toString()));
                         }
@@ -150,7 +156,7 @@ public class ActivityTerms extends AppCompatActivity {
 
     private void updatelst() {
         strTerm = txtTerm.getText().toString();
-        Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
+        Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE lower(Text) = '" + strTerm.toLowerCase() + "'");
         listAdapter.clear();
         IDTerm = -1;
         if (c.moveToFirst()) {

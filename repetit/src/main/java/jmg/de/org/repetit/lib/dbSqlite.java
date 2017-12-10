@@ -281,6 +281,8 @@ public class dbSqlite extends SQLiteOpenHelper {
             DataBase = null;
         }
         stInsertError = null;
+        stInsertMeaning = null;
+        stInsertFachbegriff = null;
         super.close();
 
     }
@@ -368,7 +370,7 @@ public class dbSqlite extends SQLiteOpenHelper {
     }
 
     private SQLiteStatement stInsertMeaning = null;
-    public int InsertMeaning(int FBID, String strMeaning)
+    public int InsertMeaning(int FBID, String strMeaning) throws Throwable
     {
         int ID = -1;
         if (DataBase == null) {
@@ -379,7 +381,7 @@ public class dbSqlite extends SQLiteOpenHelper {
         if (c.moveToFirst())
         {
             c.close();
-            return c.getInt(c.getColumnIndex("ID"));
+            return -1; // c.getInt(c.getColumnIndex("ID"));
         }
         c.close();
         if (stInsertMeaning == null) {
