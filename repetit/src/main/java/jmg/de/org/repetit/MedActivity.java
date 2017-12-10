@@ -1199,8 +1199,8 @@ public class MedActivity extends Fragment {
         } else {
             res = -2;
         }
-        ShortText += (grade >= 0 && res > 0 ? "[" + grade * res + "]" : "(" + grade + ")");
-        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortText, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId, hMed.ID, grade));
+        String ShortTextHolder = ShortText + (grade >= 0 && res > 0 ? "[" + grade * res + "]" : "(" + grade + ")");
+        TreeNode treeNode2 = new TreeNode(new TreeNodeHolderSympt(hMed.getContext(), 1, ShortTextHolder, "Sympt" + SympID, SympID, Text, ShortText, KoerperTeilId, ParentSymptomId, hMed.ID, grade));
         if (res >= 0) treeNode2.setWeight(res);
         try {
             SymptomsActivity.AddNodesRecursive(hMed.getContext(), 0, treeNode2, treeNode, ParentSymptomId, res, hMed.ID);

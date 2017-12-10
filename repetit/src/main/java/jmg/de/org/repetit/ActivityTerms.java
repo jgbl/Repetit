@@ -162,9 +162,11 @@ public class ActivityTerms extends AppCompatActivity {
                     }
                 } while (cc.moveToNext());
             }
+            cc.close();
         } else {
             isNewTerm = true;
             IDTerm = -1;
         }
+        c.close();
     }
 }
