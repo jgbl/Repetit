@@ -69,7 +69,8 @@ public class ActivityTerms extends AppCompatActivity {
         lstMeanings.setAdapter(listAdapter);
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnDeleteTerm = (Button) findViewById(R.id.btnDeleteTerm);
-        strTerm = getIntent().getStringExtra("term");
+
+        if (savedInstanceState == null && getIntent() != null) strTerm = getIntent().getStringExtra("term");
 
         db = ((repApplication) getApplication()).db;
 
@@ -82,9 +83,6 @@ public class ActivityTerms extends AppCompatActivity {
                     return true;
                 }
             });
-            txtTerm.setText(strTerm);
-
-            updatelst();
 
             lstMeanings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -139,6 +137,14 @@ public class ActivityTerms extends AppCompatActivity {
         } else {
             finish();
         }
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        txtTerm.setText(strTerm);
+        updatelst();
     }
 
     private void updatelst() {
