@@ -116,7 +116,7 @@ public class ActivityTerms extends AppCompatActivity {
                     strTerm = txtTerm.getText().toString();
                     if (strTerm != null && strTerm.length() > 0) {
                         int FachbegriffsID = db.InsertTerm(strTerm);
-                        if (txtMeaning.getText().toString().length() > 0) {
+                        if (FachbegriffsID > -1 && txtMeaning.getText().toString().length() > 0) {
                             int ID = db.InsertMeaning(FachbegriffsID, txtMeaning.getText().toString());
                             if (ID > -1)
                                 listAdapter.add(new Meaning(ID, FachbegriffsID, txtMeaning.getText().toString()));
@@ -148,10 +148,11 @@ public class ActivityTerms extends AppCompatActivity {
     }
 
     private void updatelst() {
+        strTerm = txtTerm.getText().toString();
         Cursor c = db.query("SELECT * FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
+        listAdapter.clear();
         if (c.moveToFirst()) {
             isNewTerm = false;
-            listAdapter.clear();
             int ID = c.getInt(c.getColumnIndex("ID"));
             IDTerm = ID;
             Cursor cc = db.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID = " + ID + "");
