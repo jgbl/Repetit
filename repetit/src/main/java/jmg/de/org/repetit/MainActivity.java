@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
     private Bundle savedInstanceState;
     public  static String versionName;
-
+    public boolean blnSearchTerms;
 
 
     public MainActivity()
@@ -416,6 +416,10 @@ public class MainActivity extends AppCompatActivity
                 case R.id.mnuSearchWholeWord:
                     item.setChecked(item.isChecked() ^ true);
                     blnSearchWholeWord = item.isChecked();
+                    break;
+                case R.id.mnuSearchTerms:
+                    item.setChecked(item.isChecked() ^ true);
+                    blnSearchTerms = item.isChecked();
                     break;
                 case R.id.mnuShowMed:
                     mPager.setCurrentItem(MedActivity.fragID);

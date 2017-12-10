@@ -2,6 +2,7 @@ package jmg.de.org.repetit;
 
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -33,12 +34,19 @@ public class ActivityTerms extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lib.gStatus = "Activity_Terms onCreate";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            this.setFinishOnTouchOutside(true);
+        }
         setContentView(R.layout.activity_terms);
         txtTerm = (TextView)findViewById(R.id.txtTerm);
         txtMeaning = (EditText)findViewById(R.id.txtMeaning);
+        txtMeaning.setText("");
         lstMeanings = (ListView)findViewById(R.id.lstMeanings);
+        listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow);
+        lstMeanings.setAdapter(listAdapter);
         btnAdd = (Button)findViewById(R.id.btnAdd);
         strTerm = getIntent().getStringExtra("term");
+
         db = ((repApplication)getApplication()).db;
 
         if (db!=null)
@@ -51,14 +59,12 @@ public class ActivityTerms extends AppCompatActivity {
                 Cursor cc = db.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID = " + ID + "");
                 if (cc.moveToFirst())
                 {
-                    listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow);
                     do
                     {
                         {
                             listAdapter.add(cc.getString(cc.getColumnIndex("Text")));
                         }
                     } while (cc.moveToNext());
-                    lstMeanings.setAdapter(listAdapter);
                 }
             }
             else
@@ -71,10 +77,15 @@ public class ActivityTerms extends AppCompatActivity {
                 @Override
                 public void onClick(View v)
                 {
-                    if (isNewTerm)
-                    {
+                  if (strTerm != null )
+                  {
                       int FachbegriffsID = db.InsertTerm(strTerm);
-                    }
+                      if (txtMeaning.getText().toString().length()>0)
+                      {
+                          boolean BedInserted = db.InsertMeaning(FachbegriffsID,txtMeaning.getText().toString());
+                          if (BedInserted) listAdapter.add(txtMeaning.getText().toString());
+                      }
+                  }
                 }
             });
         }

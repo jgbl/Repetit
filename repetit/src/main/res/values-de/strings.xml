@@ -82,7 +82,7 @@
     <string name="nameexists">Der Name %1$s existiert schon!</string>
     <string name="results">Ergebnisse</string>
     <string name="open">öffnen</string>
-    <string name="rename">umbenennen</string>
+    <string name="rename">Umbenennen</string>
     <string name="rename_result">Ergebnis umbenennen</string>
     <string name="gotolast">Zum letzten Fehler springen</string>
     <string name="deleteerrors">Alle Fehlerdaten löschen</string>
@@ -97,5 +97,7 @@
     <string name="addTerm">Fachbegriff hinzufügen</string>
     <string name="term">Fachbegriff</string>
     <string name="meaning">Bedeutung</string>
-    <string name="btnAdd">add</string>
+    <string name="btnAdd">Hinzufügen</string>
+    <string name="getMeanings">Zeige Bedeutungen</string>
+    <string name="search_terms">Fachbegriffe durchsuchen</string>
 </resources>

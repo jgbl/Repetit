@@ -50,6 +50,11 @@
         android:checkable="true"
         app:showAsAction="never" />
     <item
+        android:id="@+id/mnuSearchTerms"
+        android:title="@string/search_terms"
+        android:checkable="true"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mnuContact"
         android:title="@string/mnuContact"
         android:icon="@android:drawable/ic_menu_send"

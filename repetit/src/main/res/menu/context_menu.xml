@@ -13,4 +13,8 @@
         android:id="@+id/cmnuAddTerm"
         android:title="@string/addTerm"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/cmnuGetMeanings"
+        android:title="@string/getMeanings"
+        app:showAsAction="never" />
 </menu>

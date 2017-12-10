@@ -439,7 +439,31 @@ public class MedActivity extends Fragment {
                     startActivity(intent2);
                     return true;
                 }
-
+                case R.id.cmnuGetMeanings:
+                    if (info.treeNode.getValue() instanceof TreeNodeHolderSympt)
+                    {
+                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                        search = h.ShortText;
+                        if (_main.db!=null)
+                        {
+                            int FBID = _main.db.getTermID(search);
+                            if (FBID>-1)
+                            {
+                                Cursor c = _main.db.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID = " + FBID);
+                                if (c.moveToFirst())
+                                {
+                                    StringBuilder sb = new StringBuilder();
+                                    do {
+                                        if (sb.length()>0)sb.append("\n");
+                                        sb.append(c.getString(c.getColumnIndex("Text")));
+                                    }  while (c.moveToNext());
+                                    lib.ShowMessage(getContext(),sb.toString(),search);
+                                }
+                                c.close();
+                            }
+                        }
+                        return true;
+                    }
                 default:
                     return super.onContextItemSelected(item);
             }
@@ -700,12 +724,12 @@ public class MedActivity extends Fragment {
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
                         if (txt.length > 1)
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("Text", s) : "WHERE Text LIKE '%" + s + "%'") + ")";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen " :  " ")  + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
                         else
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'") + ")";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen "  :  " " ) + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
-                        where += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'") + ")";
+                        where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen ":  " ") + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
                     }
                 }
             }

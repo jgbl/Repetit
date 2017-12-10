@@ -2,6 +2,7 @@ package jmg.de.org.repetit.lib;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -248,7 +250,6 @@ public class dbSqlite extends SQLiteOpenHelper {
         }
         DataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         isClosed = false;
-        stInsertRow = null;
         try {
             String sql = "CREATE TABLE IF NOT EXISTS \"Errors\" (\n" +
                     "\t`ID`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
@@ -279,7 +280,6 @@ public class dbSqlite extends SQLiteOpenHelper {
             isClosed = true;
             DataBase = null;
         }
-        stInsertRow = null;
         stInsertError = null;
         super.close();
 
@@ -301,59 +301,6 @@ public class dbSqlite extends SQLiteOpenHelper {
 
     }
 
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    SQLiteStatement stInsertRow;
-
-    public boolean InsertRow(String device, String address, Date date, Date dateFL, Date dateCL, Double altitude, Double latitude, Double longitude, Float acc, Float bearing, Float bacc, Float v, Float vacc, Integer steps, Double altitudeC, Double latitudeC, Double longitudeC, Float accC, Float temp, Float humidity) throws Throwable {
-
-        if (DataBase == null) {
-            openDataBase();
-        }
-        if (stInsertRow == null) {
-
-            stInsertRow = DataBase.compileStatement("INSERT INTO Data (Device, Address, Date, DateFL, DateCL, " +
-                    "Altitude, Latitude, Longitude, Accuracy, Bearing, BearingAccuracy, Speed, SpeedAccuracy, Steps, " +
-                    "AltitudeC, LatitudeC, LongitudeC, AccuracyC, " +
-                    "Temperature, Humidity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        }
-        this.DataBase.beginTransaction();
-        try {
-            SQLiteStatement st = stInsertRow;
-            //ContentValues values = new ContentValues();
-            st.clearBindings();
-            st.bindString(1, device);
-            st.bindString(2, address);
-            st.bindString(3, dateFormat.format(date));
-            if (dateFL == null) st.bindNull(4);
-            else st.bindString(4, dateFormat.format(dateFL));
-            if (dateCL == null) st.bindNull(5);
-            else st.bindString(5, dateFormat.format(dateCL));
-            if (altitude != null) st.bindDouble(6, altitude);
-            if (latitude != null) st.bindDouble(7, latitude);
-            if (longitude != null) st.bindDouble(8, longitude);
-            if (acc != null) st.bindDouble(9, acc);
-            if (bearing != null) st.bindDouble(10, bearing);
-            if (bacc != null) st.bindDouble(11, bacc);
-            if (v != null) st.bindDouble(12, v);
-            if (vacc != null) st.bindDouble(13, vacc);
-            if (steps != null) st.bindLong(14, steps);
-            if (altitudeC != null) st.bindDouble(15, altitudeC);
-            if (latitudeC != null) st.bindDouble(16, latitudeC);
-            if (longitudeC != null) st.bindDouble(17, longitudeC);
-            if (accC != null) st.bindDouble(18, accC);
-            st.bindDouble(19, temp);
-            st.bindDouble(20, humidity);
-            st.executeInsert();
-            //this.DataBase.insert("Data", null, values);
-            this.DataBase.setTransactionSuccessful();
-        } catch (Throwable ex) {
-            Log.e("dbsqlite", "insert data", ex);
-            return false;
-        } finally {
-            this.DataBase.endTransaction();
-        }
-        return true;
-    }
 
     private SQLiteStatement stInsertError;
 
@@ -389,22 +336,68 @@ public class dbSqlite extends SQLiteOpenHelper {
         return true;
     }
 
-
+    private SQLiteStatement stInsertFachbegriff = null;
     public int InsertTerm(String strTerm)
     {
-        if (stInsertError == null) {
+        int ID = 0;
+        ID = getTermID(strTerm);
+        if (ID > -1) return  ID;
+        if (stInsertFachbegriff == null) {
 
-            stInsertError = DataBase.compileStatement("INSERT INTO Fachbegriffe (ID, Text) VALUES(?,?)");
+            stInsertFachbegriff = DataBase.compileStatement("INSERT INTO Fachbegriffe (ID, Text) VALUES(?,?)");
         }
-        int ID
+        Cursor c = this.query("SELECT max(ID) FROM Fachbegriffe");
+        if (c.moveToFirst()) ID = c.getInt(0);
+        c.close();
         this.DataBase.beginTransaction();
         try {
-            SQLiteStatement st = stInsertError;
+            SQLiteStatement st = stInsertFachbegriff;
             //ContentValues values = new ContentValues();
             st.clearBindings();
-            st.bindString(1, err);
-            st.bindString(2, CodeLoc);
-            st.bindString(3, comment);
+            st.bindLong(1, ID+1);
+            st.bindString(2,strTerm);
+            st.executeInsert();
+            //this.DataBase.insert("Data", null, values);
+            this.DataBase.setTransactionSuccessful();
+        } catch (Throwable eex) {
+            return -1;
+        } finally {
+            this.DataBase.endTransaction();
+        }
+        return ID+1;
+    }
+
+    private SQLiteStatement stInsertMeaning = null;
+    public boolean InsertMeaning(int FBID, String strMeaning)
+    {
+        int ID = 0;
+        if (DataBase == null) {
+            openDataBase();
+        }
+
+        Cursor c = this.query("SELECT ID FROM Bedeutungen WHERE FachbegriffsID = " + FBID + " AND Text = '" + strMeaning + "'" );
+        if (c.moveToFirst())
+        {
+            c.close();
+            return false;
+        }
+        c.close();
+        if (stInsertMeaning == null) {
+
+            stInsertMeaning = DataBase.compileStatement("INSERT INTO Bedeutungen (ID, FachbegriffsID, Text) VALUES(?,?,?)");
+        }
+        c = this.query("SELECT max(ID) FROM Bedeutungen");
+        if (c.moveToFirst()) ID = c.getInt(0);
+        c.close();
+        ID += 1;
+        this.DataBase.beginTransaction();
+        try {
+            SQLiteStatement st = stInsertMeaning;
+            //ContentValues values = new ContentValues();
+            st.clearBindings();
+            st.bindLong(1, ID);
+            st.bindLong(2,FBID);
+            st.bindString(3,strMeaning);
             st.executeInsert();
             //this.DataBase.insert("Data", null, values);
             this.DataBase.setTransactionSuccessful();
@@ -414,5 +407,20 @@ public class dbSqlite extends SQLiteOpenHelper {
             this.DataBase.endTransaction();
         }
         return true;
+    }
+
+    public int getTermID(String strTerm) {
+        int ID = -1;
+        if (DataBase == null) {
+            openDataBase();
+        }
+
+        Cursor c = this.query("SELECT ID FROM Fachbegriffe WHERE Text = '" + strTerm + "'" );
+        if (c.moveToFirst())
+        {
+            ID = c.getInt(0);
+        }
+        c.close();
+        return  ID;
     }
 }
