@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
             try
             {
                 db = new dbSqlite(this, false);
-                if (db.createDataBase()) db.openDataBase();
+                if (db.createDataBase() == null) db.openDataBase();
                 ((repApplication)getApplication()).db = db;
             }
             catch (Throwable throwable)
@@ -186,15 +186,15 @@ public class MainActivity extends AppCompatActivity
             try
             {
                 db = new dbSqlite(this, false);
-
-                if (!db.createDataBase()){
+                String ex;
+                if ((ex = db.createDataBase()) != null){
                     blnStop = true;
-                    lib.getDialogOK(this, getString(R.string.DatabaseErrorOlderVersions), getString(R.string.database), new DialogInterface.OnClickListener()
+                    lib.getDialogOK(this, getString(R.string.DatabaseErrorOlderVersions) + "\n" + ex, getString(R.string.database), new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            finish();
+
                         }
                     }).show();
                 }

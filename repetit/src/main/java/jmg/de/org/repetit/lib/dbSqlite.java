@@ -28,7 +28,8 @@ import java.util.Locale;
 import jmg.de.org.repetit.MainActivity;
 import jmg.de.org.repetit.R;
 
-public class dbSqlite extends SQLiteOpenHelper {
+public class dbSqlite extends SQLiteOpenHelper
+{
     //The Android's default system path of your application database.
     public String DB_PATH = "/data/data/jmg.de.org.repetit/databases/";
     public String original_path = null;
@@ -42,19 +43,23 @@ public class dbSqlite extends SQLiteOpenHelper {
     public String original_name;
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db)
+    {
 
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int P1, int P2) {
+    public void onUpgrade(SQLiteDatabase db, int P1, int P2)
+    {
 
     }
 
-    public dbSqlite(Context context, boolean blnErr) throws Throwable {
+    public dbSqlite(Context context, boolean blnErr) throws Throwable
+    {
         super(context, (blnErr ? DB_NAMEERR : DB_NAME), null, 1);
         if (blnErr) dbname = DB_NAMEERR;
-        if (context == null) {
+        if (context == null)
+        {
             throw new RuntimeException("context is null!");
         }
         lib.gStatus = "getFilesDir";
@@ -64,23 +69,31 @@ public class dbSqlite extends SQLiteOpenHelper {
         lib.gStatus = "getExternalStorageDirectory";
         String extPath = Environment.getExternalStorageDirectory().getPath();
         File F = new File(extPath);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+        {
             File F2 = context.getExternalFilesDir(null);
             if (F2 != null) F = F2;
             extPath = F.getPath();
-            if (F.isDirectory() == false && !F.exists()) {
+            if (F.isDirectory() == false && !F.exists())
+            {
                 F.mkdirs();
             }
         }
-        if (F.isDirectory() && F.exists()) {
+        if (F.isDirectory() && F.exists())
+        {
             String JMGDataDirectory = Path.combine(extPath, "repetit", "database");
             File F1 = new File(JMGDataDirectory);
-            if (F1.isDirectory() == false && !F1.exists()) {
+            if (F1.isDirectory() == false && !F1.exists())
+            {
                 F1.mkdirs();
-                if (checkDataBase() && F1.exists()) {
-                    try {
+                if (checkDataBase() && F1.exists())
+                {
+                    try
+                    {
                         lib.copyFile(DB_PATH + dbname, Path.combine(JMGDataDirectory, dbname));
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                         lib.ShowException(context, e);
@@ -89,39 +102,46 @@ public class dbSqlite extends SQLiteOpenHelper {
             }
             if (F1.exists()) DB_PATH = JMGDataDirectory;
         }
-        if (DB_PATH.endsWith("/") == false) {
+        if (DB_PATH.endsWith("/") == false)
+        {
             DB_PATH = DB_PATH + "/";
         }
         original_path = DB_PATH;
         original_name = dbname;
         if (mContext != null)
         {
-           DB_PATH = mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("dbpath", DB_PATH);
-           dbname = mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("dbname", dbname);
+            DB_PATH = mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).getString("dbpath", DB_PATH);
+            dbname = mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).getString("dbname", dbname);
         }
 
     }
 
-    public final boolean createDataBase() {
+    public final String createDataBase()
+    {
 
         boolean dbExist = checkDataBase();
-        boolean isNewVersion = !(mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") .equalsIgnoreCase(MainActivity.versionName));
-        if (dbExist) {
-            return true;
-        } else {
-            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("version",MainActivity.versionName).commit();
+        boolean isNewVersion = !(mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).getString("version", "0").equalsIgnoreCase(MainActivity.versionName));
+        if (dbExist) // && !isNewVersion)
+        {
+            return null;
+        } else
+        {
+            mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).edit().putString("version", MainActivity.versionName).commit();
             //By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
             this.getReadableDatabase();
 
-            try {
+            try
+            {
 
                 return copyDataBase();
 
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 System.out.println(e.getMessage());
                 if (mContext != null) lib.ShowException(mContext, e);
-                return false;
+                return e.getMessage();
                 //throw new RuntimeException("Error copying database");
 
             }
@@ -134,21 +154,26 @@ public class dbSqlite extends SQLiteOpenHelper {
      *
      * @return true if it exists, false if it doesn't
      */
-    private boolean checkDataBase() {
+    private boolean checkDataBase()
+    {
 
         SQLiteDatabase checkDB = null;
 
-        try {
+        try
+        {
             String myPath = DB_PATH + dbname;
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
-        } catch (SQLiteException e) {
+        }
+        catch (SQLiteException e)
+        {
             System.out.println(e.getMessage());
             //database does't exist yet.
 
         }
 
-        if (checkDB != null) {
+        if (checkDB != null)
+        {
 
             checkDB.close();
 
@@ -157,7 +182,8 @@ public class dbSqlite extends SQLiteOpenHelper {
         return checkDB != null;
     }
 
-    private boolean copyDataBase() throws IOException {
+    private String copyDataBase() throws IOException
+    {
 
         //Open your local db as the input stream
         assert (mContext != null);
@@ -165,22 +191,26 @@ public class dbSqlite extends SQLiteOpenHelper {
         AssetManager A = mContext.getAssets();
         //int rID = mContext.getResources().getIdentifier("fortyonepost.com.lfas:raw/"+fileName, null, null);
         //InputStream myInput = A.open(DB_NAME);
-        for (int ii = 0; ii <= 1; ii++) {
+        for (int ii = 0; ii <= 1; ii++)
+        {
             // Path to the just created empty db
             String outFileName = original_path + original_name;
-            if (ii == 1) outFileName = outFileName.replace("kent","kent2");
-            if ((new java.io.File(DB_PATH)).isDirectory() == false) {
+            if (ii == 1) outFileName = outFileName.replace("kent", "kent2");
+            if ((new java.io.File(DB_PATH)).isDirectory() == false)
+            {
                 (new java.io.File(DB_PATH)).mkdirs();
             }
             //Open the empty db as the output stream
 
             File file = new File(outFileName);
 
-            if (file.exists()) {
+            if (file.exists())
+            {
                 file.delete();
             }
             // if file doesnt exists, then create it
-            if (!file.exists()) {
+            if (!file.exists())
+            {
                 file.createNewFile();
             }
             OutputStream myOutput = new FileOutputStream(file);
@@ -191,66 +221,79 @@ public class dbSqlite extends SQLiteOpenHelper {
             String[] assetfiles;
             Locale L = Locale.getDefault();
             String folder;
-            if ((L.equals(Locale.GERMAN)) || (L.equals(Locale.GERMANY))) {
+            if ((L.equals(Locale.GERMAN)) || (L.equals(Locale.GERMANY)))
+            {
                 folder = "db";
-            } else {
+            } else
+            {
                 folder = "dbEn";
             }
             if (ii == 1)
             {
-                if (folder == "db") folder = "dbEn"; else folder = "db";
+                if (folder == "db") folder = "dbEn";
+                else folder = "db";
             }
             assetfiles = A.list(folder);
             Arrays.sort(assetfiles);
             byte[] buffer = new byte[1024];
             int length;
-            try {
+            try
+            {
                 for (int i = 0; i < assetfiles.length; i++) //I have definitely less than 10 files; you might have more
                 {
                     String partname = assetfiles[i];
-                    if (partname.startsWith("db") && partname.length() == 4) {
+                    if (partname.startsWith("db") && partname.length() == 4)
+                    {
                         InputStream instream = A.open(folder + "/" + partname);
-                        while ((length = instream.read(buffer, 0, 1024)) > 0) {
+                        while ((length = instream.read(buffer, 0, 1024)) > 0)
+                        {
                             myOutput.write(buffer, 0, length);
                         }
                         instream.close();
                     }
                 }
 
-            } catch (Throwable ex) {
+            }
+            catch (Throwable ex)
+            {
                 Log.e("copyDatabase", ex.getMessage(), ex);
-                if (file.exists()) {
+                if (file.exists())
+                {
                     file.delete();
                 }
-                return false;
-            } finally {
+                return ex.getMessage();
+            }
+            finally
+            {
                 myOutput.flush();
                 myOutput.close();
                 //myInput.close();
             }
         }
-        return true;
+        return null;
         //Close the streams
 
 
     }
 
-    public final void openDataBase() {
-        if (DataBase!=null)return;
+    public final void openDataBase()
+    {
+        if (DataBase != null) return;
         //Open the database
         if (mContext != null)
         {
-            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("dbpath", DB_PATH).commit();
-            mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("dbname", dbname).commit();
+            mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).edit().putString("dbpath", DB_PATH).commit();
+            mContext.getSharedPreferences("sqlite", Context.MODE_PRIVATE).edit().putString("dbname", dbname).commit();
         }
         String myPath = DB_PATH + dbname;
-        if (Looper.myLooper() == Looper.getMainLooper() && mContext!=null && mContext instanceof MainActivity)
+        if (Looper.myLooper() == Looper.getMainLooper() && mContext != null && mContext instanceof MainActivity)
         {
             ((MainActivity) mContext).setTitle(dbname);
         }
         DataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         isClosed = false;
-        try {
+        try
+        {
             String sql = "CREATE TABLE IF NOT EXISTS \"Errors\" (\n" +
                     "\t`ID`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
                     "\t`date`\tDATETIME DEFAULT CURRENT_TIMESTAMP,\n" +
@@ -261,10 +304,15 @@ public class dbSqlite extends SQLiteOpenHelper {
                     ")";
             this.DataBase.execSQL(sql);
             this.DataBase.execSQL("PRAGMA foreign_keys = ON;");
-        } catch (Throwable ex) {
-            try {
+        }
+        catch (Throwable ex)
+        {
+            try
+            {
                 this.InsertError(ex, "OpenDatabase", "Create Table Errors");
-            } catch (Throwable throwable) {
+            }
+            catch (Throwable throwable)
+            {
                 throwable.printStackTrace();
             }
         }
@@ -273,9 +321,11 @@ public class dbSqlite extends SQLiteOpenHelper {
     public boolean isClosed = true;
 
     @Override
-    public void close() {
+    public void close()
+    {
 
-        if (DataBase != null) {
+        if (DataBase != null)
+        {
             if (DataBase.isOpen()) DataBase.close();
             isClosed = true;
             DataBase = null;
@@ -287,16 +337,20 @@ public class dbSqlite extends SQLiteOpenHelper {
 
     }
 
-    public final android.database.Cursor query(String SQL) {
-        if (DataBase == null) {
+    public final android.database.Cursor query(String SQL)
+    {
+        if (DataBase == null)
+        {
             openDataBase();
         }
         return DataBase.rawQuery(SQL, null);
 
     }
 
-    public final android.database.Cursor query(String SQL, String[] params) {
-        if (DataBase == null) {
+    public final android.database.Cursor query(String SQL, String[] params)
+    {
+        if (DataBase == null)
+        {
             openDataBase();
         }
         return DataBase.rawQuery(SQL, params);
@@ -306,21 +360,25 @@ public class dbSqlite extends SQLiteOpenHelper {
 
     private SQLiteStatement stInsertError;
 
-    public boolean InsertError(Throwable ex, String CodeLoc, String comment) throws Throwable {
+    public boolean InsertError(Throwable ex, String CodeLoc, String comment) throws Throwable
+    {
         if (ex == null) return false;
         StringWriter errors = new StringWriter();
         ex.printStackTrace(new PrintWriter(errors));
         String err = errors.toString();
         if (lib.libString.IsNullOrEmpty(comment)) comment = ex.getMessage();
-        if (DataBase == null) {
+        if (DataBase == null)
+        {
             openDataBase();
         }
-        if (stInsertError == null) {
+        if (stInsertError == null)
+        {
 
             stInsertError = DataBase.compileStatement("INSERT INTO Errors (ex, CodeLoc, comment) VALUES(?,?,?)");
         }
         this.DataBase.beginTransaction();
-        try {
+        try
+        {
             SQLiteStatement st = stInsertError;
             //ContentValues values = new ContentValues();
             st.clearBindings();
@@ -330,21 +388,27 @@ public class dbSqlite extends SQLiteOpenHelper {
             st.executeInsert();
             //this.DataBase.insert("Data", null, values);
             this.DataBase.setTransactionSuccessful();
-        } catch (Throwable eex) {
+        }
+        catch (Throwable eex)
+        {
             return false;
-        } finally {
+        }
+        finally
+        {
             this.DataBase.endTransaction();
         }
         return true;
     }
 
     private SQLiteStatement stInsertFachbegriff = null;
+
     public int InsertTerm(String strTerm)
     {
         int ID = 0;
         ID = getTermID(strTerm);
-        if (ID > -1) return  ID;
-        if (stInsertFachbegriff == null) {
+        if (ID > -1) return ID;
+        if (stInsertFachbegriff == null)
+        {
 
             stInsertFachbegriff = DataBase.compileStatement("INSERT INTO Fachbegriffe (ID, Text) VALUES(?,?)");
         }
@@ -352,39 +416,47 @@ public class dbSqlite extends SQLiteOpenHelper {
         if (c.moveToFirst()) ID = c.getInt(0);
         c.close();
         this.DataBase.beginTransaction();
-        try {
+        try
+        {
             SQLiteStatement st = stInsertFachbegriff;
             //ContentValues values = new ContentValues();
             st.clearBindings();
-            st.bindLong(1, ID+1);
-            st.bindString(2,strTerm);
+            st.bindLong(1, ID + 1);
+            st.bindString(2, strTerm);
             st.executeInsert();
             //this.DataBase.insert("Data", null, values);
             this.DataBase.setTransactionSuccessful();
-        } catch (Throwable eex) {
+        }
+        catch (Throwable eex)
+        {
             return -1;
-        } finally {
+        }
+        finally
+        {
             this.DataBase.endTransaction();
         }
-        return ID+1;
+        return ID + 1;
     }
 
     private SQLiteStatement stInsertMeaning = null;
+
     public int InsertMeaning(int FBID, String strMeaning) throws Throwable
     {
         int ID = -1;
-        if (DataBase == null) {
+        if (DataBase == null)
+        {
             openDataBase();
         }
 
-        Cursor c = this.query("SELECT ID FROM Bedeutungen WHERE FachbegriffsID = " + FBID + " AND Text = '" + strMeaning + "'" );
+        Cursor c = this.query("SELECT ID FROM Bedeutungen WHERE FachbegriffsID = " + FBID + " AND Text = '" + strMeaning + "'");
         if (c.moveToFirst())
         {
             c.close();
             return -1; // c.getInt(c.getColumnIndex("ID"));
         }
         c.close();
-        if (stInsertMeaning == null) {
+        if (stInsertMeaning == null)
+        {
 
             stInsertMeaning = DataBase.compileStatement("INSERT INTO Bedeutungen (ID, FachbegriffsID, Text) VALUES(?,?,?)");
         }
@@ -393,57 +465,123 @@ public class dbSqlite extends SQLiteOpenHelper {
         c.close();
         ID += 1;
         this.DataBase.beginTransaction();
-        try {
+        try
+        {
             SQLiteStatement st = stInsertMeaning;
             //ContentValues values = new ContentValues();
             st.clearBindings();
             st.bindLong(1, ID);
-            st.bindLong(2,FBID);
-            st.bindString(3,strMeaning);
+            st.bindLong(2, FBID);
+            st.bindString(3, strMeaning);
             st.executeInsert();
             //this.DataBase.insert("Data", null, values);
             this.DataBase.setTransactionSuccessful();
-        } catch (Throwable eex) {
+        }
+        catch (Throwable eex)
+        {
             return -1;
-        } finally {
+        }
+        finally
+        {
             this.DataBase.endTransaction();
         }
         return ID;
     }
 
-    public int getTermID(String strTerm) {
+    public int getTermID(String strTerm)
+    {
         int ID = -1;
-        if (DataBase == null) {
+        if (DataBase == null)
+        {
             openDataBase();
         }
 
-        Cursor c = this.query("SELECT ID FROM Fachbegriffe WHERE Text = '" + strTerm + "'" );
+        Cursor c = this.query("SELECT ID FROM Fachbegriffe WHERE Text = '" + strTerm + "'");
         if (c.moveToFirst())
         {
             ID = c.getInt(0);
         }
         c.close();
-        return  ID;
+        return ID;
     }
 
-    public void deleteMeaning(int ID) {
-        if (DataBase == null) {
+    public void deleteMeaning(int ID)
+    {
+        if (DataBase == null)
+        {
             openDataBase();
         }
         this.DataBase.execSQL("DELETE FROM Bedeutungen WHERE ID = " + ID);
     }
 
-    public void deleteTerm(String strTerm, int idTerm) {
-        if (DataBase == null) {
+    public void deleteTerm(String strTerm, int idTerm)
+    {
+        if (DataBase == null)
+        {
             openDataBase();
         }
         if (idTerm > -12)
         {
             this.DataBase.execSQL("DELETE FROM Fachbegriffe WHERE ID = " + idTerm);
-        }
-        else
+        } else
         {
             this.DataBase.execSQL("DELETE FROM Fachbegriffe WHERE Text = " + strTerm);
         }
     }
+
+    public String[] getBedeutungen(String strTerm)
+    {
+        Cursor c = this.query("SELECT * FROM Bedeutungen WHERE FachbegriffsID IN (Select ID FROM Fachbegriffe WHERE LOWER(Text) = '" + lib.libString.MakeFitForQuery(strTerm, true).toLowerCase() + "')");
+        String[] Bed = null;
+        if (c.moveToFirst())
+        {
+            Bed = new String[c.getCount()];
+            int i = 0;
+            do
+            {
+                Bed[i] = lib.libString.MakeFitForQuery(c.getString(c.getColumnIndex("Text")),true);
+                i++;
+            } while (c.moveToNext());
+        }
+        c.close();
+        return Bed;
+    }
+
+    public String[] getFachbegriffe(String strMeaning)
+    {
+        Cursor c = this.query("SELECT * FROM Fachbegriffe WHERE ID IN (Select FachbegriffsID FROM Bedeutungen WHERE LOWER(Text) = '" + lib.libString.MakeFitForQuery(strMeaning, true).toLowerCase() + "')");
+        String[] Bed = null;
+        if (c.moveToFirst())
+        {
+            Bed = new String[c.getCount()];
+            int i = 0;
+            do
+            {
+                Bed[i] = lib.libString.MakeFitForQuery(c.getString(c.getColumnIndex("Text")),true);
+                i++;
+            } while (c.moveToNext());
+        }
+        c.close();
+        return Bed;
+    }
+
+
+    public static String getBedsQuery(String Field, String[] bed)
+    {
+        StringBuilder qry = new StringBuilder();
+        if (bed != null && bed.length>0)
+        {
+            qry.append(" OR (");
+            boolean first = true;
+            for (String s : bed)
+            {
+                if (!first) qry.append(" OR ");
+                qry.append(Field + " LIKE '%" + s + "%'");
+                first = false;
+            }
+            qry.append(")");
+        }
+        return  qry.toString();
+    }
+
 }

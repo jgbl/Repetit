@@ -426,21 +426,26 @@ public class SymptomsActivity extends Fragment {
         }
         String[] txt = searchtxt.split("\\.");
         try {
-            String qry = "SELECT Symptome.* FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen " :  " ") + "WHERE ";
+            String qry = "SELECT Symptome.* FROM Symptome WHERE ";
             String where = "";
             for (String s : txt) {
                 if (!lib.libString.IsNullOrEmpty(s)) {
                     s = MakeFitForQuery(s,true);
+                    String Bed[] = null;
+                    if (_main.blnSearchTerms && _main.db != null)
+                    {
+                        Bed = _main.db.getFachbegriffe(s);
+                    }
                     if (AndFlag) {
                         if (where != "") where += " AND ";
                         if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (Symptome.Text LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
+                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("Text",Bed):""));
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
                     } else {
                         if (where != "") where += " OR ";
                         if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
+                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
                     }
                 }
             }

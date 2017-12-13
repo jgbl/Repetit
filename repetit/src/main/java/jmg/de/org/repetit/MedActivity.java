@@ -50,6 +50,7 @@ import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
 import static android.content.Context.MODE_PRIVATE;
+import static jmg.de.org.repetit.lib.dbSqlite.getBedsQuery;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 import static org.apache.commons.codec.binary.Base64.*;
 
@@ -717,19 +718,24 @@ public class MedActivity extends Fragment {
                 if (res != lib.yesnoundefined.yes) return;
             }
             String where = "";
+            String Bed[] = null;
             for (String s : txt) {
                 String whereWhole = null;
                 if (!lib.libString.IsNullOrEmpty(s)) {
                     s = MakeFitForQuery(s, true);
+                    if (_main.blnSearchTerms && _main.db != null)
+                    {
+                        Bed = _main.db.getFachbegriffe(s);
+                    }
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
                         if (txt.length > 1)
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen " :  " ")  + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (Symptome.Text LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "   + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Text",Bed) :"")) + ")";
                         else
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen "  :  " " ) + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
-                        where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen ":  " ") + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
+                        where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";
                     }
                 }
             }
@@ -738,12 +744,13 @@ public class MedActivity extends Fragment {
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade, true, txt, null, null);
+            buildTreeRep(qryMedGrade, true, txt, Bed, null, null);
             _lastQuery = qryMedGrade;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
     }
+
 
     public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
@@ -951,9 +958,12 @@ public class MedActivity extends Fragment {
         }
 
 
-
-
     public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
+        buildTreeRep(qry,refresh,txt,null,selected,savedinstancestate);
+    }
+
+
+        public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final String[] Bed, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
         final Context context = getContext();
         if (savedinstancestate!=null && _main != null && _main.db!=null)
         {
@@ -1042,7 +1052,7 @@ public class MedActivity extends Fragment {
                                 TreeNode treeNode = new TreeNode(hMed);
                                 treeNode.setLevel(0);
                                 root.addChild(treeNode);
-                                int f = insertSymptom(c, treeNode, hMed, selected, ID, txt);
+                                int f = insertSymptom(c, treeNode, hMed, selected, ID, txt,Bed);
                                 if (f == -2) f = 1;
                                 if (f >= 0) {
                                     sum = c.getInt(ColumnGrade) * f;
@@ -1054,7 +1064,7 @@ public class MedActivity extends Fragment {
                                         pc.counter = counter;
                                         this.publishProgress(pc);
                                     }
-                                    f = insertSymptom(c, treeNode, hMed, selected, ID, txt);
+                                    f = insertSymptom(c, treeNode, hMed, selected, ID, txt,Bed);
                                     if (f == -2) f = 1;
                                     if (f >= 0) {
                                         nexts += 1;
@@ -1151,7 +1161,7 @@ public class MedActivity extends Fragment {
 
     }
 
-    private int insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, ArrayList<Integer> Weight, int ID, String[] txt) {
+    private int insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, ArrayList<Integer> Weight, int ID, String[] txt, String[] Bed) {
         int res;
         final int ColumnTextId = c.getColumnIndex("Text");
         final int ColumnSymptomIDId = c.getColumnIndex("SymptomID");
@@ -1179,6 +1189,15 @@ public class MedActivity extends Fragment {
         } else {
             found = true;
         }
+        if (Bed != null && Bed.length > 0) {
+            for (String t : Bed) {
+                if (ShortText.toLowerCase().contains(t.toLowerCase())) {
+                    found |= true;
+                    break;
+                }
+            }
+        }
+
         if (!found) return -1;
         res = -1;
         if (Weight != null && Weight.size() > 0) {
