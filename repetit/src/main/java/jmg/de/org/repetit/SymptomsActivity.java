@@ -434,7 +434,7 @@ public class SymptomsActivity extends Fragment {
                     if (AndFlag) {
                         if (where != "") where += " AND ";
                         if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
+                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (Symptome.Text LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
                         else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":""));
                     } else {
                         if (where != "") where += " OR ";

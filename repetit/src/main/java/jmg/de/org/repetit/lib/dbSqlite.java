@@ -105,8 +105,8 @@ public class dbSqlite extends SQLiteOpenHelper {
     public final boolean createDataBase() {
 
         boolean dbExist = checkDataBase();
-
-        if ((mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") .equalsIgnoreCase(MainActivity.versionName)) && dbExist) {
+        boolean isNewVersion = !(mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).getString("version","0") .equalsIgnoreCase(MainActivity.versionName));
+        if (dbExist) {
             return true;
         } else {
             mContext.getSharedPreferences("sqlite",Context.MODE_PRIVATE).edit().putString("version",MainActivity.versionName).commit();

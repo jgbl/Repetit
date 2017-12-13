@@ -724,7 +724,7 @@ public class MedActivity extends Fragment {
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
                         if (txt.length > 1)
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen " :  " ")  + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen " :  " ")  + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (Symptome.Text LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
                         else
                             where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome" + (_main.blnSearchTerms ? ", Fachbegriffe, Bedeutungen "  :  " " ) + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? " OR (ShortText LIKE '%' || Fachbegriffe.Text || '%' AND Bedeutungen.Text LIKE '%" + s + "%' AND Fachbegriffe.ID = Bedeutungen.FachbegriffsID)":"")) + ")";
                     } else {
