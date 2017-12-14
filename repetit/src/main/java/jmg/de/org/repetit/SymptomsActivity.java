@@ -439,13 +439,13 @@ public class SymptomsActivity extends Fragment {
                     if (AndFlag) {
                         if (where != "") where += " AND ";
                         if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("Text",Bed):""));
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
+                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"(Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("Text",Bed):"")+ ")");
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
                     } else {
                         if (where != "") where += " OR ";
                         if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):""));
+                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
+                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
                     }
                 }
             }

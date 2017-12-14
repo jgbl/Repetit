@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:weightSum="1">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:weightSum="1">
 
 
     <EditText
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/term"
         android:text="@string/term"
-        tools:text="@string/term"/>
+        tools:text="@string/term" />
 
     <EditText
         android:id="@+id/txtMeaning"
@@ -21,24 +21,41 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/meaning"
         android:text="@string/meaning"
-        tools:text="@string/meaning"/>
+        tools:text="@string/meaning" />
 
-    <Button
-        android:id="@+id/btnAdd"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btnAdd"/>
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/btnDeleteTerm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btnDeleteTerm"/>
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnAdd" />
+
+        <Button
+            android:id="@+id/btnDeleteTerm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnDeleteTerm" />
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnClose" />
+
+
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/lstMeanings"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

@@ -36,6 +36,7 @@ public class ActivityTerms extends AppCompatActivity {
     private boolean isNewTerm;
     private Button btnAdd;
     private Button btnDeleteTerm;
+    private Button btnClose;
 
     private class Meaning {
         int ID;
@@ -71,6 +72,7 @@ public class ActivityTerms extends AppCompatActivity {
         lstMeanings.setAdapter(listAdapter);
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnDeleteTerm = (Button) findViewById(R.id.btnDeleteTerm);
+        btnClose = (Button) findViewById((R.id.btnClose));
 
         if (savedInstanceState == null && getIntent() != null) strTerm = getIntent().getStringExtra("term");
 
@@ -149,6 +151,12 @@ public class ActivityTerms extends AppCompatActivity {
                     txtTerm.setText(strTerm);
                     listAdapter.clear();
                     txtTerm.setText("");
+                }
+            });
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
                 }
             });
         } else {

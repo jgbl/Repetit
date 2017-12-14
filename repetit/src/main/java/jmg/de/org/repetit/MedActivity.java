@@ -719,6 +719,7 @@ public class MedActivity extends Fragment {
             }
             String where = "";
             String Bed[] = null;
+            ArrayList<String>BedAll = new ArrayList<>();
             for (String s : txt) {
                 String whereWhole = null;
                 if (!lib.libString.IsNullOrEmpty(s)) {
@@ -726,6 +727,7 @@ public class MedActivity extends Fragment {
                     if (_main.blnSearchTerms && _main.db != null)
                     {
                         Bed = _main.db.getFachbegriffe(s);
+                        if (Bed != null) for (String ss: Bed) BedAll.add(ss);
                     }
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
@@ -744,7 +746,7 @@ public class MedActivity extends Fragment {
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade, true, txt, Bed, null, null);
+            buildTreeRep(qryMedGrade, true, txt,BedAll, null, null);
             _lastQuery = qryMedGrade;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -963,7 +965,7 @@ public class MedActivity extends Fragment {
     }
 
 
-        public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final String[] Bed, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
+        public void buildTreeRep(final String qry, final boolean refresh, final String[] txt, final ArrayList<String> Bed, final ArrayList<Integer> selected, final Bundle savedinstancestate) {
         final Context context = getContext();
         if (savedinstancestate!=null && _main != null && _main.db!=null)
         {
@@ -1161,7 +1163,7 @@ public class MedActivity extends Fragment {
 
     }
 
-    private int insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, ArrayList<Integer> Weight, int ID, String[] txt, String[] Bed) {
+    private int insertSymptom(Cursor c, TreeNode treeNode, TreeNodeHolderMed hMed, ArrayList<Integer> Weight, int ID, String[] txt, ArrayList<String> Bed) {
         int res;
         final int ColumnTextId = c.getColumnIndex("Text");
         final int ColumnSymptomIDId = c.getColumnIndex("SymptomID");
@@ -1189,7 +1191,7 @@ public class MedActivity extends Fragment {
         } else {
             found = true;
         }
-        if (Bed != null && Bed.length > 0) {
+        if (Bed != null && Bed.size() > 0) {
             for (String t : Bed) {
                 if (ShortText.toLowerCase().contains(t.toLowerCase())) {
                     found |= true;

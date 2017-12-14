@@ -102,4 +102,5 @@
     <string name="search_terms">Fachbegriffe durchsuchen</string>
     <string name="DeleteMeaning">Lösche Bedeutung</string>
     <string name="btnDeleteTerm">Fachbegriff löschen</string>
+    <string name="btnClose">Schließen</string>
 </resources>
