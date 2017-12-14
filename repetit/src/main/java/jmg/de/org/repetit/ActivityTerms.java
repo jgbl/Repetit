@@ -2,19 +2,24 @@ package jmg.de.org.repetit;
 
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,6 +42,8 @@ public class ActivityTerms extends AppCompatActivity {
     private Button btnAdd;
     private Button btnDeleteTerm;
     private Button btnClose;
+    private LinearLayout llButtons;
+    private LinearLayout llTerms;
 
     private class Meaning {
         int ID;
@@ -73,6 +80,35 @@ public class ActivityTerms extends AppCompatActivity {
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnDeleteTerm = (Button) findViewById(R.id.btnDeleteTerm);
         btnClose = (Button) findViewById((R.id.btnClose));
+        llButtons = (LinearLayout)findViewById(R.id.llButtons);
+        llTerms = (LinearLayout)findViewById(R.id.llTerms);
+        llButtons.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                lib.removeLayoutListener(llButtons.getViewTreeObserver(), this);
+                int width = (llTerms).getWidth();
+                int widthButton = (width-lib.dpToPx(10))/3;
+                int widthButtons = btnAdd.getWidth() + btnDeleteTerm.getWidth() + btnClose.getWidth() + lib.dpToPx(20);
+                if (widthButtons == 370)
+                {
+                    float scale = (float) width / (float) widthButtons;
+                    btnAdd.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnAdd.getTextSize() * scale);
+                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)btnAdd.getLayoutParams();
+                    params.width = widthButton;
+                    btnAdd.setLayoutParams(params);
+                    btnDeleteTerm.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnDeleteTerm.getTextSize() * scale);
+                    params = (LinearLayout.LayoutParams)btnDeleteTerm.getLayoutParams();
+                    params.width = widthButton;
+                    btnDeleteTerm.setLayoutParams(params);
+                    btnClose.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnClose.getTextSize() * scale);
+                    params = (LinearLayout.LayoutParams)btnClose.getLayoutParams();
+                    params.width = widthButton;
+                    btnClose.setLayoutParams(params);
+                    btnClose.setWidth(widthButton);
+                }
+
+            }
+        });
 
         if (savedInstanceState == null && getIntent() != null) strTerm = getIntent().getStringExtra("term");
 
