@@ -88,23 +88,27 @@ public class ActivityTerms extends AppCompatActivity {
                 lib.removeLayoutListener(llButtons.getViewTreeObserver(), this);
                 int width = (llTerms).getWidth();
                 int widthButton = (width-lib.dpToPx(10))/3;
-                int widthButtons = btnAdd.getWidth() + btnDeleteTerm.getWidth() + btnClose.getWidth() + lib.dpToPx(20);
-                if (widthButtons == 370)
+                int widthButtons = btnAdd.getWidth() + btnDeleteTerm.getWidth() + btnClose.getWidth();
+                if (widthButtons == 330)
                 {
                     float scale = (float) width / (float) widthButtons;
-                    btnAdd.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnAdd.getTextSize() * scale);
+                    btnAdd.setTextSize(TypedValue.COMPLEX_UNIT_PX,(btnAdd.getTextSize() * scale > lib.dpToPx(20)? lib.dpToPx(20):btnAdd.getTextSize() * scale));
                     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)btnAdd.getLayoutParams();
+                    params.leftMargin = lib.dpToPx(5);
                     params.width = widthButton;
                     btnAdd.setLayoutParams(params);
-                    btnDeleteTerm.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnDeleteTerm.getTextSize() * scale);
+                    btnDeleteTerm.setTextSize(TypedValue.COMPLEX_UNIT_PX,(btnDeleteTerm.getTextSize() * scale > lib.dpToPx(20)? lib.dpToPx(20):btnDeleteTerm.getTextSize() * scale));
                     params = (LinearLayout.LayoutParams)btnDeleteTerm.getLayoutParams();
                     params.width = widthButton;
                     btnDeleteTerm.setLayoutParams(params);
-                    btnClose.setTextSize(TypedValue.COMPLEX_UNIT_PX,btnClose.getTextSize() * scale);
+                    btnClose.setTextSize(TypedValue.COMPLEX_UNIT_PX,(btnClose.getTextSize() * scale > lib.dpToPx(20)? lib.dpToPx(20):btnClose.getTextSize() * scale));
                     params = (LinearLayout.LayoutParams)btnClose.getLayoutParams();
                     params.width = widthButton;
                     btnClose.setLayoutParams(params);
                     btnClose.setWidth(widthButton);
+                    //params = (LinearLayout.LayoutParams)btnAdd.getLayoutParams();
+                    //params.leftMargin = ((llButtons.getRight()-btnClose.getRight())/2);
+                    //btnAdd.setLayoutParams(params);
                 }
 
             }
