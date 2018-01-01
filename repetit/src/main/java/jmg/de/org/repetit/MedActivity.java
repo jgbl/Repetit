@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
@@ -711,6 +712,7 @@ public class MedActivity extends Fragment {
     private void searchSymptoms(String searchtxt, boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
         String[] txt = searchtxt.split("\\.");
+        if (txt.length<=1) txt = searchtxt.split("\\s+");
         try {
             //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
             if (!lib.libString.IsNullOrEmpty(_main.lastQuery)) {
@@ -718,6 +720,7 @@ public class MedActivity extends Fragment {
                 if (res != lib.yesnoundefined.yes) return;
             }
             String where = "";
+            String whereSympt = "";
             String Bed[] = null;
             ArrayList<String>BedAll = new ArrayList<>();
             for (String s : txt) {
@@ -731,10 +734,19 @@ public class MedActivity extends Fragment {
                     }
                     if (AndFlag) {
                         if (!(where.equalsIgnoreCase(""))) where += " AND ";
-                        if (txt.length > 1)
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "   + (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Text",Bed) :"")) + ")";
+                        if (!(whereSympt.equalsIgnoreCase(""))) whereSympt += " OR ";
+                        String whereS = "";
+                        if (txt.length > 1) {
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Text", Bed) : ""));
+                            where += "SymptomeOfMedikament.MedikamentID IN (Select SymptomeOfMedikament.MedikamentID FROM SymptomeOfMedikament WHERE SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + whereS + "))";
+                        }
                         else
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";
+                        {
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):""));
+                            where += "SymptomeOfMedikament.MedikamentID IN (Select SymptomeOfMedikament.MedikamentID FROM SymptomeOfMedikament WHERE SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + whereS + "))";
+                        }
+                        whereS = whereS.substring(6);
+                        whereSympt += whereS;
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
                         where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";
@@ -744,7 +756,7 @@ public class MedActivity extends Fragment {
             if (!AndFlag || txt.length < 2) txt = null;
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")";
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")"+ (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, true, txt,BedAll, null, null);
             _lastQuery = qryMedGrade;
@@ -1181,9 +1193,20 @@ public class MedActivity extends Fragment {
         Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
         Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
         boolean found = false;
+        String txtCompare = ShortText.toLowerCase();
         if (txt != null && txt.length > 0) {
             for (String t : txt) {
-                if (ShortText.toLowerCase().contains(t.toLowerCase())) {
+                String regExTXT = null;
+                t = Pattern.quote(t.toLowerCase());
+                if (_main.blnSearchWholeWord)
+                {
+                    regExTXT = "\\b" + t + "\\b";
+                }
+                else
+                {
+                    regExTXT = ".*" + t + ".*";
+                }
+                if (txtCompare.matches(regExTXT)) {
                     found = true;
                     break;
                 }
@@ -1193,7 +1216,17 @@ public class MedActivity extends Fragment {
         }
         if (Bed != null && Bed.size() > 0) {
             for (String t : Bed) {
-                if (ShortText.toLowerCase().contains(t.toLowerCase())) {
+                String regExBED = null;
+                t = Pattern.quote(t.toLowerCase());
+                if (_main.blnSearchWholeWord)
+                {
+                    regExBED = "\\b" + t + "\\b";
+                }
+                else
+                {
+                    regExBED = ".*" + t + ".*";
+                }
+                if (txtCompare.matches(regExBED)) {
                     found |= true;
                     break;
                 }

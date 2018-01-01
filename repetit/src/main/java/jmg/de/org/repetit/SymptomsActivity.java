@@ -425,6 +425,7 @@ public class SymptomsActivity extends Fragment {
             }
         }
         String[] txt = searchtxt.split("\\.");
+        if (txt.length<=1) txt = searchtxt.split("\\s+");
         try {
             String qry = "SELECT Symptome.* FROM Symptome WHERE ";
             String where = "";
