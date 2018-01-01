@@ -687,18 +687,19 @@ public class SymptomsActivity extends Fragment {
                 protected void onPostExecute(final Integer result)
                 {
                     // continue what you are doing...
-
-                    pd.dismiss();
-                    if (refresh && treeView != null) treeView.refreshTreeView();
-                    blnHasbeenRepertorised = false;
-                    if (this.ex != null) lib.ShowException(context, ex);
-                    if (savedinstancestate != null) try
+                    try {
+                        if (pd != null && pd.isShowing()) pd.dismiss();
+                        if (refresh && treeView != null) treeView.refreshTreeView();
+                        blnHasbeenRepertorised = false;
+                        if (this.ex != null) lib.ShowException(context, ex);
+                        if (savedinstancestate != null) try {
+                            restoreTreeView(savedinstancestate);
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    } catch (Throwable ex)
                     {
-                        restoreTreeView(savedinstancestate);
-                    }
-                    catch (Throwable throwable)
-                    {
-                        throwable.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
 

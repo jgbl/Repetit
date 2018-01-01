@@ -737,15 +737,16 @@ public class MedActivity extends Fragment {
                         if (!(whereSympt.equalsIgnoreCase(""))) whereSympt += " OR ";
                         String whereS = "";
                         if (txt.length > 1) {
-                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Text", Bed) : ""));
-                            where += "SymptomeOfMedikament.MedikamentID IN (Select SymptomeOfMedikament.MedikamentID FROM SymptomeOfMedikament WHERE SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + whereS + "))";
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
+                            //whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.Text", s) : "WHERE S3.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.Text", Bed) : ""));
+                            where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 " + whereS + "))";
                         }
                         else
                         {
-                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):""));
-                            where += "SymptomeOfMedikament.MedikamentID IN (Select SymptomeOfMedikament.MedikamentID FROM SymptomeOfMedikament WHERE SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + whereS + "))";
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
+                            where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + "))";
                         }
-                        whereS = whereS.substring(6);
+                        whereS = whereS.substring(6).replace("S3.","Symptome.");
                         whereSympt += whereS;
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
@@ -756,7 +757,7 @@ public class MedActivity extends Fragment {
             if (!AndFlag || txt.length < 2) txt = null;
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")"+ (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND " + where + "" + (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, true, txt,BedAll, null, null);
             _lastQuery = qryMedGrade;
@@ -953,18 +954,20 @@ public class MedActivity extends Fragment {
                 protected void onPostExecute(final Integer result)
                 {
                     // continue what you are doing...
-
-                    pd.dismiss();
-                    if (refresh && treeView != null) treeView.refreshTreeView();
-                    if (savedinstancestate != null) try
-                    {
-                        restoreTreeView(savedinstancestate);
+                    try {
+                        if (pd != null && pd.isShowing()) pd.dismiss();
+                        if (refresh && treeView != null) treeView.refreshTreeView();
+                        if (savedinstancestate != null) try {
+                            restoreTreeView(savedinstancestate);
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                        if (this.ex != null) lib.ShowException(context, ex);
                     }
-                    catch (Throwable throwable)
+                    catch(Throwable ex)
                     {
-                        throwable.printStackTrace();
+                        ex.printStackTrace();
                     }
-                    if (this.ex != null) lib.ShowException(context, ex);
                 }
 
 
@@ -1155,18 +1158,22 @@ public class MedActivity extends Fragment {
             @Override
             protected void onPostExecute(final Integer result) {
                 // continue what you are doing...
-
-                pd.dismiss();
-                if (refresh && treeView != null) treeView.refreshTreeView();
-                _lastQuery = qry;
-                _txt = txt;
-                if (savedinstancestate != null) try {
-                    restoreTreeView(savedinstancestate);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+                try {
+                    if (pd != null && pd.isShowing()) pd.dismiss();
+                    if (refresh && treeView != null) treeView.refreshTreeView();
+                    _lastQuery = qry;
+                    _txt = txt;
+                    if (savedinstancestate != null) try {
+                        restoreTreeView(savedinstancestate);
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    if (this.ex != null) lib.ShowException(context, ex);
                 }
-                if (this.ex != null) lib.ShowException(context, ex);
-
+                catch (Throwable ex)
+                {
+                    ex.printStackTrace();
+                }
             }
 
 
