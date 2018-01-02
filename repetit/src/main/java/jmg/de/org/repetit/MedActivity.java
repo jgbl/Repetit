@@ -787,38 +787,40 @@ public class MedActivity extends Fragment {
                         if (!(whereSympt.equalsIgnoreCase(""))) whereSympt += " OR ";
                         String whereS = "";
                         if (txt.length > 1) {
-                            //whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.Text", s) : "WHERE S3.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.Text", Bed) : ""));
+                            //whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
                             if (blnWide)
                             {
-                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
-                                where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 " + whereS + "))";
-                                whereS = whereS.substring(6).replace("S3.", "Symptome.");
+                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", s) : "WHERE Symptome.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText",Bed):""));
+                                where += "Medikamente.ID IN (Select SymptomeOfMedikament.MedikamentID FROM SymptomeOfMedikament WHERE SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome AS Symptome " + whereS + "))";
+                                whereS = whereS.substring(6).replace("Symptome.", "Symptome.");
                                 whereSympt += whereS;
                             }
                             else
                             {
-                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.Text", s) : "WHERE S3.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.Text", Bed) : ""));
-                                where += "SymptomeOfMedikament.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + ")";
+                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                where += whereS.substring(6);
+                                //where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + whereS + ")";
                             }
                         }
                         else
                         {
-                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
-                            //where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + "))";
-                            where += "SymptomeOfMedikament.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + ")";
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", s) : "WHERE Symptome.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText",Bed):""));
+                            //where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT Symptome.ID FROM Symptome AS Symptome "  + whereS + "))";
+                            where += whereS.substring(6);
+                            //where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + whereS + ")";
                         }
-                        //whereS = whereS.substring(6).replace("S3.","Symptome.");
+                        //whereS = whereS.substring(6).replace("Symptome.","Symptome.");
                         //whereSympt += whereS;
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
-                        where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";
+                        where += ((_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", s) : "WHERE Symptome.ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText",Bed):"")) + "").substring(6);
                     }
                 }
             }
             if (!AndFlag || txt.length < 2) txt = null;
             //AddSymptomeQueryRecursive(root,qry,-1,true);
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND " + where + "" + (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")" + (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, true, txt,BedAll, null, null);
             _lastQuery = qryMedGrade;
@@ -1056,6 +1058,7 @@ public class MedActivity extends Fragment {
             }
         }
         new AsyncTask<Void, ProgressClass, Integer>() {
+            public boolean blnQry;
             public boolean cancelled;
             public Throwable ex;
             public int oldmax;
@@ -1064,7 +1067,7 @@ public class MedActivity extends Fragment {
 
             public void cancel()
             {
-                this.cancelled = true;
+                this.cancelled = true;if (blnQry) this.cancel(true);
             }
 
             @Override
@@ -1107,7 +1110,13 @@ public class MedActivity extends Fragment {
                 }
                 dbSqlite db = ((MainActivity) getActivity()).db;
                 try {
+                    synchronized (MedActivity.this) {
+                        blnQry = true;
+                    }
                     Cursor c = db.query(qry);
+                    synchronized (MedActivity.this) {
+                        blnQry = false;
+                    }
                     try {
                         if (c.moveToFirst()) {
                             int ColumnNameId = c.getColumnIndex("Name");
