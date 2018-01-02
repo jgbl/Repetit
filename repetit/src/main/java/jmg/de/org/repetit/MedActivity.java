@@ -515,7 +515,14 @@ public class MedActivity extends Fragment {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     String txt = txtSearch.getText().toString();
-                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, true);
+                    if (!lib.libString.IsNullOrEmpty(txt)) try
+                    {
+                        searchSymptoms(txt, true);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
                     return true;
                 }
             });
@@ -524,7 +531,14 @@ public class MedActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     String txt = txtSearch.getText().toString();
-                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, true);
+                    if (!lib.libString.IsNullOrEmpty(txt)) try
+                    {
+                        searchSymptoms(txt, true);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
                 }
             });
             btnSearchOr = (ImageButton) v.findViewById(R.id.btnSearchOr);
@@ -532,7 +546,14 @@ public class MedActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     String txt = txtSearch.getText().toString();
-                    if (!lib.libString.IsNullOrEmpty(txt)) searchSymptoms(txt, false);
+                    if (!lib.libString.IsNullOrEmpty(txt)) try
+                    {
+                        searchSymptoms(txt, false);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        throwable.printStackTrace();
+                    }
                 }
             });
             if (savedinstancestate!=null) {
@@ -709,10 +730,39 @@ public class MedActivity extends Fragment {
         return "WHERE " + column + " like '% " + search + " %' OR " + column + " like '" + search + " %' OR " + column + " like '% " + search + "' OR " + column + " like '" + search + "'";
     }
 
-    private void searchSymptoms(String searchtxt, boolean AndFlag) {
+    private void searchSymptoms(String searchtxt, final boolean AndFlag) throws Throwable
+    {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
         String[] txt = searchtxt.split("\\.");
         if (txt.length<=1) txt = searchtxt.split("\\s+");
+        if (txt.length > 1 && AndFlag)
+        {
+            final String[] ftxt = txt;
+          lib.getMessagePosNeg(getContext(), getString(R.string.WideOrNarrow), getString(R.string.search), getString(R.string.wide)
+                  , getString(R.string.narrow), false, new DialogInterface.OnClickListener()
+                  {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which)
+                      {
+                          searchSymptoms2(ftxt, AndFlag, true);
+
+                      }
+                  }, new DialogInterface.OnClickListener()
+                  {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which)
+                      {
+                          searchSymptoms2(ftxt, AndFlag, false);
+                      }
+                  }).show();
+        }
+        else
+        {
+            searchSymptoms2(txt, AndFlag, false);
+        }
+    }
+
+    private void searchSymptoms2(String[]txt, boolean AndFlag, boolean blnWide){
         try {
             //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
             if (!lib.libString.IsNullOrEmpty(_main.lastQuery)) {
@@ -737,17 +787,28 @@ public class MedActivity extends Fragment {
                         if (!(whereSympt.equalsIgnoreCase(""))) whereSympt += " OR ";
                         String whereS = "";
                         if (txt.length > 1) {
-                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
                             //whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.Text", s) : "WHERE S3.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.Text", Bed) : ""));
-                            where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 " + whereS + "))";
+                            if (blnWide)
+                            {
+                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
+                                where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 " + whereS + "))";
+                                whereS = whereS.substring(6).replace("S3.", "Symptome.");
+                                whereSympt += whereS;
+                            }
+                            else
+                            {
+                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.Text", s) : "WHERE S3.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.Text", Bed) : ""));
+                                where += "SymptomeOfMedikament.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + ")";
+                            }
                         }
                         else
                         {
                             whereS = (_main.blnSearchWholeWord ? getWhereWhole("S3.ShortText", s) : "WHERE S3.ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("S3.ShortText",Bed):""));
-                            where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + "))";
+                            //where += "Medikamente.ID IN (Select S2.MedikamentID FROM SymptomeOfMedikament AS S2 WHERE S2.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + "))";
+                            where += "SymptomeOfMedikament.SymptomID IN (SELECT S3.ID FROM Symptome AS S3 "  + whereS + ")";
                         }
-                        whereS = whereS.substring(6).replace("S3.","Symptome.");
-                        whereSympt += whereS;
+                        //whereS = whereS.substring(6).replace("S3.","Symptome.");
+                        //whereSympt += whereS;
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
                         where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome " + (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "WHERE ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("ShortText",Bed):"")) + ")";

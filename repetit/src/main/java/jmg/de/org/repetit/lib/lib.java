@@ -855,9 +855,14 @@ public class lib
         }
         return DialogResultYes;
     }
-
     public static AlertDialog getMessageYesNo(Context context,
-                                                  String msg, String title, boolean center, OnClickListener OnClickListenerYes, OnClickListener OnClickListenerNo) throws  Throwable
+                                              String msg, String title, boolean center, OnClickListener OnClickListenerYes, OnClickListener OnClickListenerNo) throws  Throwable
+    {
+        return getMessagePosNeg(context,msg,title, context.getString(R.string.yes),context.getString(R.string.no),center, OnClickListenerYes, OnClickListenerNo);
+    }
+
+        public static AlertDialog getMessagePosNeg(Context context,
+                                                  String msg, String title, String positive, String negative, boolean center, OnClickListener OnClickListenerPos, OnClickListener OnClickListenerNeg) throws  Throwable
     {
         // System.Threading.SynchronizationContext.Current.Post(new
         // System.Threading.SendOrPostCallback(DelShowException),new
@@ -868,8 +873,8 @@ public class lib
 
             DialogResultYes = yesnoundefined.undefined;
             AlertDialog.Builder A = new AlertDialog.Builder(context);
-            A.setPositiveButton(context.getString(R.string.yes), OnClickListenerYes);
-            A.setNegativeButton(context.getString(R.string.no), OnClickListenerNo);
+            A.setPositiveButton(positive, OnClickListenerPos);
+            A.setNegativeButton(negative, OnClickListenerNeg);
             A.setMessage(msg);
             A.setTitle(title);
             AlertDialog dlg = A.create();

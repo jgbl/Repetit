@@ -90,6 +90,10 @@
     <string name="DeleteMeaning">delete meaning</string>
     <string name="btnDeleteTerm">delete term</string>
     <string name="btnClose">close</string>
+    <string name="WideOrNarrow">Do you want to make ad wide Search\n(more results, takes longer)\nor a narrow search?</string>
+    <string name="narrow">narrow</string>
+    <string name="search">search</string>
+    <string name="wide">wide</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
