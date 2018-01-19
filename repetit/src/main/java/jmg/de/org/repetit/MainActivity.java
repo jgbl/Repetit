@@ -207,6 +207,14 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     db.openDataBase();
+                    try
+                    {
+                        db.DataBase.execSQL("ALTER TABLE Medikamente ADD COLUMN Polychrest INTEGER");
+                    }
+                    catch (Throwable eex)
+                    {
+
+                    }
                 }
                 ((repApplication)getApplication()).db = db;
             }

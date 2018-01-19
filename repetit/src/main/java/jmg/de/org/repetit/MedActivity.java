@@ -937,6 +937,7 @@ public class MedActivity extends Fragment {
                                 final int ColumnNameId = c.getColumnIndex("Name");
                                 final int ColumnIDId = c.getColumnIndex("ID");
                                 final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                                final int ColumnPolychrest = c.getColumnIndex("Polychrest");
                                 int count = c.getCount();
                                 do
                                 {
@@ -949,7 +950,8 @@ public class MedActivity extends Fragment {
                                     int ID = c.getInt(ColumnIDId);
                                     String Name = c.getString(ColumnNameId);
                                     String Beschreibung = c.getString(ColumnBeschreibungId);
-                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, Name, "Med" + ID, ID, Name, Beschreibung));
+                                    Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
+                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest?"!":"") + Name, "Med" + ID, ID,  Name, Beschreibung));
                                     treeNode.setLevel(0);
                                     root.addChild(treeNode);
                                     if (cancelled) break;
@@ -1123,6 +1125,7 @@ public class MedActivity extends Fragment {
                             int ColumnIDId = c.getColumnIndex("ID");
                             int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
                             int ColumnGrade = c.getColumnIndex("Grade");
+                            int ColumnPolychrest = c.getColumnIndex("Polychrest");
                             pc.update(0, c.getCount(), context.getString(R.string.processingquery), false);
                             this.publishProgress(pc);
                             counter += 1;
@@ -1135,7 +1138,8 @@ public class MedActivity extends Fragment {
                                 String Beschreibung = c.getString(ColumnBeschreibungId);
                                 int sum = 0;
                                 int nexts = 0;
-                                TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity) getActivity(), 0, Name, "Med" + ID, ID, Name, Beschreibung);
+                                Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
+                                TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest?"!":"") + Name, "Med" + ID, ID, Name, Beschreibung);
                                 TreeNode treeNode = new TreeNode(hMed);
                                 treeNode.setLevel(0);
                                 root.addChild(treeNode);
