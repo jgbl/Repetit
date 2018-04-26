@@ -228,7 +228,10 @@ public class MedActivity extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode,resultCode,data);
-        if (_main==null||data == null)return;
+        if (_main==null||data == null){
+            lib.ShowMessage(getContext(),getString(R.string.noData),getString(R.string.noDataReceived));
+            return;
+        }
         if (requestCode == OpenResultCode && resultCode == Activity.RESULT_OK)
         {
             Uri uri = data.getData();
@@ -262,17 +265,23 @@ public class MedActivity extends Fragment {
                             if (_main.fPA.fragMed != null) _main.fPA.fragMed.refresh();
                             if (_main.fPA.fragSymptoms != null) _main.fPA.fragSymptoms.refresh();
                             if (_main.fPA.fragData != null) _main.fPA.fragData.refresh();
+                            lib.ShowMessage(getContext(), getString(R.string.message),getString(R.string.databaseloaded));
+                        }
+                        else if (!c)
+                        {
+                            lib.ShowMessage(getContext(),getString(R.string.message), getString(R.string.filenotwritable));
+                        }
+                        else
+                        {
+                            lib.ShowMessage(getContext(),getString(R.string.message), getString(R.string.filecantbeopended));
                         }
                     }
                 }
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
             catch (Throwable throwable)
             {
                 throwable.printStackTrace();
+                lib.ShowException(getContext(),throwable);
             }
         }
     }

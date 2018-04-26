@@ -107,5 +107,10 @@
     <string name="narrow">Eng</string>
     <string name="search">Suche</string>
     <string name="wide">Weit</string>
+    <string name="noData">Keine Daten!</string>
+    <string name="noDataReceived">Keine Daten!</string>
+    <string name="databaseloaded">Die Datenbank wurde geladen!</string>
+    <string name="filecantbeopended">Die Datei konnte nicht geöffnet werden!</string>
+    <string name="filenotwritable">Die Datei kann nicht beschrieben werden!</string>
 
 </resources>

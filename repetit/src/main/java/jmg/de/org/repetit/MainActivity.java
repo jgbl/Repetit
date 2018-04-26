@@ -448,6 +448,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 case R.id.mnuFindMeds:
+                    break;
                 case R.id.mnuFindMedsAdd:
                     String[] qry;
                     boolean blnAdd = false;
