@@ -277,6 +277,10 @@ public class MedActivity extends Fragment {
                         }
                     }
                 }
+                else
+                {
+                    lib.ShowMessage(getContext(), getString(R.string.message), String.format(getString(R.string.FileNotFound),uri.toString()));
+                }
             }
             catch (Throwable throwable)
             {
@@ -926,62 +930,54 @@ public class MedActivity extends Fragment {
                 @Override
                 protected Integer doInBackground(Void... params)
                 {
-                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
-                    publishProgress(pc);
-                    if (root.getChildren().size() > 0)
-                    {
-                        List<TreeNode> l = root.getChildren();
-                        l.clear();
-                        root.setChildren(l);
-                    }
-                    dbSqlite db = ((MainActivity) getActivity()).db;
-                    try
-                    {
+                    try {
+                        ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
+                        publishProgress(pc);
+                        if (root.getChildren().size() > 0) {
+                            List<TreeNode> l = root.getChildren();
+                            l.clear();
+                            root.setChildren(l);
+                        }
+                        dbSqlite db = ((MainActivity) getActivity()).db;
+                        try {
 
-                        Cursor c = db.query(qry);
-                        try
-                        {
-                            if (c.moveToFirst())
-                            {
-                                final int ColumnNameId = c.getColumnIndex("Name");
-                                final int ColumnIDId = c.getColumnIndex("ID");
-                                final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
-                                final int ColumnPolychrest = c.getColumnIndex("Polychrest");
-                                int count = c.getCount();
-                                do
-                                {
-                                    counter += 1;
-                                    if (count < 10 || counter % (count / 10) == 0)
-                                    {
-                                        pc.update(counter, count, context.getString(R.string.processingquery), false);
-                                        publishProgress(pc);
-                                    }
-                                    int ID = c.getInt(ColumnIDId);
-                                    String Name = c.getString(ColumnNameId);
-                                    String Beschreibung = c.getString(ColumnBeschreibungId);
-                                    Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
-                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest?"!":"") + Name, "Med" + ID, ID,  Name, Beschreibung));
-                                    treeNode.setLevel(0);
-                                    root.addChild(treeNode);
-                                    if (cancelled) break;
-                                } while (c.moveToNext());
+                            Cursor c = db.query(qry);
+                            try {
+                                if (c.moveToFirst()) {
+                                    final int ColumnNameId = c.getColumnIndex("Name");
+                                    final int ColumnIDId = c.getColumnIndex("ID");
+                                    final int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                                    final int ColumnPolychrest = c.getColumnIndex("Polychrest");
+                                    int count = c.getCount();
+                                    do {
+                                        counter += 1;
+                                        if (count < 10 || counter % (count / 10) == 0) {
+                                            pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                            publishProgress(pc);
+                                        }
+                                        int ID = c.getInt(ColumnIDId);
+                                        String Name = c.getString(ColumnNameId);
+                                        String Beschreibung = c.getString(ColumnBeschreibungId);
+                                        Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
+                                        TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest ? "!" : "") + Name, "Med" + ID, ID, Name, Beschreibung));
+                                        treeNode.setLevel(0);
+                                        root.addChild(treeNode);
+                                        if (cancelled) break;
+                                    } while (c.moveToNext());
+                                }
+                            } finally {
+                                c.close();
                             }
-                        }
-                        finally
-                        {
-                            c.close();
-                        }
 
-                    }
-                    catch (Throwable ex)
+                        } catch (Throwable ex) {
+                            this.ex = ex;
+                        } finally {
+                            db.close();
+                        }
+                    } catch (Throwable ex)
                     {
                         this.ex = ex;
                     }
-                    finally
-                    {
-                        db.close();
-                    }
-
 
                     return counter;
 
@@ -1106,105 +1102,111 @@ public class MedActivity extends Fragment {
 
             @Override
             protected Integer doInBackground(Void... params) {
-                ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingRep), false);
-                publishProgress(pc);
-                boolean Initialized = true;
-                final String CodeLoc = TAG + ".initTreeview";
-                lib.gStatus = CodeLoc + " Start";
-                int MedID;
                 int counter = 0;
-                //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
-                if (root.getChildren().size() > 0) {
-                    List<TreeNode> l = root.getChildren();
-                    l.clear();
-                    root.setChildren(l);
-                }
-                dbSqlite db = ((MainActivity) getActivity()).db;
                 try {
-                    synchronized (MedActivity.this) {
-                        blnQry = true;
+                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingRep), false);
+                    publishProgress(pc);
+                    boolean Initialized = true;
+                    final String CodeLoc = TAG + ".initTreeview";
+                    lib.gStatus = CodeLoc + " Start";
+                    int MedID;
+                    //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
+                    if (root.getChildren().size() > 0) {
+                        List<TreeNode> l = root.getChildren();
+                        l.clear();
+                        root.setChildren(l);
                     }
-                    Cursor c = db.query(qry);
-                    synchronized (MedActivity.this) {
-                        blnQry = false;
-                    }
+                    dbSqlite db = ((MainActivity) getActivity()).db;
                     try {
-                        if (c.moveToFirst()) {
-                            int ColumnNameId = c.getColumnIndex("Name");
-                            int ColumnIDId = c.getColumnIndex("ID");
-                            int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
-                            int ColumnGrade = c.getColumnIndex("Grade");
-                            int ColumnPolychrest = c.getColumnIndex("Polychrest");
-                            pc.update(0, c.getCount(), context.getString(R.string.processingquery), false);
-                            this.publishProgress(pc);
-                            counter += 1;
-                            pc.counter = counter;
-                            this.publishProgress(pc);
-                            do {
-                                //if(!c.moveToNext()) break;
-                                int ID = c.getInt(ColumnIDId);
-                                String Name = c.getString(ColumnNameId);
-                                String Beschreibung = c.getString(ColumnBeschreibungId);
-                                int sum = 0;
-                                int nexts = 0;
-                                Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
-                                TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest?"!":"") + Name, "Med" + ID, ID, Name, Beschreibung);
-                                TreeNode treeNode = new TreeNode(hMed);
-                                treeNode.setLevel(0);
-                                root.addChild(treeNode);
-                                int f = insertSymptom(c, treeNode, hMed, selected, ID, txt,Bed);
-                                if (f == -2) f = 1;
-                                if (f >= 0) {
-                                    sum = c.getInt(ColumnGrade) * f;
-                                    nexts += 1;
-                                }
-                                while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
-                                    counter += 1;
-                                    if (pc.max < 10 || counter % (pc.max / 10) == 0) {
-                                        pc.counter = counter;
-                                        this.publishProgress(pc);
-                                    }
-                                    f = insertSymptom(c, treeNode, hMed, selected, ID, txt,Bed);
+                        synchronized (MedActivity.this) {
+                            blnQry = true;
+                        }
+                        Cursor c = db.query(qry);
+                        synchronized (MedActivity.this) {
+                            blnQry = false;
+                        }
+                        try {
+                            if (c.moveToFirst()) {
+                                int ColumnNameId = c.getColumnIndex("Name");
+                                int ColumnIDId = c.getColumnIndex("ID");
+                                int ColumnBeschreibungId = c.getColumnIndex("Beschreibung");
+                                int ColumnGrade = c.getColumnIndex("Grade");
+                                int ColumnPolychrest = c.getColumnIndex("Polychrest");
+                                pc.update(0, c.getCount(), context.getString(R.string.processingquery), false);
+                                this.publishProgress(pc);
+                                counter += 1;
+                                pc.counter = counter;
+                                this.publishProgress(pc);
+                                do {
+                                    //if(!c.moveToNext()) break;
+                                    int ID = c.getInt(ColumnIDId);
+                                    String Name = c.getString(ColumnNameId);
+                                    String Beschreibung = c.getString(ColumnBeschreibungId);
+                                    int sum = 0;
+                                    int nexts = 0;
+                                    Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
+                                    TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest ? "!" : "") + Name, "Med" + ID, ID, Name, Beschreibung);
+                                    TreeNode treeNode = new TreeNode(hMed);
+                                    treeNode.setLevel(0);
+                                    root.addChild(treeNode);
+                                    int f = insertSymptom(c, treeNode, hMed, selected, ID, txt, Bed);
                                     if (f == -2) f = 1;
                                     if (f >= 0) {
+                                        sum = c.getInt(ColumnGrade) * f;
                                         nexts += 1;
-                                        sum += c.getInt(ColumnGrade) * f;
                                     }
+                                    while (c.moveToNext() && c.getInt(ColumnIDId) == ID) {
+                                        counter += 1;
+                                        if (pc.max < 10 || counter % (pc.max / 10) == 0) {
+                                            pc.counter = counter;
+                                            this.publishProgress(pc);
+                                        }
+                                        f = insertSymptom(c, treeNode, hMed, selected, ID, txt, Bed);
+                                        if (f == -2) f = 1;
+                                        if (f >= 0) {
+                                            nexts += 1;
+                                            sum += c.getInt(ColumnGrade) * f;
+                                        }
+                                        if (cancelled) break;
+                                    }
+                                    counter += 1;
+                                    hMed.totalGrade = sum;
+                                    hMed.count = nexts;
+                                    hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
                                     if (cancelled) break;
-                                }
-                                counter += 1;
-                                hMed.totalGrade = sum;
-                                hMed.count = nexts;
-                                hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
-                                if (cancelled) break;
-                            } while (!c.isAfterLast());
-                            List<TreeNode> l = root.getChildren();
+                                } while (!c.isAfterLast());
+                                List<TreeNode> l = root.getChildren();
 
-                            Collections.sort(l, new Comparator<TreeNode>() {
-                                @Override
-                                public int compare(TreeNode lhs, TreeNode rhs) {
-                                    TreeNodeHolderMed h1 = (TreeNodeHolderMed) lhs.getValue();
-                                    TreeNodeHolderMed h2 = (TreeNodeHolderMed) rhs.getValue();
-                                    if (h1.totalGrade > h2.totalGrade) return -1;
-                                    if (h1.totalGrade == h2.totalGrade && h1.count > h2.count)
-                                        return -1;
-                                    if (h1.totalGrade == h2.totalGrade && h1.count == h2.count)
-                                        return 0;
-                                    return 1;
-                                }
-                            });
-                            root.setChildren(l);
-                            //if (refresh) treeView.refreshTreeView();
+                                Collections.sort(l, new Comparator<TreeNode>() {
+                                    @Override
+                                    public int compare(TreeNode lhs, TreeNode rhs) {
+                                        TreeNodeHolderMed h1 = (TreeNodeHolderMed) lhs.getValue();
+                                        TreeNodeHolderMed h2 = (TreeNodeHolderMed) rhs.getValue();
+                                        if (h1.totalGrade > h2.totalGrade) return -1;
+                                        if (h1.totalGrade == h2.totalGrade && h1.count > h2.count)
+                                            return -1;
+                                        if (h1.totalGrade == h2.totalGrade && h1.count == h2.count)
+                                            return 0;
+                                        return 1;
+                                    }
+                                });
+                                root.setChildren(l);
+                                //if (refresh) treeView.refreshTreeView();
 
+                            }
+                        } finally {
+                            c.close();
                         }
-                    } finally {
-                        c.close();
-                    }
 
-                } catch (Throwable ex) {
+                    } catch (Throwable ex) {
+                        this.ex = ex;
+                    } finally {
+                        db.close();
+                    }
+                }
+                catch (Throwable ex)
+                {
                     this.ex = ex;
-                } finally {
-                    db.close();
                 }
                 return counter;
 

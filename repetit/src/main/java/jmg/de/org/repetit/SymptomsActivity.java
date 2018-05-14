@@ -566,81 +566,67 @@ public class SymptomsActivity extends Fragment {
                 @Override
                 protected Integer doInBackground(Void... params)
                 {
-                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
-                    publishProgress(pc);
-                    if (treeNodeParent.getChildren().size() > 0)
-                    {
-                        List<TreeNode> l = treeNodeParent.getChildren();
-                        l.clear();
-                        treeNodeParent.setChildren(l);
-                        //treeView.collapseNode(treeNodeParent);
-                    }
-                    //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
-                    dbSqlite db = ((MainActivity) getActivity()).db;
-                    try
-                    {
-                        Cursor c = db.query(qry);
-                        try
-                        {
-                            if (c.moveToFirst())
-                            {
-                                int ColumnTextId = c.getColumnIndex("Text");
-                                int ColumnIDId = c.getColumnIndex("ID");
-                                int ColumnShortTextId = c.getColumnIndex("ShortText");
-                                int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
-                                int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
-                                if (getParents) lastQuery = qry;
-                                int count = c.getCount();
-                                do
-                                {
-                                    counter += 1;
-                                    if (count < 10 || counter % (count / 10) == 0)
-                                    {
-                                        pc.update(counter, count, context.getString(R.string.processingquery), false);
-                                        publishProgress(pc);
-                                    }
-                                    int ID = c.getInt(ColumnIDId);
-                                    String Text = c.getString(ColumnTextId);
-                                    String ShortText = c.getString(ColumnShortTextId);
-                                    Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
-                                    Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                                    int Level = treeNodeParent.getLevel();
-                                    if (treeNodeParent == root) Level = -1;
-                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
-                                    if (!getParents || ParentSymptomId == null)
-                                    {
-                                        treeNode.setLevel(Level + 1);
-                                        treeNodeParent.addChild(treeNode);
-                                    } else
-                                    {
-                                        try
-                                        {
-                                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                    try {
+                        ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
+                        publishProgress(pc);
+                        if (treeNodeParent.getChildren().size() > 0) {
+                            List<TreeNode> l = treeNodeParent.getChildren();
+                            l.clear();
+                            treeNodeParent.setChildren(l);
+                            //treeView.collapseNode(treeNodeParent);
+                        }
+                        //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
+                        dbSqlite db = ((MainActivity) getActivity()).db;
+                        try {
+                            Cursor c = db.query(qry);
+                            try {
+                                if (c.moveToFirst()) {
+                                    int ColumnTextId = c.getColumnIndex("Text");
+                                    int ColumnIDId = c.getColumnIndex("ID");
+                                    int ColumnShortTextId = c.getColumnIndex("ShortText");
+                                    int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+                                    int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                                    if (getParents) lastQuery = qry;
+                                    int count = c.getCount();
+                                    do {
+                                        counter += 1;
+                                        if (count < 10 || counter % (count / 10) == 0) {
+                                            pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                            publishProgress(pc);
                                         }
-                                        catch (Throwable throwable)
-                                        {
-                                            this.ex = throwable;
+                                        int ID = c.getInt(ColumnIDId);
+                                        String Text = c.getString(ColumnTextId);
+                                        String ShortText = c.getString(ColumnShortTextId);
+                                        Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+                                        Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+                                        int Level = treeNodeParent.getLevel();
+                                        if (treeNodeParent == root) Level = -1;
+                                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
+                                        if (!getParents || ParentSymptomId == null) {
+                                            treeNode.setLevel(Level + 1);
+                                            treeNodeParent.addChild(treeNode);
+                                        } else {
+                                            try {
+                                                AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                                            } catch (Throwable throwable) {
+                                                this.ex = throwable;
+                                            }
                                         }
-                                    }
-                                    if (cancelled) break;
-                                } while (c.moveToNext());
-                                //this.treeView.expandNode(treeNodeParent);
+                                        if (cancelled) break;
+                                    } while (c.moveToNext());
+                                    //this.treeView.expandNode(treeNodeParent);
+                                }
+                            } finally {
+                                c.close();
                             }
+                        } catch (Throwable ex) {
+                            this.ex = ex;
+                        } finally {
+                            db.close();
                         }
-                        finally
-                        {
-                            c.close();
-                        }
+                    } catch (Throwable ex){
+                        this.ex= ex;
                     }
-                    catch (Throwable ex)
-                    {
-                        this.ex = ex;
-                    }
-                    finally
-                    {
-                        db.close();
-                    }
-
 
                     return counter;
 

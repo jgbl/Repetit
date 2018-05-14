@@ -99,6 +99,7 @@
     <string name="databaseloaded">The database was loaded</string>
     <string name="filecantbeopended">The file can\'t be opened!</string>
     <string name="filenotwritable">The file is not writable!</string>
+    <string name="FileNotFound">File %s  not found!</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>
