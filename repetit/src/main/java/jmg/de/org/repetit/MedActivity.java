@@ -38,6 +38,7 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -290,6 +291,42 @@ public class MedActivity extends Fragment {
                                         }
                                 }
                             }
+                        }
+                        else
+                        {
+
+                            String extPath = Environment.getExternalStorageDirectory().getPath();
+                            File F = new File(extPath);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+                            {
+                                File F2 = _main.getExternalFilesDir(null);
+                                if (F2 != null) F = F2;
+                                extPath = F.getPath();
+                                if (!F.isDirectory() && !F.exists())
+                                {
+                                    F.mkdirs();
+                                }
+                            }
+                            if (F.isDirectory() && F.exists())
+                            {
+                                String JMGDataDirectory = Path.combine(extPath, "repetit", "database");
+                                File F1 = new File(Path.combine(JMGDataDirectory, f.getName()));
+                                if (!F1.isDirectory() && !F1.exists())
+                                {
+                                    try{
+                                        lib.copyFile(_main, uri, Path.combine(JMGDataDirectory, f.getName()));
+                                        f = F1;
+                                    }
+                                    catch (IOException e)
+                                    {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                        lib.ShowException(_main, e);
+                                    }
+                                }
+                            }
+
+
                         }
                         boolean a = f.exists();
                         boolean b = f.canRead();

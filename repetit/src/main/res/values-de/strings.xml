@@ -113,5 +113,6 @@
     <string name="filecantbeopended">Die Datei konnte nicht geöffnet werden!</string>
     <string name="filenotwritable">Die Datei kann nicht beschrieben werden!</string>
     <string name="FileNotFound">Die Datei %s wurde nicht gefunden!</string>
+    <string name="finish">Beenden?</string>
 
 </resources>
