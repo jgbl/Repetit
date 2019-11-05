@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import jmg.de.org.repetit.lib.Path;
 import jmg.de.org.repetit.lib.ProgressClass;
 import jmg.de.org.repetit.lib.dbSqlite;
 import jmg.de.org.repetit.lib.lib;
@@ -254,6 +257,40 @@ public class MedActivity extends Fragment {
                             f.setReadable(true);
                             f.setWritable(true);
                         }
+
+                        if (f.exists() && f.canRead() && !f.canWrite())
+                        {
+                            String extPath = Environment.getExternalStorageDirectory().getPath();
+                            File F = new File(extPath);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+                            {
+                                File F2 = _main.getExternalFilesDir(null);
+                                if (F2 != null) F = F2;
+                                extPath = F.getPath();
+                                if (F.isDirectory() == false && !F.exists())
+                                {
+                                    F.mkdirs();
+                                }
+                            }
+                            if (F.isDirectory() && F.exists())
+                            {
+                                String JMGDataDirectory = Path.combine(extPath, "repetit", "database");
+                                File F1 = new File(Path.combine(JMGDataDirectory, f.getName()));
+                                if (!F1.isDirectory() && !F1.exists())
+                                {
+                                        try{
+                                            lib.copyFile(f.getPath(), Path.combine(JMGDataDirectory, f.getName()));
+                                            f = F1;
+                                        }
+                                        catch (IOException e)
+                                        {
+                                            // TODO Auto-generated catch block
+                                            e.printStackTrace();
+                                            lib.ShowException(_main, e);
+                                        }
+                                }
+                            }
+                        }
                         boolean a = f.exists();
                         boolean b = f.canRead();
                         boolean c = f.canWrite();
@@ -267,7 +304,7 @@ public class MedActivity extends Fragment {
                             if (_main.fPA.fragData != null) _main.fPA.fragData.refresh();
                             lib.ShowMessage(getContext(), getString(R.string.message),getString(R.string.databaseloaded));
                         }
-                        else if (!c)
+                        else if (!c && a && b)
                         {
                             lib.ShowMessage(getContext(),getString(R.string.message), getString(R.string.filenotwritable));
                         }
