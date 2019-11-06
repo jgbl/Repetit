@@ -419,6 +419,7 @@ public class MedActivity extends Fragment {
                                             p.recycle();
                                         }
                                         _lastQueryMedsMeds = b.getString("lastquerymeds");
+                                        _main.lastQueryMedsMain = b.getString("lastquerymedsmain");
                                         _txt = b.getStringArray("txt");
                                         selectedMeds = b.getIntegerArrayList("selectedMeds");
                                         if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
@@ -442,8 +443,9 @@ public class MedActivity extends Fragment {
                                         } finally {
                                             p.recycle();
                                         }
-                                        String query = b.getString("lastquerymeds");
-                                        String[] txt = b.getStringArray("txt");
+                                        _lastQueryMedsMeds = b.getString("lastquerymeds");
+                                        String query = b.getString("lastquerymedsmain");
+                                        _txt = b.getStringArray("txt");
                                         ArrayList<Integer> sel = b.getIntegerArrayList("selecteMeds");
                                         if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
                                         String[] qry;
@@ -480,17 +482,23 @@ public class MedActivity extends Fragment {
                                 case 4:
                                     lib.yesnoundefined res2 = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), arrSaves[count - 1]), getString(R.string.delete), false);
                                     if (res2 == lib.yesnoundefined.yes) {
-                                        arrSaves[count - 1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
-                                        strSaves = lib.arrStrToCSV(arrSaves);
-                                        SharedPreferences prefs = _main.getPreferences(MODE_PRIVATE);
-                                        prefs.edit().putString("strSaves", strSaves).commit();
-                                        prefs.edit().remove("save" + count).commit();
-                                        for (int i = count; i < saves; i++) {
-                                            prefs.edit().putString("save" + i, prefs.getString("save" + (i + 1), null)).commit();
+                                        try {
+                                            arrSaves[count - 1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
+                                            strSaves = lib.arrStrToCSV(arrSaves);
+                                            SharedPreferences prefs = _main.getPreferences(MODE_PRIVATE);
+                                            prefs.edit().putString("strSaves", strSaves).commit();
+                                            prefs.edit().remove("save" + count).commit();
+                                            for (int i = count; i < saves; i++) {
+                                                prefs.edit().putString("save" + i, prefs.getString("save" + (i + 1), null)).commit();
+                                            }
+                                            if (count < saves) prefs.edit().remove("save" + saves);
+                                            saves -= 1;
+                                            _main.getPreferences(MODE_PRIVATE).edit().putInt("saves", saves).commit();
                                         }
-                                        if (count < saves) prefs.edit().remove("save" + saves);
-                                        saves -= 1;
-                                        _main.getPreferences(MODE_PRIVATE).edit().putInt("saves",saves).commit();
+                                        catch (Throwable ex)
+                                        {
+                                            lib.ShowException(getContext(),ex);
+                                        }
                                     }
                                     return true;
                                 default:
@@ -804,6 +812,7 @@ public class MedActivity extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("lastquerymeds", _lastQueryMedsMeds);
+        outState.putString("lastquerymedsmain", _main.lastQueryMedsMain);
         outState.putStringArray("txt", _txt);
         outState.putIntegerArrayList("selectedSymp", _main.selectedSymp);
         if (_main.db!=null)
