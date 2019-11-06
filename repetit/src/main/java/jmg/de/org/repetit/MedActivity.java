@@ -111,12 +111,13 @@ public class MedActivity extends Fragment {
         SubMenu subResults = mnuResults.getSubMenu();
         subResults.clear();
         for (int i = 0; i < saves; i++) {
-            if (menu.findItem(ID_MENU_SAVE + i * 4) != null) continue;
+            if (menu.findItem(ID_MENU_SAVE + i * 5) != null) continue;
             SubMenu item =
-                    subResults.addSubMenu(Menu.NONE, ID_MENU_SAVE + i * 4, Menu.NONE, arrSaves[i]);
-            item.add(Menu.NONE, ID_MENU_SAVE + i * 4 + 1, Menu.NONE, R.string.open);
-            item.add(Menu.NONE, ID_MENU_SAVE + i * 4 + 2, Menu.NONE, R.string.rename);
-            item.add(Menu.NONE, ID_MENU_SAVE + i * 4 + 3, Menu.NONE, R.string.delete);
+                    subResults.addSubMenu(Menu.NONE, ID_MENU_SAVE + i * 5, Menu.NONE, arrSaves[i]);
+            item.add(Menu.NONE, ID_MENU_SAVE + i * 5 + 1, Menu.NONE, R.string.open);
+            item.add(Menu.NONE, ID_MENU_SAVE + i * 5 + 2, Menu.NONE, R.string.btnAdd);
+            item.add(Menu.NONE, ID_MENU_SAVE + i * 5 + 3, Menu.NONE, R.string.rename);
+            item.add(Menu.NONE, ID_MENU_SAVE + i * 5 + 4, Menu.NONE, R.string.delete);
 
             //MenuItemCompat.setActionView(item,new View(getContext()));
             //MenuItemCompat.getActionView(item).setOnLongClickListener(LongDeleteSave);
@@ -395,11 +396,11 @@ public class MedActivity extends Fragment {
                     startActivityForResult(Intent.createChooser(intent,getString(R.string.openfile)), OpenResultCode);
                     return true;
                 default:
-                    if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 4) {
+                    if (ID >= this.ID_MENU_SAVE && ID < this.ID_MENU_SAVE + saves * 5) {
                         try {
                             //ComplexPreferences prefs2 = ComplexPreferences.getComplexPreferences(getContext(), "save", MODE_PRIVATE);
-                            int count = (ID - ID_MENU_SAVE) / 4 + 1;
-                            int sub = (ID - ID_MENU_SAVE) % 4;
+                            int count = (ID - ID_MENU_SAVE) / 5 + 1;
+                            int sub = (ID - ID_MENU_SAVE) % 5;
                             switch (sub) {
                                 case 0:
                                     break;
@@ -426,12 +427,52 @@ public class MedActivity extends Fragment {
                                     }
                                     return true;
                                 case 2:
+                                    bytes = _main.getPreferences(MODE_PRIVATE).getString("save" + count, null);
+                                    if (!lib.libString.IsNullOrEmpty(bytes)) {
+                                        //b = prefs2.getObject("save" + count, Bundle.class);
+                                        Parcel p = Parcel.obtain(); // i make an empty one here, but you can use yours
+                                        Bundle b;
+                                        try {
+                                            byte[] data = decodeBase64(bytes.getBytes("UTF-8"));
+                                            p.unmarshall(data, 0, data.length);
+                                            p.setDataPosition(0);
+                                            b = p.readBundle();
+                                        } finally {
+                                            p.recycle();
+                                        }
+                                        String query = b.getString("lastquery");
+                                        String[] txt = b.getStringArray("txt");
+                                        ArrayList<Integer> selected = b.getIntegerArrayList("Selected");
+                                        String[] qry;
+                                        boolean blnAdd = true;
+                                        if (_main.mPager.getCurrentItem() == SymptomsActivity.fragID) {
+                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selected);
+                                            _main.fPA.fragSymptoms.blnHasbeenRepertorised = true;
+                                        } else if (_main.mPager.getCurrentItem() == MedActivity.fragID) {
+                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
+                                        } else {
+                                            break;
+                                        }
+                                        if (lib.libString.IsNullOrEmpty(qry[1])) break;
+                                        _main.mPager.setCurrentItem(MedActivity.fragID);
+                                        //String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                                        //        "WHERE " + qry[0] + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
+                                        String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
+                                                "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
+                                        qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
+                                        String lastQuery = qry[1];
+                                        _main.fPA.fragMed._lastQuery = null;
+                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected, null);
+                                        //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
+                                    }
+                                    return true;
+                                case 3:
                                     input = new EditText(getContext());
                                     finalCount = count;
                                     dlg = lib.getInputBox(getContext(), getString(R.string.rename_result), getString(R.string.name), arrSaves[count - 1], false, ClickListenerRename ,null,input);
                                     dlg.show();
                                     return true;
-                                case 3:
+                                case 4:
                                     lib.yesnoundefined res2 = lib.ShowMessageYesNo(getContext(), String.format(getString(R.string.deletesave), arrSaves[count - 1]), getString(R.string.delete), false);
                                     if (res2 == lib.yesnoundefined.yes) {
                                         arrSaves[count - 1] = null;//strSaves = strSaves.replace(arrSaves[count-1], "").replace("\"\"","").replace(";;", "").replaceAll("^;|;$", "");
