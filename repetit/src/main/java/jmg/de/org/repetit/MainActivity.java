@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     public MyFragmentPagerAdapter fPA;
     public TreeView treeView;
     public dbSqlite db;
-    public String lastQuery = "";
+    public String lastQueryMedsMain = "";
     public boolean blnSearchWholeWord;
-    public ArrayList<Integer> selected = new ArrayList<>();
+    public ArrayList<Integer> selectedSymp = new ArrayList<>();
     private Thread.UncaughtExceptionHandler _unCaughtExceptionHandler =
             new Thread.UncaughtExceptionHandler() {
                 @Override
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             savedInstanceState.putString("dbpath", db.DB_PATH);
         }
 
-        savedInstanceState.putString("lastquery", lastQuery);
+        savedInstanceState.putString("lastquery", lastQueryMedsMain);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         lib.gStatus = "MainActivity onCreate";
         setContentView(R.layout.activity_main_viewpager);
         if (savedInstanceState != null) {
-            lastQuery = savedInstanceState.getString("lastquery");
+            lastQueryMedsMain = savedInstanceState.getString("lastquery");
 
         } else {
             try {
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.mnuSwitchDB:
                     if (db != null) {
                         db.close();
-                        lastQuery = null;
+                        lastQueryMedsMain = null;
                         if (db.DB_PATH.equalsIgnoreCase(db.original_path)) {
                             if (db.dbname.indexOf("kent2") > -1) {
                                 db.dbname = db.dbname.replace("kent2", "kent");
@@ -409,15 +409,15 @@ public class MainActivity extends AppCompatActivity {
                     String[] qry;
                     boolean blnAdd = false;
                     if (item.getItemId() == R.id.mnuFindMedsAdd) blnAdd = true;
-                    if (!blnAdd && !lib.libString.IsNullOrEmpty(lastQuery)) {
+                    if (!blnAdd && !lib.libString.IsNullOrEmpty(lastQueryMedsMain)) {
                         lib.yesnoundefined res = (lib.ShowMessageYesNo(this, getString(R.string.alreadysearched), getString(R.string.continuesearch), false));
                         if (res != lib.yesnoundefined.yes) break;
                     }
                     if (mPager.getCurrentItem() == SymptomsActivity.fragID) {
-                        qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selected);
+                        qry = fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selectedSymp);
                         fPA.fragSymptoms.blnHasbeenRepertorised = true;
                     } else if (mPager.getCurrentItem() == MedActivity.fragID) {
-                        qry = fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
+                        qry = fPA.fragMed.getQueryMed(true, false, blnAdd, selectedSymp);
                     } else {
                         break;
                     }
@@ -428,9 +428,9 @@ public class MainActivity extends AppCompatActivity {
                     String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                             "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                     qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                    lastQuery = qry[1];
-                    fPA.fragMed._lastQuery = null;
-                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected, null);
+                    lastQueryMedsMain = qry[1];
+                    fPA.fragMed._lastQueryMedsMeds = null;
+                    fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selectedSymp, null);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
             }
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
                     //mnuUploadToQuizlet.setEnabled(true);
 
                     if (fPA != null && fPA.fragMed != null) {
-                        treeView = fPA.fragMed.treeView;
+                        treeView = fPA.fragMed.treeViewMeds;
                     /*
                         fPA.fragMed._txtMeaning1.setOnFocusChangeListener(new View.OnFocusChangeListener()
                         {
@@ -514,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else if (position == SymptomsActivity.fragID) {
                     if (fPA != null && fPA.fragSymptoms != null) {
-                        treeView = fPA.fragSymptoms.treeView;
+                        treeView = fPA.fragSymptoms.treeViewSympt;
                         //searchQuizlet();
                     }
 

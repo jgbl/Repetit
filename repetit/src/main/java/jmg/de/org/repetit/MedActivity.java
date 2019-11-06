@@ -69,14 +69,14 @@ public class MedActivity extends Fragment {
 
     protected Toolbar toolbar;
     private ViewGroup viewGroup;
-    private TreeNode root;
-    public TreeView treeView;
+    private TreeNode rootMeds;
+    public TreeView treeViewMeds;
     private AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
-    String _lastQuery;
+    String _lastQueryMedsMeds;
     private String[] _txt;
-    private ArrayList<Integer> Selected;
+    private ArrayList<Integer> selectedMeds;
     private String[] finalArrSaves;
     private int finalCount;
 
@@ -418,12 +418,14 @@ public class MedActivity extends Fragment {
                                         } finally {
                                             p.recycle();
                                         }
-                                        _lastQuery = b.getString("lastquery");
+                                        _lastQueryMedsMeds = b.getString("lastquerymeds");
                                         _txt = b.getStringArray("txt");
-                                        Selected = b.getIntegerArrayList("Selected");
-                                        if (!lib.libString.IsNullOrEmpty(_lastQuery)) {
-                                            buildTreeRep(_lastQuery, true, _txt, Selected, b);
+                                        selectedMeds = b.getIntegerArrayList("selectedMeds");
+                                        if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
+                                        if (!lib.libString.IsNullOrEmpty(_lastQueryMedsMeds)) {
+                                            buildTreeRep(_lastQueryMedsMeds, true, _txt, selectedMeds, b);
                                         }
+                                        //_main.selected = Selected;
                                     }
                                     return true;
                                 case 2:
@@ -440,20 +442,19 @@ public class MedActivity extends Fragment {
                                         } finally {
                                             p.recycle();
                                         }
-                                        String query = b.getString("lastquery");
+                                        String query = b.getString("lastquerymeds");
                                         String[] txt = b.getStringArray("txt");
-                                        ArrayList<Integer> sel = b.getIntegerArrayList("Selected");
+                                        ArrayList<Integer> sel = b.getIntegerArrayList("selecteMeds");
+                                        if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
                                         String[] qry;
                                         boolean blnAdd = true;
                                         if (_main.mPager.getCurrentItem() == SymptomsActivity.fragID) {
-                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, sel);
+                                            _main.lastQueryMedsMain = query;
+                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, _main.selectedSymp);
                                             _main.fPA.fragSymptoms.blnHasbeenRepertorised = true;
                                         } else if (_main.mPager.getCurrentItem() == MedActivity.fragID) {
-                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, Selected);
-                                            if (!lib.libString.IsNullOrEmpty(query)) {
-                                                buildTreeRep(query, true, txt, sel, b);
-                                            }
-                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, Selected);
+                                            _main.lastQueryMedsMain = query;
+                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, _main.selectedSymp);
                                         } else {
                                             break;
                                         }
@@ -465,8 +466,8 @@ public class MedActivity extends Fragment {
                                         String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                                                 "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qrycombine + ")";
                                         qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                                        _main.fPA.fragMed._lastQuery = null;
-                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, sel, null);
+                                        _main.fPA.fragMed._lastQueryMedsMeds = null;
+                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, sel, b);
                                         //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                                     }
                                     return true;
@@ -542,7 +543,7 @@ public class MedActivity extends Fragment {
                     return true;
                 case R.id.cmnuShowAll:
                     //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
-                    treeView.collapseNode(info.treeNode);
+                    treeViewMeds.collapseNode(info.treeNode);
                     ArrayList<TreeNode>children = new ArrayList<>();
                     children.addAll(info.treeNode.getChildren());
                     info.treeNode.getChildren().clear();
@@ -612,22 +613,22 @@ public class MedActivity extends Fragment {
     public void initTreeView(View view, Bundle savedinstancestate) throws  Throwable {
         if (view!=null)initView(view);
 
-        root = TreeNode.root();
-        treeView = new TreeView(root, _main, new MyNodeViewFactoryMed());
-        View view2 = treeView.getView();
+        rootMeds = TreeNode.root();
+        treeViewMeds = new TreeView(rootMeds, _main, new MyNodeViewFactoryMed());
+        View view2 = treeViewMeds.getView();
         registerForContextMenu(view2);
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         viewGroup.addView(view2);
-        if (_main.treeView == null) _main.treeView = treeView;
+        if (_main.treeView == null) _main.treeView = treeViewMeds;
 
-        if (lib.libString.IsNullOrEmpty(_lastQuery) && !lib.libString.IsNullOrEmpty(_main.lastQuery)) {
+        if (lib.libString.IsNullOrEmpty(_lastQueryMedsMeds) && !lib.libString.IsNullOrEmpty(_main.lastQueryMedsMain)) {
             String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQuery + ")";
+                    "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + _main.lastQueryMedsMain + ")";
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-            buildTreeRep(qryMedGrade, true, null, Selected, savedinstancestate);
-        } else if (!lib.libString.IsNullOrEmpty(_lastQuery)) {
-            buildTreeRep(_lastQuery, true, _txt, Selected, savedinstancestate);
+            buildTreeRep(qryMedGrade, true, null, selectedMeds, savedinstancestate);
+        } else if (!lib.libString.IsNullOrEmpty(_lastQueryMedsMeds)) {
+            buildTreeRep(_lastQueryMedsMeds, true, _txt, selectedMeds, savedinstancestate);
         } else {
             buildTree("SELECT * FROM Medikamente ORDER BY Name", true, savedinstancestate);
         }
@@ -689,8 +690,8 @@ public class MedActivity extends Fragment {
                 }
             });
             if (savedinstancestate!=null) {
-                _lastQuery = savedinstancestate.getString("lastquery");
-                Selected = savedinstancestate.getIntegerArrayList("Selected");
+                _lastQueryMedsMeds = savedinstancestate.getString("lastquerymeds");
+                selectedMeds = savedinstancestate.getIntegerArrayList("selectedMeds");
             }
             initTreeView(v, savedinstancestate);
             return v;
@@ -701,12 +702,12 @@ public class MedActivity extends Fragment {
     }
 
     private void restoreTreeView(Bundle savedinstancestate) throws Throwable {
-        if (treeView != null && savedinstancestate != null) {
-            if (root != null) {
+        if (treeViewMeds != null && savedinstancestate != null) {
+            if (rootMeds != null) {
                 ArrayList<Integer> expMed = savedinstancestate.getIntegerArrayList("expMed");
                 ArrayList<Integer> expMedSymp = savedinstancestate.getIntegerArrayList("expMedSymp");
                 if (expMed.size() == 0) return;
-                for (TreeNode t : root.getChildren()) {
+                for (TreeNode t : rootMeds.getChildren()) {
                     if (t.hasChild() == false || true) {
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
                         if (expMed.contains(h.ID)) {
@@ -714,23 +715,23 @@ public class MedActivity extends Fragment {
                             while (expMedSymp.size() > 0 && expMedSymp.get(0) == -99)
                                 expMedSymp.remove(0);
                             if (t.hasChild() == false)
-                                FirstLevelNodeViewBinderMed.buildTree(treeView, t, null);
-                            else treeView.expandNode(t);
+                                FirstLevelNodeViewBinderMed.buildTree(treeViewMeds, t, null);
+                            else treeViewMeds.expandNode(t);
                             lib.gStatus = "expSympMed";
-                            expSympMed(h.ID, t, expMedSymp, Selected);
+                            expSympMed(h.ID, t, expMedSymp, selectedMeds);
                         }
                         if (expMed.size() == 0) break;
 
                     }
                 }
-                if (Selected != null && Selected.size() > 0) {
-                    for (TreeNode t : root.getChildren()) {
+                if (selectedMeds != null && selectedMeds.size() > 0) {
+                    for (TreeNode t : rootMeds.getChildren()) {
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
-                        while (Selected.size() > 0 && h.ID == Selected.get(0)) {
-                            Selected.remove(0);
-                            SymptomsActivity.AddNodesRecursive(_main, 1, null, t, Selected.get(0), Selected.get(1), h.ID);
-                            Selected.remove(0);
-                            Selected.remove(0);
+                        while (selectedMeds.size() > 0 && h.ID == selectedMeds.get(0)) {
+                            selectedMeds.remove(0);
+                            SymptomsActivity.AddNodesRecursive(_main, 1, null, t, selectedMeds.get(0), selectedMeds.get(1), h.ID);
+                            selectedMeds.remove(0);
+                            selectedMeds.remove(0);
                         }
                     }
                 }
@@ -763,8 +764,8 @@ public class MedActivity extends Fragment {
             if (h.ParentMedID == expMedSymp.get(0) && h.ID == expMedSymp.get(1)) {
                 expMedSymp.remove(0);
                 expMedSymp.remove(0);
-                if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt, null);
-                else treeView.expandNode(tt);
+                if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeViewMeds, tt, null);
+                else treeViewMeds.expandNode(tt);
                 if (expMedSymp.size() <= 0) {
                     CheckSelected(id, tt, selected);
                     break;
@@ -788,7 +789,7 @@ public class MedActivity extends Fragment {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) tt.getValue();
             for (int i = 0; i < selected.size(); i += 3) {
                 if (selected.get(i) == id && selected.get(i + 1) == h.ID) {
-                    treeView.selectNode(tt, 1);
+                    treeViewMeds.selectNode(tt, 1);
                     tt.setWeight(selected.get(i + 2));
                     selected.remove(i);
                     selected.remove(i);
@@ -802,26 +803,27 @@ public class MedActivity extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("lastquery", _lastQuery);
+        outState.putString("lastquerymeds", _lastQueryMedsMeds);
         outState.putStringArray("txt", _txt);
+        outState.putIntegerArrayList("selectedSymp", _main.selectedSymp);
         if (_main.db!=null)
         {
             outState.putString("dbname", _main.db.dbname);
             outState.putString("dbpath", _main.db.DB_PATH);
         }
-        if (treeView != null) {
-            if (root != null) {
+        if (treeViewMeds != null) {
+            if (rootMeds != null) {
                 ArrayList<Integer> expMed = new ArrayList<>();
                 ArrayList<Integer> expMedSymp = new ArrayList<>();
                 ArrayList<Integer> Selected = new ArrayList<>();
-                for (TreeNode t : root.getChildren()) {
+                for (TreeNode t : rootMeds.getChildren()) {
                     if (t.hasChild() && t.isExpanded()) {
                         TreeNodeHolderMed h = (TreeNodeHolderMed) t.getValue();
                         expMed.add(h.ID);
                         getSympMed(h.ID, t, expMedSymp);
                     }
                 }
-                for (TreeNode t : treeView.getSelectedNodes()) {
+                for (TreeNode t : treeViewMeds.getSelectedNodes()) {
                     if (t.getValue() instanceof TreeNodeHolderSympt) {
                         TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
                         Selected.add(h.ParentMedID);
@@ -832,7 +834,7 @@ public class MedActivity extends Fragment {
                 }
                 outState.putIntegerArrayList("expMed", expMed);
                 outState.putIntegerArrayList("expMedSymp", expMedSymp);
-                outState.putIntegerArrayList("Selected", Selected);
+                outState.putIntegerArrayList("selectedMeds", Selected);
             }
 
         }
@@ -897,7 +899,7 @@ public class MedActivity extends Fragment {
     private void searchSymptoms2(String[]txt, boolean AndFlag, boolean blnWide){
         try {
             //String qry = "SELECT Medikamente.* FROM Symptome WHERE ";
-            if (!lib.libString.IsNullOrEmpty(_main.lastQuery)) {
+            if (!lib.libString.IsNullOrEmpty(_main.lastQueryMedsMain)) {
                 lib.yesnoundefined res = (lib.ShowMessageYesNo(getContext(), getString(R.string.alreadysearched), getString(R.string.continuesearch), false));
                 if (res != lib.yesnoundefined.yes) return;
             }
@@ -955,7 +957,7 @@ public class MedActivity extends Fragment {
                     "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + where + ")" + (whereSympt.length()>0?" AND (" + whereSympt + ")":"");
             qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
             buildTreeRep(qryMedGrade, true, txt,BedAll, null, null);
-            _lastQuery = qryMedGrade;
+            _lastQueryMedsMeds = qryMedGrade;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -964,7 +966,7 @@ public class MedActivity extends Fragment {
 
     public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
-        List<TreeNode> selectedNodes = treeView.getSelectedNodes();
+        List<TreeNode> selectedNodes = treeViewMeds.getSelectedNodes();
         for (int i = 0; i < selectedNodes.size(); i++) {
             if (i < 5) {
                 stringBuilder.append(selectedNodes.get(i).getValue().toString()).append(",");
@@ -977,7 +979,7 @@ public class MedActivity extends Fragment {
     }
 
     public void refresh() throws Throwable {
-        _lastQuery = null;
+        _lastQueryMedsMeds = null;
         buildTree("SELECT * FROM Medikamente ORDER BY Name", true, null);
     }
 
@@ -1052,10 +1054,10 @@ public class MedActivity extends Fragment {
                     try {
                         ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
                         publishProgress(pc);
-                        if (root.getChildren().size() > 0) {
-                            List<TreeNode> l = root.getChildren();
+                        if (rootMeds.getChildren().size() > 0) {
+                            List<TreeNode> l = rootMeds.getChildren();
                             l.clear();
-                            root.setChildren(l);
+                            rootMeds.setChildren(l);
                         }
                         dbSqlite db = ((MainActivity) getActivity()).db;
                         try {
@@ -1080,7 +1082,7 @@ public class MedActivity extends Fragment {
                                         Boolean Polychrest = c.isNull(ColumnPolychrest) ? false : c.getInt(ColumnPolychrest) != 0;
                                         TreeNode treeNode = new TreeNode(new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest ? "!" : "") + Name, "Med" + ID, ID, Name, Beschreibung));
                                         treeNode.setLevel(0);
-                                        root.addChild(treeNode);
+                                        rootMeds.addChild(treeNode);
                                         if (cancelled) break;
                                     } while (c.moveToNext());
                                 }
@@ -1145,7 +1147,7 @@ public class MedActivity extends Fragment {
                     // continue what you are doing...
                     try {
                         if (pd != null && pd.isShowing()) pd.dismiss();
-                        if (refresh && treeView != null) treeView.refreshTreeView();
+                        if (refresh && treeViewMeds != null) treeViewMeds.refreshTreeView();
                         if (savedinstancestate != null) try {
                             restoreTreeView(savedinstancestate);
                         } catch (Throwable throwable) {
@@ -1230,10 +1232,10 @@ public class MedActivity extends Fragment {
                     lib.gStatus = CodeLoc + " Start";
                     int MedID;
                     //ArrayList<TreeNodeHolderMed> arrMed = new ArrayList<>();
-                    if (root.getChildren().size() > 0) {
-                        List<TreeNode> l = root.getChildren();
+                    if (rootMeds.getChildren().size() > 0) {
+                        List<TreeNode> l = rootMeds.getChildren();
                         l.clear();
-                        root.setChildren(l);
+                        rootMeds.setChildren(l);
                     }
                     dbSqlite db = ((MainActivity) getActivity()).db;
                     try {
@@ -1267,7 +1269,7 @@ public class MedActivity extends Fragment {
                                     TreeNodeHolderMed hMed = new TreeNodeHolderMed((MainActivity) getActivity(), 0, (Polychrest ? "!" : "") + Name, "Med" + ID, ID, Name, Beschreibung);
                                     TreeNode treeNode = new TreeNode(hMed);
                                     treeNode.setLevel(0);
-                                    root.addChild(treeNode);
+                                    rootMeds.addChild(treeNode);
                                     int f = insertSymptom(c, treeNode, hMed, selected, ID, txt, Bed);
                                     if (f == -2) f = 1;
                                     if (f >= 0) {
@@ -1294,7 +1296,7 @@ public class MedActivity extends Fragment {
                                     hMed.Text += "(" + hMed.totalGrade + "/" + hMed.count + ")";
                                     if (cancelled) break;
                                 } while (!c.isAfterLast());
-                                List<TreeNode> l = root.getChildren();
+                                List<TreeNode> l = rootMeds.getChildren();
 
                                 Collections.sort(l, new Comparator<TreeNode>() {
                                     @Override
@@ -1309,7 +1311,7 @@ public class MedActivity extends Fragment {
                                         return 1;
                                     }
                                 });
-                                root.setChildren(l);
+                                rootMeds.setChildren(l);
                                 //if (refresh) treeView.refreshTreeView();
 
                             }
@@ -1364,8 +1366,8 @@ public class MedActivity extends Fragment {
                 // continue what you are doing...
                 try {
                     if (pd != null && pd.isShowing()) pd.dismiss();
-                    if (refresh && treeView != null) treeView.refreshTreeView();
-                    _lastQuery = qry;
+                    if (refresh && treeViewMeds != null) treeViewMeds.refreshTreeView();
+                    _lastQueryMedsMeds = qry;
                     _txt = txt;
                     if (savedinstancestate != null) try {
                         restoreTreeView(savedinstancestate);
@@ -1482,12 +1484,12 @@ public class MedActivity extends Fragment {
     //private String lastQuery = "";
     public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd, ArrayList<Integer> selected) {
         if (!blnAdd) {
-            _main.lastQuery = "";
+            _main.lastQueryMedsMain = "";
             selected.clear();
         }
         String qry = "";
-        String qrySymptMed = _main.lastQuery;
-        List<TreeNode> arr = treeView.getSelectedNodes();
+        String qrySymptMed = _main.lastQueryMedsMain;
+        List<TreeNode> arr = treeViewMeds.getSelectedNodes();
         int count = arr.size();
         for (TreeNode t : arr) {
             if (t.getValue() instanceof TreeNodeHolderMed) continue;
@@ -1530,7 +1532,13 @@ public class MedActivity extends Fragment {
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
-        _main.lastQuery = qrySymptMed;
+        if (qrySymptMed!=null && qrySymptMed.length()>0) {
+            _main.lastQueryMedsMain = qrySymptMed;
+        }
+        else
+        {
+            qrySymptMed = _main.lastQueryMedsMain;
+        }
         return new String[]{qry, qrySymptMed};
 
     }
