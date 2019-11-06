@@ -442,27 +442,31 @@ public class MedActivity extends Fragment {
                                         }
                                         String query = b.getString("lastquery");
                                         String[] txt = b.getStringArray("txt");
-                                        ArrayList<Integer> selected = b.getIntegerArrayList("Selected");
+                                        ArrayList<Integer> sel = b.getIntegerArrayList("Selected");
                                         String[] qry;
                                         boolean blnAdd = true;
                                         if (_main.mPager.getCurrentItem() == SymptomsActivity.fragID) {
-                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selected);
+                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, sel);
                                             _main.fPA.fragSymptoms.blnHasbeenRepertorised = true;
                                         } else if (_main.mPager.getCurrentItem() == MedActivity.fragID) {
-                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, selected);
+                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, Selected);
+                                            if (!lib.libString.IsNullOrEmpty(query)) {
+                                                buildTreeRep(query, true, txt, sel, b);
+                                            }
+                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, Selected);
                                         } else {
                                             break;
                                         }
-                                        if (lib.libString.IsNullOrEmpty(qry[1])) break;
+                                        String qrycombine = qry[1];
+                                        if (lib.libString.IsNullOrEmpty(qrycombine)) break;
                                         _main.mPager.setCurrentItem(MedActivity.fragID);
                                         //String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
                                         //        "WHERE " + qry[0] + " AND Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
                                         String qryMedGrade = "Select Medikamente.*, SymptomeOFMedikament.GRADE, SymptomeOFMedikament.SymptomID, Symptome.Text, Symptome.ShortText, Symptome.KoerperTeilID, Symptome.ParentSymptomID FROM SymptomeOfMedikament, Medikamente, Symptome " +
-                                                "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qry[1] + ")";
+                                                "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qrycombine + ")";
                                         qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
-                                        String lastQuery = qry[1];
                                         _main.fPA.fragMed._lastQuery = null;
-                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selected, null);
+                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, sel, null);
                                         //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                                     }
                                     return true;
