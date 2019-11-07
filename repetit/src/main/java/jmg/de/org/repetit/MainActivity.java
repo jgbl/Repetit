@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, "txt");
+            intent.putExtra(Intent.EXTRA_TEXT, txt);
             intent.putExtra("key_text_input", txt);
             intent.putExtra("key_text_output", "");
             intent.putExtra("key_language_from", from);
