@@ -60,7 +60,7 @@ public class SymptomsActivity extends Fragment {
     protected Toolbar toolbar;
     private ViewGroup viewGroup;
     private TreeNode root;
-    public TreeView treeView;
+    public TreeView treeViewSympt;
     private AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
@@ -82,8 +82,8 @@ public class SymptomsActivity extends Fragment {
         if (view!=null)initView(view);
 
         root = TreeNode.root();
-        treeView = new TreeView(root, _main, new MyNodeViewFactory());
-        View view2 = treeView.getView();
+        treeViewSympt = new TreeView(root, _main, new MyNodeViewFactory());
+        View view2 = treeViewSympt.getView();
         registerForContextMenu(view2);
         view2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -154,12 +154,12 @@ public class SymptomsActivity extends Fragment {
             outState.putString("dbname", _main.db.dbname);
             outState.putString("dbpath", _main.db.DB_PATH);
         }
-        if (treeView != null) {
+        if (treeViewSympt != null) {
             if (root != null) {
                 ArrayList<Integer> expSymp = new ArrayList<>();
                 ArrayList<Integer> Selected = new ArrayList<>();
                 getSymp(root, expSymp);
-                for (TreeNode t : treeView.getSelectedNodes()) {
+                for (TreeNode t : treeViewSympt.getSelectedNodes()) {
                     if (t.getValue() instanceof TreeNodeHolderSympt) {
                         TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
                         //Selected.add(h.ParentMedID);
@@ -202,7 +202,7 @@ public class SymptomsActivity extends Fragment {
                 _main.db.openDataBase();
             }
         }
-        if (treeView != null && savedinstancestate != null) {
+        if (treeViewSympt != null && savedinstancestate != null) {
             if (root != null) {
                 ArrayList<Integer> expSymp = savedinstancestate.getIntegerArrayList("expSymp");
                 ArrayList<Integer> Selected = savedinstancestate.getIntegerArrayList("Selected");
@@ -240,11 +240,11 @@ public class SymptomsActivity extends Fragment {
             if (h.ID == expSymp.get(0)) {
                 expSymp.remove(0);
                 if (t == root) {
-                    if (tt.hasChild() == false) FirstLevelNodeViewBinder.buildTree(treeView, tt, null);
-                    else treeView.expandNode(tt);
+                    if (tt.hasChild() == false) FirstLevelNodeViewBinder.buildTree(treeViewSympt, tt, null);
+                    else treeViewSympt.expandNode(tt);
                 } else {
-                    if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeView, tt, null);
-                    else treeView.expandNode(tt);
+                    if (tt.hasChild() == false) SecondLevelNodeViewBinder.buildTree(treeViewSympt, tt, null);
+                    else treeViewSympt.expandNode(tt);
                 }
                 if (expSymp.size() <= 0) {
                     checkSelected(tt, selected);
@@ -282,7 +282,7 @@ public class SymptomsActivity extends Fragment {
                 }
             }
             if (found > -1) {
-                treeView.selectNode(tt,1);
+                treeViewSympt.selectNode(tt,1);
                 tt.setWeight(selected.get(found + 1));
                 selected.remove(found);
                 selected.remove(found);
@@ -356,13 +356,13 @@ public class SymptomsActivity extends Fragment {
                 }
             case R.id.cmnuShowAll:
                 //lib.ShowMessage(getContext(),((TreeNodeHolder)info.treeNode.getValue()).Text,"Node");
-                treeView.collapseNode(info.treeNode);
+                treeViewSympt.collapseNode(info.treeNode);
                 info.treeNode.getChildren().clear();
                 /*if (info.treeNode.getLevel() == 1)
                 {
                     try
                     {
-                        FirstLevelNodeViewBinderMed.buildTree(treeView,info.treeNode);
+                        FirstLevelNodeViewBinderMed.buildTree(treeViewSympt,info.treeNode);
                     }
                     catch (Throwable throwable)
                     {
@@ -371,8 +371,8 @@ public class SymptomsActivity extends Fragment {
                 }
                 */
                 info.treeNode.holder.onNodeToggled(info.treeNode,true);
-                //treeView.toggleNode(info.treeNode);
-                //treeView.expandNode(info.treeNode);
+                //treeViewSympt.toggleNode(info.treeNode);
+                //treeViewSympt.expandNode(info.treeNode);
                 return true;
             case R.id.cmnuAddTerm:
                 if (info.treeNode.getValue() instanceof TreeNodeHolderSympt)
@@ -399,9 +399,9 @@ public class SymptomsActivity extends Fragment {
     public boolean blnHasbeenRepertorised;
     private void searchSymptoms(final String searchtxt, final boolean AndFlag) {
         if (lib.libString.IsNullOrEmpty(searchtxt)) return;
-        if (!blnHasbeenRepertorised && treeView != null)
+        if (!blnHasbeenRepertorised && treeViewSympt != null)
         {
-            List <TreeNode> sel = treeView.getSelectedNodes();
+            List <TreeNode> sel = treeViewSympt.getSelectedNodes();
             if (sel != null && sel.size()>0)
             {
                 AlertDialog dlg = lib.getMessageOKCancel(getContext(), getString(R.string.clearselection), getString(R.string.clear), false, new DialogInterface.OnClickListener()
@@ -461,12 +461,12 @@ public class SymptomsActivity extends Fragment {
     //String lastQuery = "";
     public String[] getQueryMed(boolean OrFlag, boolean Wide, boolean blnAdd, ArrayList<Integer> selected) {
         if (!blnAdd) {
-            _main.lastQuery = "";
+            _main.lastQueryMedsMain = "";
             selected.clear();
         }
         String qry = "";
-        String qrySymptMed = _main.lastQuery;
-        for (TreeNode t : treeView.getSelectedNodes()) {
+        String qrySymptMed = _main.lastQueryMedsMain;
+        for (TreeNode t : treeViewSympt.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
             selected.add(-1); selected.add(h.ID);selected.add(t.getWeight());
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
@@ -492,14 +492,14 @@ public class SymptomsActivity extends Fragment {
                 qrySymptMed += "SymptomeOfMedikament.SymptomID IN (SELECT ID FROM Symptome WHERE Text LIKE '%" + MakeFitForQuery(h.SymptomText, true) + "%')";
             }
         }
-        _main.lastQuery = qrySymptMed;
+        _main.lastQueryMedsMain = qrySymptMed;
         return new String[]{qry, qrySymptMed};
 
     }
 
     public String getSelectedNodes() {
         StringBuilder stringBuilder = new StringBuilder("You have selected: ");
-        List<TreeNode> selectedNodes = treeView.getSelectedNodes();
+        List<TreeNode> selectedNodes = treeViewSympt.getSelectedNodes();
         for (int i = 0; i < selectedNodes.size(); i++) {
             if (i < 5) {
                 stringBuilder.append(selectedNodes.get(i).getValue().toString() + ",");
@@ -566,81 +566,67 @@ public class SymptomsActivity extends Fragment {
                 @Override
                 protected Integer doInBackground(Void... params)
                 {
-                    ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
-                    publishProgress(pc);
-                    if (treeNodeParent.getChildren().size() > 0)
-                    {
-                        List<TreeNode> l = treeNodeParent.getChildren();
-                        l.clear();
-                        treeNodeParent.setChildren(l);
-                        //treeView.collapseNode(treeNodeParent);
-                    }
-                    //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
-                    dbSqlite db = ((MainActivity) getActivity()).db;
-                    try
-                    {
-                        Cursor c = db.query(qry);
-                        try
-                        {
-                            if (c.moveToFirst())
-                            {
-                                int ColumnTextId = c.getColumnIndex("Text");
-                                int ColumnIDId = c.getColumnIndex("ID");
-                                int ColumnShortTextId = c.getColumnIndex("ShortText");
-                                int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
-                                int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
-                                if (getParents) lastQuery = qry;
-                                int count = c.getCount();
-                                do
-                                {
-                                    counter += 1;
-                                    if (count < 10 || counter % (count / 10) == 0)
-                                    {
-                                        pc.update(counter, count, context.getString(R.string.processingquery), false);
-                                        publishProgress(pc);
-                                    }
-                                    int ID = c.getInt(ColumnIDId);
-                                    String Text = c.getString(ColumnTextId);
-                                    String ShortText = c.getString(ColumnShortTextId);
-                                    Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
-                                    Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
-                                    int Level = treeNodeParent.getLevel();
-                                    if (treeNodeParent == root) Level = -1;
-                                    TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
-                                    if (!getParents || ParentSymptomId == null)
-                                    {
-                                        treeNode.setLevel(Level + 1);
-                                        treeNodeParent.addChild(treeNode);
-                                    } else
-                                    {
-                                        try
-                                        {
-                                            AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                    try {
+                        ProgressClass pc = new ProgressClass(0, 100, context.getString(R.string.startingquery), false);
+                        publishProgress(pc);
+                        if (treeNodeParent.getChildren().size() > 0) {
+                            List<TreeNode> l = treeNodeParent.getChildren();
+                            l.clear();
+                            treeNodeParent.setChildren(l);
+                            //treeViewSympt.collapseNode(treeNodeParent);
+                        }
+                        //MedActivity.TreeNodeHolderMed h = (MedActivity.TreeNodeHolderMed) treeNodeParent.getValue();
+                        dbSqlite db = ((MainActivity) getActivity()).db;
+                        try {
+                            Cursor c = db.query(qry);
+                            try {
+                                if (c.moveToFirst()) {
+                                    int ColumnTextId = c.getColumnIndex("Text");
+                                    int ColumnIDId = c.getColumnIndex("ID");
+                                    int ColumnShortTextId = c.getColumnIndex("ShortText");
+                                    int ColumnKoerperTeilId = c.getColumnIndex("KoerperTeilID");
+                                    int ColumnParentSymptomId = c.getColumnIndex("ParentSymptomID");
+                                    if (getParents) lastQuery = qry;
+                                    int count = c.getCount();
+                                    do {
+                                        counter += 1;
+                                        if (count < 10 || counter % (count / 10) == 0) {
+                                            pc.update(counter, count, context.getString(R.string.processingquery), false);
+                                            publishProgress(pc);
                                         }
-                                        catch (Throwable throwable)
-                                        {
-                                            this.ex = throwable;
+                                        int ID = c.getInt(ColumnIDId);
+                                        String Text = c.getString(ColumnTextId);
+                                        String ShortText = c.getString(ColumnShortTextId);
+                                        Integer KoerperTeilId = c.getInt(ColumnKoerperTeilId);
+                                        Integer ParentSymptomId = c.getInt(ColumnParentSymptomId);
+                                        int Level = treeNodeParent.getLevel();
+                                        if (treeNodeParent == root) Level = -1;
+                                        TreeNode treeNode = new TreeNode(new TreeNodeHolderSympt((MainActivity) getActivity(), Level + 1, ShortText, "Sympt" + ID, ID, Text, ShortText, KoerperTeilId, ParentSymptomId, -1, 0));
+                                        if (!getParents || ParentSymptomId == null) {
+                                            treeNode.setLevel(Level + 1);
+                                            treeNodeParent.addChild(treeNode);
+                                        } else {
+                                            try {
+                                                AddNodesRecursive((MainActivity) getActivity(), Level, treeNode, treeNodeParent, ParentSymptomId, 0, -1);
+                                            } catch (Throwable throwable) {
+                                                this.ex = throwable;
+                                            }
                                         }
-                                    }
-                                    if (cancelled) break;
-                                } while (c.moveToNext());
-                                //this.treeView.expandNode(treeNodeParent);
+                                        if (cancelled) break;
+                                    } while (c.moveToNext());
+                                    //this.treeViewSympt.expandNode(treeNodeParent);
+                                }
+                            } finally {
+                                c.close();
                             }
+                        } catch (Throwable ex) {
+                            this.ex = ex;
+                        } finally {
+                            db.close();
                         }
-                        finally
-                        {
-                            c.close();
-                        }
+                    } catch (Throwable ex){
+                        this.ex= ex;
                     }
-                    catch (Throwable ex)
-                    {
-                        this.ex = ex;
-                    }
-                    finally
-                    {
-                        db.close();
-                    }
-
 
                     return counter;
 
@@ -689,7 +675,7 @@ public class SymptomsActivity extends Fragment {
                     // continue what you are doing...
                     try {
                         if (pd != null && pd.isShowing()) pd.dismiss();
-                        if (refresh && treeView != null) treeView.refreshTreeView();
+                        if (refresh && treeViewSympt != null) treeViewSympt.refreshTreeView();
                         blnHasbeenRepertorised = false;
                         if (this.ex != null) lib.ShowException(context, ex);
                         if (savedinstancestate != null) try {
@@ -784,7 +770,7 @@ public class SymptomsActivity extends Fragment {
                         else
                             Log.i(TAG,"Sympt" + ID + "ParentSymptomID null");
                     } while (c.moveToNext());
-                    //this.treeView.expandNode(treeNodeParent);
+                    //this.treeViewSympt.expandNode(treeNodeParent);
                 }
             } finally {
                 c.close();
@@ -792,7 +778,7 @@ public class SymptomsActivity extends Fragment {
         } finally {
             //db.close();
         }
-        //if (refresh && treeView != null) treeView.refreshTreeView();
+        //if (refresh && treeViewSympt != null) treeViewSympt.refreshTreeView();
     }
 
 
@@ -909,7 +895,7 @@ public class SymptomsActivity extends Fragment {
                         }
                     });
                     SNode.setChildren(l);
-                    if (refresh) treeView.refreshTreeView();
+                    if (refresh) treeViewSympt.refreshTreeView();
                 } else {
                     qry = "Text = 'AKZB794'";
                 }
