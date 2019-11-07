@@ -1528,7 +1528,7 @@ public class MedActivity extends Fragment {
                 selNeu.add(selected.get(i+2));
                 blnMeds = false;
             }
-            selected = selNeu;
+            if (!blnMeds) selected = selNeu;
         }
         for (TreeNode t : arr) {
             if (t.getValue() instanceof TreeNodeHolderMed) continue;

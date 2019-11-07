@@ -490,7 +490,7 @@ public class SymptomsActivity extends Fragment {
                 selNeu.add(selected.get(i+2));
                 blnMeds = false;
             }
-            selected = selNeu;
+            if (!blnMeds) selected = selNeu;
         }
         for (TreeNode t : treeViewSympt.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
