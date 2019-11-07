@@ -1,5 +1,8 @@
 package jmg.de.org.repetit;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -271,7 +274,42 @@ public class MainActivity extends AppCompatActivity {
             init(savedInstanceState);
         }
     }
+    private final static int TranslateResultCode = 10001;
 
+    public void translate(String from, String to, String txt)
+    {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT, "hello");
+            intent.putExtra("key_text_input", txt);
+            intent.putExtra("key_text_output", "");
+            intent.putExtra("key_language_from", from);
+            intent.putExtra("key_language_to", to);
+            intent.putExtra("key_suggest_translation", "");
+            intent.putExtra("key_from_floating_window", false);
+            intent.setComponent(new ComponentName(
+                    "com.google.android.apps.translate",
+                    "com.google.android.apps.translate.TranslateActivity"));
+            startActivityForResult(intent,TranslateResultCode);
+        } catch (ActivityNotFoundException e) {
+            // TODO Auto-generated catch block
+            Toast.makeText(getApplication(), "Sorry, No Google Translation Installed",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            lib.ShowMessage(this, getString(R.string.noData), getString(R.string.noDataReceived));
+            return;
+        }
+        if (requestCode == TranslateResultCode && resultCode == Activity.RESULT_OK) {
+            System.out.println(data.toString());
+        }
+    }
 
     private void AcceptLicense() throws Throwable {
         boolean blnLicenseAccepted = getPreferences(Context.MODE_PRIVATE).getBoolean("LicenseAccepted", false);
@@ -433,6 +471,19 @@ public class MainActivity extends AppCompatActivity {
                     fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selectedSymp, null);
                     //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                     break;
+                case R.id.mnuTranslate:
+                {
+                    String txt;
+                    if (mPager.getCurrentItem() == SymptomsActivity.fragID) {
+                        txt = fPA.fragSymptoms.txtSearch.getText().toString();
+                    } else if (mPager.getCurrentItem() == MedActivity.fragID) {
+                        txt = fPA.fragMed.txtSearch.getText().toString();
+                    } else {
+                        break;
+                    }
+                    translate();
+                 break;
+                }
             }
         } catch (Throwable ex) {
             Log.e(TAG, "OptionsItemSelected", ex);

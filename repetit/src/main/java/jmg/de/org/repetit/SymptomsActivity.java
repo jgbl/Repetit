@@ -61,7 +61,7 @@ public class SymptomsActivity extends Fragment {
     private ViewGroup viewGroup;
     private TreeNode root;
     public TreeView treeViewSympt;
-    private AppCompatEditText txtSearch;
+    AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
     private String lastQuery;
