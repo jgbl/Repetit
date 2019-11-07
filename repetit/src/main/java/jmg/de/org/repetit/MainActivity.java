@@ -1,7 +1,10 @@
 package jmg.de.org.repetit;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private Bundle savedInstanceState;
     public static String versionName;
     public boolean blnSearchTerms;
+    private EditText txtSearch;
 
 
     public MainActivity() {
@@ -276,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private final static int TranslateResultCode = 10001;
 
-    public void translate(String from, String to, String txt)
+    public void translate(String from, String to, String txt, EditText txtSearch)
     {
         try {
             Intent intent = new Intent();
@@ -291,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setComponent(new ComponentName(
                     "com.google.android.apps.translate",
                     "com.google.android.apps.translate.TranslateActivity"));
+            this.txtSearch = txtSearch;
             startActivityForResult(intent,TranslateResultCode);
         } catch (ActivityNotFoundException e) {
             // TODO Auto-generated catch block
@@ -302,15 +308,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            lib.ShowMessage(this, getString(R.string.noData), getString(R.string.noDataReceived));
-            return;
-        }
-        if (requestCode == TranslateResultCode && resultCode == Activity.RESULT_OK) {
-            System.out.println(data.toString());
+        if (requestCode == TranslateResultCode) {
+
+            CharSequence pasteData = paste();
+
+            if (pasteData!=null) txtSearch.setText(pasteData);
         }
     }
-
+    @SuppressLint("NewApi") @SuppressWarnings("deprecation")
+    public String paste()
+    {
+        if (android.os.Build.VERSION.SDK_INT < 11)
+        {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null)
+            {
+                return (String) clipboard.getText();
+            }
+        }
+        else
+        {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null && clipboard.getPrimaryClip() != null && clipboard.getPrimaryClip().getItemCount() > 0)
+            {
+                return (String) clipboard.getPrimaryClip().getItemAt(0).getText();
+            }
+        }
+        return null;
+    }
     private void AcceptLicense() throws Throwable {
         boolean blnLicenseAccepted = getPreferences(Context.MODE_PRIVATE).getBoolean("LicenseAccepted", false);
         if (!blnLicenseAccepted) {
@@ -475,13 +500,15 @@ public class MainActivity extends AppCompatActivity {
                 {
                     String txt;
                     if (mPager.getCurrentItem() == SymptomsActivity.fragID) {
+                        txtSearch = fPA.fragSymptoms.txtSearch;
                         txt = fPA.fragSymptoms.txtSearch.getText().toString();
                     } else if (mPager.getCurrentItem() == MedActivity.fragID) {
+                        txtSearch = fPA.fragMed.txtSearch;
                         txt = fPA.fragMed.txtSearch.getText().toString();
                     } else {
                         break;
                     }
-                    translate("de", "en",txt);
+                    translate("de", "en",txt, txtSearch);
                  break;
                 }
             }
