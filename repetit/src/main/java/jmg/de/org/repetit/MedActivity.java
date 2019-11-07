@@ -71,7 +71,7 @@ public class MedActivity extends Fragment {
     private ViewGroup viewGroup;
     private TreeNode rootMeds;
     public TreeView treeViewMeds;
-    private AppCompatEditText txtSearch;
+    AppCompatEditText txtSearch;
     private ImageButton btnSearchAnd;
     private ImageButton btnSearchOr;
     String _lastQueryMedsMeds;
