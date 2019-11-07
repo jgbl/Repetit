@@ -109,7 +109,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 				if (fragMed == null)
 				{
 					fragMed = new MedActivity();
-					if (main.treeView == null) main.treeView = this.fragMed.treeView;
+					if (main.treeView == null) main.treeView = this.fragMed.treeViewMeds;
 				}
 				LastItem = fragMed;
 				return fragMed;
