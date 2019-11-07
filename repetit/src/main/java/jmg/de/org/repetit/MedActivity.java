@@ -421,7 +421,8 @@ public class MedActivity extends Fragment {
                                         _lastQueryMedsMeds = b.getString("lastquerymeds");
                                         _main.lastQueryMedsMain = b.getString("lastquerymedsmain");
                                         _txt = b.getStringArray("txt");
-                                        selectedMeds = b.getIntegerArrayList("selectedMeds");
+                                        ArrayList<Integer> selMeds = b.getIntegerArrayList("selectedMeds");
+                                        if (selMeds != null) selectedMeds = selMeds;
                                         if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
                                         if (!lib.libString.IsNullOrEmpty(_lastQueryMedsMeds)) {
                                             buildTreeRep(_lastQueryMedsMeds, true, _txt, selectedMeds, b);
@@ -444,22 +445,25 @@ public class MedActivity extends Fragment {
                                             p.recycle();
                                         }
                                         _lastQueryMedsMeds = b.getString("lastquerymeds");
-                                        String query = b.getString("lastquerymedsmain");
+                                        String queryMedsMain = b.getString("lastquerymedsmain");
                                         _txt = b.getStringArray("txt");
-                                        ArrayList<Integer> sel = b.getIntegerArrayList("selecteMeds");
+                                        ArrayList<Integer> selMeds = b.getIntegerArrayList("selectedMeds");
+                                        if (selMeds == null) selMeds = selectedMeds;
+                                        if (selMeds.size()>0) selectedMeds = selMeds;
                                         if (b.containsKey("selectedSymp")) _main.selectedSymp = b.getIntegerArrayList("selectedSymp");
                                         String[] qry;
                                         boolean blnAdd = true;
                                         if (_main.mPager.getCurrentItem() == SymptomsActivity.fragID) {
-                                            _main.lastQueryMedsMain = query;
-                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, _main.selectedSymp);
+                                            _main.lastQueryMedsMain = queryMedsMain;
+                                            qry = _main.fPA.fragSymptoms.getQueryMed(true, false, blnAdd, selMeds);
                                             _main.fPA.fragSymptoms.blnHasbeenRepertorised = true;
                                         } else if (_main.mPager.getCurrentItem() == MedActivity.fragID) {
-                                            _main.lastQueryMedsMain = query;
-                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, _main.selectedSymp);
+                                            _main.lastQueryMedsMain = queryMedsMain;
+                                            qry = _main.fPA.fragMed.getQueryMed(true, false, blnAdd, selMeds);
                                         } else {
                                             break;
                                         }
+                                        selectedMeds = selMeds;
                                         String qrycombine = qry[1];
                                         if (lib.libString.IsNullOrEmpty(qrycombine)) break;
                                         _main.mPager.setCurrentItem(MedActivity.fragID);
@@ -469,7 +473,7 @@ public class MedActivity extends Fragment {
                                                 "WHERE Medikamente.ID = SymptomeOfMedikament.MedikamentID AND SymptomeOfMedikament.SymptomID = Symptome.ID AND (" + qrycombine + ")";
                                         qryMedGrade += " ORDER BY Medikamente.Name, SymptomeOfMedikament.GRADE DESC";
                                         _main.fPA.fragMed._lastQueryMedsMeds = null;
-                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, sel, b);
+                                        _main.fPA.fragMed.buildTreeRep(qryMedGrade, true, null, selMeds, b);
                                         //((MainActivity)getActivity()).fPA.fragMed.buildTree("SELECT * FROM Medikamente WHERE " + qry, true);
                                     }
                                     return true;
@@ -1500,24 +1504,61 @@ public class MedActivity extends Fragment {
         String qrySymptMed = _main.lastQueryMedsMain;
         List<TreeNode> arr = treeViewMeds.getSelectedNodes();
         int count = arr.size();
+        boolean blnMeds = false;
+        if (selected.size()>0 && selected.get(0) > -1) blnMeds = true;
+        if (blnMeds)
+        {
+            ArrayList<Integer> selNeu = new ArrayList<>();
+            for (int i = 0; i < selected.size(); i+=3)
+            {
+                int found = selNeu.indexOf(selected.get(i+1));
+                if (found >= 0 && (found - 1) % 3 != 0) {
+                    found = -1;
+                    for (int ii = 0; ii < selNeu.size(); ii = ii + 3) {
+                        if (selNeu.get(ii + 1).equals(selected.get(i + 1))) {
+                            found = ii + 1;
+                            break;
+                        }
+                    }
+                }
+                ;
+                if (found >= 0) continue;
+                selNeu.add(-1);
+                selNeu.add(selected.get(i+1));
+                selNeu.add(selected.get(i+2));
+                blnMeds = false;
+            }
+            selected = selNeu;
+        }
         for (TreeNode t : arr) {
             if (t.getValue() instanceof TreeNodeHolderMed) continue;
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
-            int found = selected.indexOf(new Integer(h.ID));
-            if (found >= 0 && (found - 1) % 3 != 0) {
-                found = -1;
-                for (int i = 0; i < selected.size(); i = i + 3) {
-                    if (selected.get(i + 1) == h.ID) {
-                        found = i + 1;
-                        break;
+            int parentMed = h.ParentMedID;
+            int sympID = h.ID;
+            int weight = t.getWeight();
+            if (!blnMeds) {
+                int found = selected.indexOf(new Integer(h.ID));
+                if (found >= 0 && (found - 1) % 3 != 0) {
+                    found = -1;
+                    for (int i = 0; i < selected.size(); i = i + 3) {
+                        if (selected.get(i + 1) == h.ID) {
+                            found = i + 1;
+                            break;
+                        }
                     }
                 }
+                ;
+                if (found >= 0) continue;
+                selected.add(-1);
+                selected.add(sympID);
+                selected.add(weight);
             }
-            ;
-            if (found >= 0) continue;
-            selected.add(-1);
-            selected.add(h.ID);
-            selected.add(t.getWeight());
+            else
+            {
+                selected.add(parentMed);
+                selected.add(sympID);
+                selected.add(weight);
+            }
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
                 if (OrFlag)
                     qrySymptMed += " OR ";
