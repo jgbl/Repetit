@@ -466,9 +466,37 @@ public class SymptomsActivity extends Fragment {
         }
         String qry = "";
         String qrySymptMed = _main.lastQueryMedsMain;
+        boolean blnMeds = false;
+        if (selected.size()>0 && selected.get(0) > -1) blnMeds = true;
+        if (blnMeds)
+        {
+            ArrayList<Integer> selNeu = new ArrayList<>();
+            for (int i = 0; i < selected.size(); i+=3)
+            {
+                int found = selNeu.indexOf(selected.get(i+1));
+                if (found >= 0 && (found - 1) % 3 != 0) {
+                    found = -1;
+                    for (int ii = 0; ii < selNeu.size(); ii = ii + 3) {
+                        if (selNeu.get(ii + 1).equals(selected.get(i + 1))) {
+                            found = ii + 1;
+                            break;
+                        }
+                    }
+                }
+                ;
+                if (found >= 0) continue;
+                selNeu.add(-1);
+                selNeu.add(selected.get(i+1));
+                selNeu.add(selected.get(i+2));
+                blnMeds = false;
+            }
+            selected = selNeu;
+        }
         for (TreeNode t : treeViewSympt.getSelectedNodes()) {
             TreeNodeHolderSympt h = (TreeNodeHolderSympt) t.getValue();
-            selected.add(-1); selected.add(h.ID);selected.add(t.getWeight());
+            int parentMedID = -1;
+            if (blnMeds) parentMedID = h.ParentMedID;
+            selected.add(parentMedID); selected.add(h.ID);selected.add(t.getWeight());
             if (!lib.libString.IsNullOrEmpty(qrySymptMed)) {
                 if (OrFlag)
                     qrySymptMed += " OR ";
