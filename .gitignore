@@ -8,4 +8,4 @@
 /build
 /captures
 .externalNativeBuild
-keystore
+repetit/pub/keystore
