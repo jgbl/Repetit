@@ -284,6 +284,7 @@ public class MainActivity extends AppCompatActivity {
     public void translate(String from, String to, String txt, EditText txtSearch)
     {
         try {
+            copy(txt);
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_TEXT, txt);
@@ -312,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
             CharSequence pasteData = paste();
 
-            if (pasteData!=null) txtSearch.setText(pasteData);
+            if (pasteData!=null && txtSearch != null) txtSearch.setText(pasteData);
         }
     }
     @SuppressLint("NewApi") @SuppressWarnings("deprecation")
@@ -336,6 +337,30 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    @SuppressLint("NewApi") @SuppressWarnings("deprecation")
+    public void copy(String txt)
+    {
+        if (android.os.Build.VERSION.SDK_INT < 11)
+        {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null)
+            {
+                clipboard.setText(txt);
+            }
+        }
+        else
+        {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null && clipboard.getPrimaryClip() != null && clipboard.getPrimaryClip().getItemCount() > 0)
+            {
+                clipboard.setPrimaryClip(ClipData.newPlainText("txt", txt));
+            }
+        }
+
+    }
+
+
     private void AcceptLicense() throws Throwable {
         boolean blnLicenseAccepted = getPreferences(Context.MODE_PRIVATE).getBoolean("LicenseAccepted", false);
         if (!blnLicenseAccepted) {

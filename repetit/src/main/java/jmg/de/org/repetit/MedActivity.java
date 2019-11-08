@@ -610,6 +610,15 @@ public class MedActivity extends Fragment {
                             }
                         }
                         return true;
+
+                    }
+                case R.id.cmnTranslate:
+                    if (info.treeNode.getValue() instanceof TreeNodeHolderSympt)
+                    {
+                        TreeNodeHolderSympt h = (TreeNodeHolderSympt) info.treeNode.getValue();
+                        search = h.ShortText;
+                        _main.translate("en", "de", search,null);
+                        return true;
                     }
                 default:
                     return super.onContextItemSelected(item);
