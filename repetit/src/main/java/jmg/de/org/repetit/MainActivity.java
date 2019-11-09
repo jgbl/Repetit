@@ -2,6 +2,7 @@ package jmg.de.org.repetit;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -651,4 +652,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void searchGoogle(String search) throws Throwable {
+        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+        intent.putExtra(SearchManager.QUERY, search);
+        startActivity(intent);
+    }
 }
