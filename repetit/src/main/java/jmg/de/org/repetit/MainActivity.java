@@ -655,6 +655,13 @@ public class MainActivity extends AppCompatActivity {
     public void searchGoogle(String search) throws Throwable {
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, search);
-        startActivity(intent);
+        Intent chooserIntent = Intent.createChooser(intent,"");
+        if (chooserIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(chooserIntent);
+        }
+        else
+        {
+            lib.ShowMessage(this,getString(R.string.websearchnotfound),getString(R.string.websearchnotfound));
+        }
     }
 }
