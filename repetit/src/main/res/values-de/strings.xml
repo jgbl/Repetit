@@ -115,5 +115,7 @@
     <string name="FileNotFound">Die Datei %s wurde nicht gefunden!</string>
     <string name="finish">Beenden?</string>
     <string name="translate">übersetzen</string>
+    <string name="searchgoogle">Google Suche</string>
+    <string name="websearchnotfound">Web Suche nicht gefunden!</string>
 
 </resources>

@@ -102,6 +102,8 @@
     <string name="FileNotFound">File %s  not found!</string>
     <string name="finish">Beenden?</string>
     <string name="translate">translate</string>
+    <string name="searchgoogle">Google Suche</string>
+    <string name="websearchnotfound">Web Suche nicht gefunden!</string>
     <string-array name="spnWeight">
         <item >0</item>
         <item >1</item>

@@ -17,4 +17,12 @@
         android:id="@+id/cmnuGetMeanings"
         android:title="@string/getMeanings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/cmnuTranslate"
+        android:title="@string/translate"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/cmnuSearchGoogle"
+        android:title="@string/searchgoogle"
+        app:showAsAction="never" />
 </menu>
