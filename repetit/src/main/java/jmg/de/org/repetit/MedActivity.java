@@ -881,7 +881,6 @@ public class MedActivity extends Fragment {
             String combinedSearch = null;
             for (int i = 0; i < txt.length; i++) {
                 String s = txt[i];
-                String whereWhole = null;
                 if (AndFlag && blnWide && (s.startsWith("(") || combinedSearch != null)) {
                     if (s.startsWith("(")) txt[i] = s.substring(1);
                     if (combinedSearch == null) combinedSearch = "";
