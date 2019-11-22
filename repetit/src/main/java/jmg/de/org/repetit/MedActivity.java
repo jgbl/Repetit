@@ -970,7 +970,7 @@ public class MedActivity extends Fragment {
                                         blnOr = true;
                                     }
                                     else {
-                                        combinedSearch.split("\\.");
+                                        txt2 = combinedSearch.split("\\.");
                                         if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
                                     }
                                     String wheretmp = "";

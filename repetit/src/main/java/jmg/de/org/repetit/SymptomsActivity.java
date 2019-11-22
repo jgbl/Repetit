@@ -44,6 +44,7 @@ import me.texy.treeview.ContextMenuRecyclerView;
 import me.texy.treeview.TreeNode;
 import me.texy.treeview.TreeView;
 
+import static jmg.de.org.repetit.lib.dbSqlite.getBedsQuery;
 import static jmg.de.org.repetit.lib.lib.libString.MakeFitForQuery;
 
 /**
@@ -450,9 +451,24 @@ public class SymptomsActivity extends Fragment {
         try {
             String qry = "SELECT Symptome.* FROM Symptome WHERE ";
             String where = "";
-            for (String s : txt) {
+            String combinedSearch = null;
+            ArrayList<String> BedAll = new ArrayList<>();
+            for (int i = 0; i < txt.length; i++) {
+                String s = txt[i];
                 if (!lib.libString.IsNullOrEmpty(s)) {
                     s = MakeFitForQuery(s,true);
+                    if (s.startsWith("(") || combinedSearch != null) {
+                        if (s.startsWith("(")) txt[i] = s.substring(1);
+                        if (combinedSearch == null) combinedSearch = "";
+                        combinedSearch += s;
+                        if (!combinedSearch.endsWith(")")) {
+                            combinedSearch += ".";
+                            continue;
+                        }
+                        txt[i] = s.substring(0,s.length()-1);
+                    } else {
+                        combinedSearch = null;
+                    }
                     String Bed[] = null;
                     if (_main.blnSearchTerms && _main.db != null)
                     {
@@ -460,14 +476,112 @@ public class SymptomsActivity extends Fragment {
                     }
                     if (AndFlag) {
                         if (where != "") where += " AND ";
-                        if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("Symptome.Text",s):"(Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("Text",Bed):"")+ ")");
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
+                        if (combinedSearch != null) {
+                            combinedSearch = combinedSearch.substring(1, combinedSearch.length() - 1);
+                            boolean blnOr = false;
+                            String[] txt2 = null;
+                            if (combinedSearch.toLowerCase().contains(".or.") || combinedSearch.contains("|"))
+                            {
+                                txt2 = combinedSearch.split("(?i)\\.or\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\|");
+                                blnOr = true;
+                            }
+                            else {
+                                txt2 = combinedSearch.split("\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                            }
+                            String wheretmp = "";
+                            String whereS = "";
+                            boolean isSecond = false;
+                            for (String ss : txt2) {
+                                ss = MakeFitForQuery(ss, true);
+                                if (_main.blnSearchTerms && _main.db != null) {
+                                    Bed = _main.db.getFachbegriffe(ss);
+                                    if (Bed != null) for (String sss : Bed) BedAll.add(sss);
+                                }
+                                if (blnOr)
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", ss) : "WHERE Symptome.ShortText LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : ""));
+                                }
+                                else
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", ss) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                }
+                                if (!(wheretmp.equalsIgnoreCase(""))) {
+                                    if (blnOr)
+                                    {
+                                        wheretmp += " OR ";
+                                    }
+                                    else
+                                    {
+                                        wheretmp += " AND ";
+                                    }
+                                }
+                                wheretmp += whereS.substring(6);
+                                isSecond = true;
+                            }
+                            combinedSearch = null;
+                            where += "(" + wheretmp + ")";
+                        } else {
+                            if (txt.length > 1)
+                                where += (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "(Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("Text", Bed) : "") + ")");
+                            else
+                                where += (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText", Bed) : "") + ")");
+                        }
                     } else {
                         if (where != "") where += " OR ";
-                        if (txt.length > 1)
-                            where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
-                        else where += (_main.blnSearchWholeWord?getWhereWhole("ShortText",s):"(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText",Bed):"")+")");
+                        if (combinedSearch != null) {
+                            combinedSearch = combinedSearch.substring(1, combinedSearch.length() - 1);
+                            boolean blnOr = false;
+                            String[] txt2 = null;
+                            if (combinedSearch.toLowerCase().contains(".or.") || combinedSearch.contains("|"))
+                            {
+                                txt2 = combinedSearch.split("(?i)\\.or\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\|");
+                                blnOr = true;
+                            }
+                            else {
+                                txt2 = combinedSearch.split("\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                            }
+                            String wheretmp = "";
+                            String whereS = "";
+                            boolean isSecond = false;
+                            for (String ss : txt2) {
+                                ss = MakeFitForQuery(ss, true);
+                                if (_main.blnSearchTerms && _main.db != null) {
+                                    Bed = _main.db.getFachbegriffe(ss);
+                                    if (Bed != null) for (String sss : Bed) BedAll.add(sss);
+                                }
+                                if (blnOr)
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", ss) : "WHERE Symptome.ShortText LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : ""));
+                                }
+                                else
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", ss) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                }
+                                if (!(wheretmp.equalsIgnoreCase(""))) {
+                                    if (blnOr)
+                                    {
+                                        wheretmp += " OR ";
+                                    }
+                                    else
+                                    {
+                                        wheretmp += " AND ";
+                                    }
+                                }
+                                wheretmp += whereS.substring(6);
+                                isSecond = true;
+                            }
+                            combinedSearch = null;
+                            where += "(" + wheretmp + ")";
+                        } else {
+                            if (txt.length > 1)
+                                where += (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText", Bed) : "") + ")");
+                            else
+                                where += (_main.blnSearchWholeWord ? getWhereWhole("ShortText", s) : "(ShortText LIKE '%" + s + "%'" + (_main.blnSearchTerms ? dbSqlite.getBedsQuery("ShortText", Bed) : "") + ")");
+                        }
                     }
                 }
             }
