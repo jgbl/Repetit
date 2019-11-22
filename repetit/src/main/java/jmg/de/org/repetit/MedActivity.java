@@ -881,7 +881,7 @@ public class MedActivity extends Fragment {
             String combinedSearch = null;
             for (int i = 0; i < txt.length; i++) {
                 String s = txt[i];
-                if (AndFlag && blnWide && (s.startsWith("(") || combinedSearch != null)) {
+                if (s.startsWith("(") || combinedSearch != null) {
                     if (s.startsWith("(")) txt[i] = s.substring(1);
                     if (combinedSearch == null) combinedSearch = "";
                     combinedSearch += s;
@@ -908,18 +908,44 @@ public class MedActivity extends Fragment {
                             if (blnWide) {
                                 if (combinedSearch != null) {
                                     combinedSearch = combinedSearch.substring(1, combinedSearch.length() - 1);
-                                    String[] txt2 = combinedSearch.split("\\.");
-                                    if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                                    boolean blnOr = false;
+                                    String[] txt2 = null;
+                                    if (combinedSearch.toLowerCase().contains(".or.") || combinedSearch.contains("|"))
+                                    {
+                                        txt2 = combinedSearch.split("(?i)\\.or\\.");
+                                        if (txt2.length <= 1) txt2 = combinedSearch.split("\\|");
+                                        blnOr = true;
+                                    }
+                                    else {
+                                        txt2 = combinedSearch.split("\\.");
+                                        if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                                    }
                                     String wheretmp = "";
                                     boolean isSecond = false;
                                     for (String ss : txt2) {
                                         ss = MakeFitForQuery(ss, true);
                                         if (_main.blnSearchTerms && _main.db != null) {
-                                            Bed = _main.db.getFachbegriffe(s);
+                                            Bed = _main.db.getFachbegriffe(ss);
                                             if (Bed != null) for (String sss : Bed) BedAll.add(sss);
                                         }
-                                        whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
-                                        if (!(wheretmp.equalsIgnoreCase(""))) wheretmp += " AND ";
+                                        if (blnOr)
+                                        {
+                                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", ss) : "WHERE Symptome.ShortText LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : ""));
+                                        }
+                                        else
+                                        {
+                                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", ss) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                        }
+                                        if (!(wheretmp.equalsIgnoreCase(""))) {
+                                            if (blnOr)
+                                            {
+                                                wheretmp += " OR ";
+                                            }
+                                            else
+                                            {
+                                                wheretmp += " AND ";
+                                            }
+                                        }
                                         wheretmp += whereS.substring(6);
                                         isSecond = true;
                                     }
@@ -933,7 +959,54 @@ public class MedActivity extends Fragment {
                                 whereS = "(" + whereS + ")";
                                 whereSympt += whereS;
                             } else {
-                                whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                if (combinedSearch != null) {
+                                    combinedSearch = combinedSearch.substring(1, combinedSearch.length() - 1);
+                                    boolean blnOr = false;
+                                    String[] txt2 = null;
+                                    if (combinedSearch.toLowerCase().contains(".or.") || combinedSearch.contains("|"))
+                                    {
+                                        txt2 = combinedSearch.split("(?i)\\.or\\.");
+                                        if (txt2.length <= 1) txt2 = combinedSearch.split("\\|");
+                                        blnOr = true;
+                                    }
+                                    else {
+                                        combinedSearch.split("\\.");
+                                        if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                                    }
+                                    String wheretmp = "";
+                                    boolean isSecond = false;
+                                    for (String ss : txt2) {
+                                        ss = MakeFitForQuery(ss, true);
+                                        if (_main.blnSearchTerms && _main.db != null) {
+                                            Bed = _main.db.getFachbegriffe(ss);
+                                            if (Bed != null) for (String sss : Bed) BedAll.add(sss);
+                                        }
+                                        if (blnOr)
+                                        {
+                                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", ss) : "WHERE Symptome.ShortText LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : ""));
+                                        }
+                                        else
+                                        {
+                                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", ss) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                        }
+                                        if (!(wheretmp.equalsIgnoreCase(""))) {
+                                            if (blnOr)
+                                            {
+                                                wheretmp += " OR ";
+                                            }
+                                            else
+                                            {
+                                                wheretmp += " AND ";
+                                            }
+                                        }
+                                        wheretmp += whereS.substring(6);
+                                        isSecond = true;
+                                    }
+                                    combinedSearch = null;
+                                    whereS = "WHERE " + wheretmp;
+                                } else {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                }
                                 where += whereS.substring(6);
                                 //where += "SymptomeOfMedikament.SymptomID IN (SELECT Symptome.ID FROM Symptome "  + whereS + ")";
                             }
@@ -947,7 +1020,57 @@ public class MedActivity extends Fragment {
                         //whereSympt += whereS;
                     } else {
                         if (!(where.equalsIgnoreCase(""))) where += " OR ";
-                        where += ((_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", s) : "WHERE Symptome.ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : "")) + "").substring(6);
+                        String whereS = "";
+                        if (combinedSearch != null) {
+                            combinedSearch = combinedSearch.substring(1, combinedSearch.length() - 1);
+                            boolean blnOr = false;
+                            String[] txt2 = null;
+                            if (combinedSearch.toLowerCase().contains(".or.") || combinedSearch.contains("|"))
+                            {
+                                txt2 = combinedSearch.split("(?i)\\.or\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\|");
+                                blnOr = true;
+                            }
+                            else {
+                                txt2 = combinedSearch.split("\\.");
+                                if (txt2.length <= 1) txt2 = combinedSearch.split("\\s+");
+                            }
+                            String wheretmp = "";
+                            boolean isSecond = false;
+                            for (String ss : txt2) {
+                                ss = MakeFitForQuery(ss, true);
+                                if (_main.blnSearchTerms && _main.db != null) {
+                                    Bed = _main.db.getFachbegriffe(ss);
+                                    if (Bed != null) for (String sss : Bed) BedAll.add(sss);
+                                }
+                                if (blnOr)
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", ss) : "WHERE Symptome.ShortText LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : ""));
+                                }
+                                else
+                                {
+                                    whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", ss) : "WHERE Symptome.Text LIKE '%" + ss + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                                }
+                                if (!(wheretmp.equalsIgnoreCase(""))) {
+                                    if (blnOr)
+                                    {
+                                        wheretmp += " OR ";
+                                    }
+                                    else
+                                    {
+                                        wheretmp += " AND ";
+                                    }
+                                }
+                                wheretmp += whereS.substring(6);
+                                isSecond = true;
+                            }
+                            combinedSearch = null;
+                            whereS = "WHERE (" + wheretmp + ")";
+                        } else {
+                            whereS = (_main.blnSearchWholeWord ? getWhereWhole("Symptome.Text", s) : "WHERE Symptome.Text LIKE '%" + s + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.Text", Bed) : ""));
+                        }
+
+                        where += whereS.substring(6); //((_main.blnSearchWholeWord ? getWhereWhole("Symptome.ShortText", s) : "WHERE Symptome.ShortText LIKE '%" + MakeFitForQuery(s, true) + "%'" + (_main.blnSearchTerms ? getBedsQuery("Symptome.ShortText", Bed) : "")) + "").substring(6);
                     }
                 }
             }
